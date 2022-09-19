@@ -2,40 +2,12 @@ AddCSLuaFile()
 include("JI_DS_Shared.lua")
 if(CLIENT)then
 	local ArmorAppearances={
-		--vests
-		["Ballistic Nylon"]="models/mat_jack_bodyarmor_bn",
-		["Stab Vest"]="models/mat_jack_bodyarmor_sv",
-		["Soft Kevlar"]="models/mat_jack_bodyarmor_sk",
-		["Kevlar SAPI"]="models/mat_jack_bodyarmor_ks",
-		["Impact Vest"]="models/mat_jack_bodyarmor_im",
-		--helmets
-		["Steel"]="models/mat_jack_helmetmetal",
-		["Kevlar Resin"]="models/mat_jack_monotone_acu_flat",
-		["Polyethylene"]="models/mat_jack_monotone_abu_flat",
-		["Riot"]="models/mat_jack_bodyarmor_riothelm",
-		["Impact"]="models/mat_jack_motorcyclehelmet",
-		--suits
 		["Hazardous Material"]="models/dpfilms/jetropolice/playermodels/pm_police_bt.mdl",
 		["Fire-Faraday"]="models/dpfilms/jetropolice/playermodels/pm_policetrench.mdl",
-		["EOD"]="models/juggerjaut_player.mdl"
 	}
 	local ArmorDisadvantages={
-		--vests
-		["Ballistic Nylon"]=.99,
-		["Stab Vest"]=.95,
-		["Soft Kevlar"]=.95,
-		["Kevlar SAPI"]=.75,
-		["Impact Vest"]=.7,
-		--helmets
-		["Steel"]="sprites/mat_jack_helmoverlay_h",
-		["Kevlar Resin"]="sprites/mat_jack_helmoverlay_l",
-		["Polyethylene"]="sprites/mat_jack_helmoverlay_n",
-		["Riot"]="sprites/mat_jack_helmoverlay_r",
-		["Impact"]="sprites/mat_jack_helmoverlay_i",
-		--suits
 		["Hazardous Material"]={"sprites/mat_jack_hazmatoverlay",.75},
 		["Fire-Faraday"]={"sprites/mat_jack_firesuitoverlay",.75},
-		["EOD"]={"sprites/mat_jack_helmoverlay_e",.5}
 	}
 	local function JackSentCont(data)
 		local ply=data:ReadEntity()
