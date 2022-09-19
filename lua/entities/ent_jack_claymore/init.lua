@@ -64,7 +64,7 @@ function ENT:Detonate()
 	Pow:SetScale(1)
 	util.Effect("eff_jack_shrapnelburst",Pow,true,true)
 	self.Entity:EmitSound("BaseExplosionEffect.Sound")
-	self:EmitSound("snd_jack_fragsplodeclose.wav",100,120)
+	self:EmitSound("snd_jack_fragsplodeclose.mp3",100,120)
 	util.ScreenShake(SelfPos,99999,99999,.5,1000)
 	local MaxRange=1000
 	for key,target in pairs(ents.FindInSphere(SelfPos,MaxRange))do
@@ -145,12 +145,12 @@ function ENT:Use(activator,caller)
 				self:SetAngles(TheAngle)
 				self:NotifySetup(activator)
 			end
-			self:EmitSound("snd_jack_pinpull.wav")
+			self:EmitSound("snd_jack_pinpull.mp3")
 			self.Armed=true
 		end
 	else
 		self.Armed=false
-		self:EmitSound("snd_jack_pinpush.wav")
+		self:EmitSound("snd_jack_pinpush.mp3")
 		constraint.RemoveAll(self)
 	end
 end
@@ -187,7 +187,7 @@ local function DetonateClaymores(ply)
 	end
 	if(FoundEm)then
 		JackaGenericUseEffect(ply)
-		ply:EmitSound("snd_jack_detonator.wav",70,100)
+		ply:EmitSound("snd_jack_detonator.mp3",70,100)
 	end
 end
 numpad.Register("JackaClaymoreDet",DetonateClaymores)

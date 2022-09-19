@@ -73,7 +73,7 @@ function ENT:PhysicsCollide(data,physobj)
 								effectdata:SetScale(1) --length of strands
 								effectdata:SetRadius(1) --thickness of strands
 								util.Effect("Sparks",effectdata,true,true)
-								data.HitEntity:EmitSound("snd_jack_niceding.wav")
+								data.HitEntity:EmitSound("snd_jack_niceding.mp3")
 								self.Remaining=self.Remaining-1
 							end
 						end
@@ -99,7 +99,7 @@ function ENT:Use(activator,caller)
 end
 function ENT:Start()
 	if(self.Remaining>0)then
-		self:EmitSound("snd_jack_genstart.wav")
+		self:EmitSound("snd_jack_genstart.mp3")
 		self.State="Running"
 		self:SetDTBool(0,self.State=="Running")
 		self.NextSoundTime=CurTime()+8
@@ -110,7 +110,7 @@ function ENT:Start()
 	end
 end
 function ENT:ShutOff()
-	self:EmitSound("snd_jack_genstop.wav")
+	self:EmitSound("snd_jack_genstop.mp3")
 	self.State="Off"
 	self:SetDTBool(0,self.State=="Running")
 end
@@ -143,7 +143,7 @@ function ENT:Think()
 		end
 		if(self.NextSoundTime<CurTime())then
 			self.NextSoundTime=CurTime()+3.5
-			self:EmitSound("snd_jack_genrun.wav")
+			self:EmitSound("snd_jack_genrun.mp3")
 		end
 		if(self:WaterLevel()>0)then self:ShutOff() end
 		self:GetPhysicsObject():ApplyForceCenter(VectorRand()*1500)
@@ -182,7 +182,7 @@ function ENT:FuelWith(ent)
 	ent:SetAngles(Ang)
 	ent:SetParent(self)
 	ent:SetNotSolid(true)
-	self:EmitSound("snd_jack_metallicload.wav")
+	self:EmitSound("snd_jack_metallicload.mp3")
 end
 function ENT:OnRemove()
 	if(IsValid(self.FuelTank))then self.FuelTank:Remove() end
