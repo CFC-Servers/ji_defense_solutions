@@ -84,7 +84,7 @@ function ENT:Think()
 		util.Effect("eff_jack_rocketthrust",Eff,true,true)
 		self:GetPhysicsObject():ApplyForceCenter(-Up*3000)
 		self:GetPhysicsObject():AddAngleVelocity(-self:GetPhysicsObject():GetAngleVelocity()/10)
-		self:EmitSound("snd_jack_thrustburn.wav",75,100)
+		self:EmitSound("snd_jack_thrustburn.mp3",75,100)
 		self.FuelLeft=self.FuelLeft-.75
 		if(self.FuelLeft<=0)then
 			self.Fired=false

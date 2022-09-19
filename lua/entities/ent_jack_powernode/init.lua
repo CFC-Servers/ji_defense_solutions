@@ -86,7 +86,7 @@ function ENT:PhysicsCollide(data,physobj)
 								effectdata:SetScale(1) --length of strands
 								effectdata:SetRadius(1) --thickness of strands
 								util.Effect("Sparks",effectdata,true,true)
-								data.HitEntity:EmitSound("snd_jack_niceding.wav")
+								data.HitEntity:EmitSound("snd_jack_niceding.mp3")
 								self.Generator.Remaining=self.Generator.Remaining-1
 							end
 						end

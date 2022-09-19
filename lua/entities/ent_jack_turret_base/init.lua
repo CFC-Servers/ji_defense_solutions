@@ -223,11 +223,11 @@ function ENT:Use(activator,caller)
 		if(IsValid(Kit))then self:Fix(Kit);JackaGenericUseEffect(activator) end
 	end
 	if(self.Broken)then return end
-	if(activator==self.CurrentTarget)then self:EmitSound("snd_jack_denied.wav",75,100) return end -- lol dude
-	if(self.IsLocked)then self:EmitSound("snd_jack_denied.wav",75,100) return end
+	if(activator==self.CurrentTarget)then self:EmitSound("snd_jack_denied.mp3",75,100) return end -- lol dude
+	if(self.IsLocked)then self:EmitSound("snd_jack_denied.mp3",75,100) return end
 	if not(self.MenuOpen)then
 		local Tag=activator:GetNetworkedInt("JackyIFFTag")
-		self:EmitSound("snd_jack_uisuccess.wav",65,100)
+		self:EmitSound("snd_jack_uisuccess.mp3",65,100)
 		self.MenuOpen=true
 		umsg.Start("JackaTurretOpenMenu",activator)
 		umsg.Entity(self)
@@ -258,7 +258,7 @@ function ENT:TakeNegativeInputs(key)
 	local Time=CurTime()
 	if(key==IN_ATTACK2)then
 		self.ControllingPly:SetFOV(90,.1)
-		for i=0,10 do self:EmitSound("snd_jack_turretservo.wav",70,70+i) end
+		for i=0,10 do self:EmitSound("snd_jack_turretservo.mp3",70,70+i) end
 	end
 end
 function ENT:TakeInputs(key)
@@ -290,15 +290,15 @@ function ENT:TakeInputs(key)
 		end
 	elseif(key==IN_ATTACK2)then
 		self.ControllingPly:SetFOV(4,.1)
-		for i=0,10 do self:EmitSound("snd_jack_turretservo.wav",70,70+i) end
+		for i=0,10 do self:EmitSound("snd_jack_turretservo.mp3",70,70+i) end
 	elseif(key==IN_USE)then
 		local Mode=self:GetDTInt(3)
 		if(Mode==2)then Mode=-1 end
 		self:SetDTInt(3,Mode+1)
 		if(Mode+1==0)then
-			self:EmitSound("snd_jack_displaysoff.wav",70,100)
+			self:EmitSound("snd_jack_displaysoff.mp3",70,100)
 		else
-			self:EmitSound("snd_jack_displayson.wav",70,100)
+			self:EmitSound("snd_jack_displayson.mp3",70,100)
 		end
 	end
 end
@@ -326,7 +326,7 @@ function ENT:Think()
 			effectdata:SetScale(1) --length of strands
 			effectdata:SetRadius(3) --thickness of strands
 			util.Effect("Sparks",effectdata,true,true)
-			self:EmitSound("snd_jack_turretfizzle.wav",70,100)
+			self:EmitSound("snd_jack_turretfizzle.mp3",70,100)
 		else
 			local effectdata=EffectData()
 			effectdata:SetOrigin(self:GetShootPos())
@@ -604,7 +604,7 @@ function ENT:FriendlyAlert()
 	Flash:SetOrigin(self:GetShootPos())
 	Flash:SetScale(.7)
 	util.Effect("eff_jack_cyanflash",Flash,true,true)
-	self:EmitSound("snd_jack_turrethi.wav",80,100)
+	self:EmitSound("snd_jack_turrethi.mp3",80,100)
 	self.BatteryCharge=self.BatteryCharge-.5
 end
 function ENT:HostileAlert()
@@ -612,8 +612,8 @@ function ENT:HostileAlert()
 	Flash:SetOrigin(self:GetShootPos())
 	Flash:SetScale(1.3)
 	util.Effect("eff_jack_redflash",Flash,true,true)
-	self:EmitSound("snd_jack_turretwarn.wav",80,100)
-	sound.Play("snd_jack_turretwarn.wav",self:GetPos(),80,100)
+	self:EmitSound("snd_jack_turretwarn.mp3",80,100)
+	sound.Play("snd_jack_turretwarn.mp3",self:GetPos(),80,100)
 	self.BatteryCharge=self.BatteryCharge-.5
 end
 function ENT:HoldFire()
@@ -632,7 +632,7 @@ function ENT:Notice()
 	self:SetDTInt(0,TS_WATCHING)
 	self.NextGoSilentTime=CurTime()+5
 	self.NextScanTime=CurTime()+(1/self.ScanRate)
-	self:EmitSound("snd_jack_turretdetect.wav",90,100)
+	self:EmitSound("snd_jack_turretdetect.mp3",90,100)
 	self.BatteryCharge=self.BatteryCharge-.25
 end
 function ENT:Alert(targ)
@@ -641,7 +641,7 @@ function ENT:Alert(targ)
 		self:ResetSequence(4)
 		self.WeaponOut=true
 		if not((self.AmmoType=="AAmissile")or(self.AmmoType=="ATrocket"))then
-			self:EmitSound("snd_jack_turretawaken.wav",70,100)
+			self:EmitSound("snd_jack_turretawaken.mp3",70,100)
 		end
 		timer.Simple(.4/self.TrackRate,function()
 			if((IsValid(self))and(IsValid(self.CurrentTarget)))then
@@ -679,20 +679,20 @@ function ENT:Traverse()
 	local PowerDrain=.2*self.TrackRate*self.MechanicsSizeMod^1.5
 	if(self.CurrentSweep>(self.GoalSweep+2))then
 		self.CurrentSweep=self.CurrentSweep-self.TrackRate
-		self:EmitSound("snd_jack_turretservo.wav",66,90)
+		self:EmitSound("snd_jack_turretservo.mp3",66,90)
 		self.BatteryCharge=self.BatteryCharge-PowerDrain
 	elseif(self.CurrentSweep<(self.GoalSweep-2))then
 		self.CurrentSweep=self.CurrentSweep+self.TrackRate
-		self:EmitSound("snd_jack_turretservo.wav",66,90)
+		self:EmitSound("snd_jack_turretservo.mp3",66,90)
 		self.BatteryCharge=self.BatteryCharge-PowerDrain
 	end
 	if(self.CurrentSwing>(self.GoalSwing+2))then
 		self.CurrentSwing=self.CurrentSwing-(self.TrackRate*.6667)
-		self:EmitSound("snd_jack_turretservo.wav",66,110)
+		self:EmitSound("snd_jack_turretservo.mp3",66,110)
 		self.BatteryCharge=self.BatteryCharge-PowerDrain
 	elseif(self.CurrentSwing<(self.GoalSwing-2))then
 		self.CurrentSwing=self.CurrentSwing+(self.TrackRate*.6667)
-		self:EmitSound("snd_jack_turretservo.wav",66,110)
+		self:EmitSound("snd_jack_turretservo.mp3",66,110)
 		self.BatteryCharge=self.BatteryCharge-PowerDrain
 	end
 	self:SetDTInt(1,self.CurrentSweep)
@@ -709,20 +709,20 @@ function ENT:TraverseManually(horiz,vert,fast,slow)
 	if(slow)then Mul=Mul*.125 end
 	if((horiz>0)and(self.CurrentSweep>-90))then
 		self.CurrentSweep=self.CurrentSweep-self.TrackRate*Mul
-		self:EmitSound("snd_jack_turretservo.wav",66,90+10*Mul)
+		self:EmitSound("snd_jack_turretservo.mp3",66,90+10*Mul)
 		self.BatteryCharge=self.BatteryCharge-PowerDrain
 	elseif((horiz<0)and(self.CurrentSweep<90))then
 		self.CurrentSweep=self.CurrentSweep+self.TrackRate*Mul
-		self:EmitSound("snd_jack_turretservo.wav",66,90+10*Mul)
+		self:EmitSound("snd_jack_turretservo.mp3",66,90+10*Mul)
 		self.BatteryCharge=self.BatteryCharge-PowerDrain
 	end
 	if((vert>0)and(self.CurrentSwing>-90))then
 		self.CurrentSwing=self.CurrentSwing-(self.TrackRate*.6667)*Mul
-		self:EmitSound("snd_jack_turretservo.wav",66,100+10*Mul)
+		self:EmitSound("snd_jack_turretservo.mp3",66,100+10*Mul)
 		self.BatteryCharge=self.BatteryCharge-PowerDrain
 	elseif((vert<0)and(self.CurrentSwing<90))then
 		self.CurrentSwing=self.CurrentSwing+(self.TrackRate*.6667)*Mul
-		self:EmitSound("snd_jack_turretservo.wav",66,100+10*Mul)
+		self:EmitSound("snd_jack_turretservo.mp3",66,100+10*Mul)
 		self.BatteryCharge=self.BatteryCharge-PowerDrain
 	end
 	self:SetDTInt(1,self.CurrentSweep)
@@ -862,7 +862,7 @@ function ENT:FireShot()
 		end
 		self:GetPhysicsObject():ApplyForceOffset(-Dir*self.ShotPower*6*self.ProjectilesPerShot,SelfPos+self:GetUp()*30)
 	else
-		self:EmitSound("snd_jack_turretclick.wav",70,110)
+		self:EmitSound("snd_jack_turretclick.mp3",70,110)
 		if(self.NextWhineTime<CurTime())then
 			self:Whine()
 			self.NextWhineTime=CurTime()+2.25
@@ -870,7 +870,7 @@ function ENT:FireShot()
 	end
 end
 function ENT:Whine()
-	self:EmitSound("snd_jack_turretwhine.wav",80,100)
+	self:EmitSound("snd_jack_turretwhine.mp3",80,100)
 	self.BatteryCharge=self.BatteryCharge-.05
 end
 function ENT:StandBy()
@@ -878,7 +878,7 @@ function ENT:StandBy()
 	if(self.WeaponOut)then
 		self:ResetSequence(0)
 		if not((self.AmmoType=="AAmissile")or(self.AmmoType=="ATrocket"))then
-			self:EmitSound("snd_jack_turretasleep.wav",70,100)
+			self:EmitSound("snd_jack_turretasleep.mp3",70,100)
 		end
 		self.WeaponOut=false
 		self.BatteryCharge=self.BatteryCharge-.5*self.MechanicsSizeMod
@@ -896,7 +896,7 @@ function ENT:CanSee(ent)
 	return !Tr.Hit
 end
 function ENT:HardShutDown()
-	self:EmitSound("snd_jack_turretshutdown.wav",80,100)
+	self:EmitSound("snd_jack_turretshutdown.mp3",80,100)
 	self:SetDTInt(0,TS_NOTHING)
 	self:GetPhysicsObject():SetDamping(0,0)
 	self.CurrentTarget=nil
@@ -909,7 +909,7 @@ end
 function ENT:StartUp()
 	if not(self.HasBattery)then return end
 	if(self.BatteryCharge<=0)then return end
-	self:EmitSound("snd_jack_turretstartup.wav",80,100)
+	self:EmitSound("snd_jack_turretstartup.mp3",80,100)
 	self:GetPhysicsObject():SetDamping(0,10)
 	if(self.AmmoType=="AAmissile")then self.MissileLocked=false end
 	self:Notice()
@@ -935,7 +935,7 @@ function ENT:DetachAmmoBox()
 	Box:SetAngles(self:GetRight():Angle())
 	Box:Spawn()
 	Box:Activate()
-	self:EmitSound("snd_jack_turretammounload.wav")
+	self:EmitSound("snd_jack_turretammounload.mp3")
 	SafeRemoveEntityDelayed(Box,30)
 end
 function ENT:RefillAmmo(box)
@@ -947,7 +947,7 @@ function ENT:RefillAmmo(box)
 		self.RoundInChamber=true
 		self.RoundsOnBelt=box.NumberOfRounds-1
 	end
-	self:EmitSound("snd_jack_turretammoload.wav")
+	self:EmitSound("snd_jack_turretammoload.mp3")
 	SafeRemoveEntity(box)
 end
 function ENT:RefillPower(box)
@@ -957,7 +957,7 @@ function ENT:RefillPower(box)
 	self:SetDTInt(2,math.Round((self.BatteryCharge/self.MaxCharge)*100))
 	SafeRemoveEntity(box)
 	self:SetDTBool(3,false)
-	self:EmitSound("snd_jack_turretbatteryload.wav")
+	self:EmitSound("snd_jack_turretbatteryload.mp3")
 end
 function ENT:DetachBattery()
 	self.BatteryCharge=0
@@ -969,7 +969,7 @@ function ENT:DetachBattery()
 	Box:SetAngles(self:GetForward():Angle())
 	Box:Spawn()
 	Box:Activate()
-	self:EmitSound("snd_jack_turretbatteryunload.wav")
+	self:EmitSound("snd_jack_turretbatteryunload.mp3")
 end
 function ENT:FindBattery()
 	for key,potential in pairs(ents.FindInSphere(self:GetPos(),40))do
@@ -983,7 +983,7 @@ function ENT:FindBattery()
 end
 function ENT:Break()
 	if not(self.Broken)then
-		self:EmitSound("snd_jack_turretbreak.wav")
+		self:EmitSound("snd_jack_turretbreak.mp3")
 		self.Broken=true
 		self:SetDTInt(0,TS_NOTHING)
 		self.IsLocked=false
@@ -996,7 +996,7 @@ function ENT:Break()
 end
 function ENT:Fix(kit)
 	self.StructuralIntegrity=400
-	self:EmitSound("snd_jack_turretrepair.wav",70,100)
+	self:EmitSound("snd_jack_turretrepair.mp3",70,100)
 	timer.Simple(3.25,function()
 		if(IsValid(self))then
 			self.Broken=false
@@ -1050,7 +1050,7 @@ local function SentryChat(ply,txt)
 					sent.IsLocked=false
 					sent.LockPass=""
 					ply:PrintMessage(HUD_PRINTTALK,"Sentry "..tostring(sent:EntIndex()).." unlocked")
-					sent:EmitSound("snd_jack_granted.wav",75,100)
+					sent:EmitSound("snd_jack_granted.mp3",75,100)
 				end
 			end
 		end
@@ -1064,7 +1064,7 @@ hook.Add("PlayerSay","JackaSentryChat",SentryChat)
 local function CloseOn(...)
 	local args={...}
 	local self=Entity(tonumber(args[3][1]))
-	self:EmitSound("snd_jack_uiselect.wav",65,100)
+	self:EmitSound("snd_jack_uiselect.mp3",65,100)
 	self.MenuOpen=false
 	if(self:GetDTInt(0)==TS_NOTHING)then
 		if(self.StartUp)then
@@ -1077,7 +1077,7 @@ concommand.Add("JackaTurretCloseMenu_On",CloseOn)
 local function CloseOff(...)
 	local args={...}
 	local self=Entity(tonumber(args[3][1]))
-	self:EmitSound("snd_jack_uiselect.wav",65,100)
+	self:EmitSound("snd_jack_uiselect.mp3",65,100)
 	self.MenuOpen=false
 	if not(self:GetDTInt(0)==TS_NOTHING)then
 		self:HardShutDown()
@@ -1088,7 +1088,7 @@ concommand.Add("JackaTurretCloseMenu_Off",CloseOff)
 local function CloseCancel(...)
 	local args={...}
 	local self=Entity(tonumber(args[3][1]))
-	self:EmitSound("snd_jack_uiselect.wav",65,100)
+	self:EmitSound("snd_jack_uiselect.mp3",65,100)
 	self.MenuOpen=false
 end
 concommand.Add("JackaTurretCloseMenu_Cancel",CloseCancel)
@@ -1143,7 +1143,7 @@ local function TargetingGroup(...)
 	else
 		table.remove(self.TargetingGroup,table.KeyFromValue(self.TargetingGroup,Num))
 	end
-	self:EmitSound("snd_jack_uiselect.wav",65,100)
+	self:EmitSound("snd_jack_uiselect.mp3",65,100)
 end
 concommand.Add("JackaTurretTargetingChange",TargetingGroup)
 local function TargetingGroupType(...)
@@ -1152,14 +1152,14 @@ local function TargetingGroupType(...)
 	local Check=tobool(args[3][3])
 	local Type=args[3][2]
 	self[Type]=Check
-	self:EmitSound("snd_jack_uiselect.wav",65,100)
+	self:EmitSound("snd_jack_uiselect.mp3",65,100)
 end
 concommand.Add("JackaTurretTargetingTypeChange",TargetingGroupType)
 local function IFFTag(...)
 	local args={...}
 	local self=Entity(tonumber(args[3][1]))
 	local ply=args[1]
-	self:EmitSound("snd_jack_uiselect.wav",65,100)
+	self:EmitSound("snd_jack_uiselect.mp3",65,100)
 	self.MenuOpen=false
 	local Tag=ply:GetNetworkedInt("JackyIFFTag")
 	if((Tag)and(Tag!=0))then
@@ -1188,7 +1188,7 @@ local function Warn(...)
 	local self=Entity(tonumber(args[3][1]))
 	local Check=tobool(args[3][2])
 	self.WillWarn=Check
-	self:EmitSound("snd_jack_uiselect.wav",65,100)
+	self:EmitSound("snd_jack_uiselect.mp3",65,100)
 end
 concommand.Add("JackaTurretWarn",Warn)
 local function Light(...)
@@ -1196,7 +1196,7 @@ local function Light(...)
 	local self=Entity(tonumber(args[3][1]))
 	local Check=tobool(args[3][2])
 	self.WillLight=Check
-	self:EmitSound("snd_jack_uiselect.wav",65,100)
+	self:EmitSound("snd_jack_uiselect.mp3",65,100)
 end
 concommand.Add("JackaTurretLight",Light)
 local function Battery(...)

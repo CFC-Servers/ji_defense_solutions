@@ -28,14 +28,14 @@ ENT.ShellEffect="RifleShellEject"
 ENT.ProjectilesPerShot=1
 ENT.TurretSkin="models/mat_jack_missileturret"
 ENT.ShotPitch=100
-ENT.NearShotNoise="snd_jack_turretmissilelaunch_close.wav"
-ENT.FarShotNoise="snd_jack_turretmissilelaunch_far.wav"
+ENT.NearShotNoise="snd_jack_turretmissilelaunch_close.mp3"
+ENT.FarShotNoise="snd_jack_turretmissilelaunch_far.mp3"
 ENT.AmmoType="AAmissile"
 ENT.Automatic=true
 ENT.MuzzEff="muzzle_center_M82"
 ENT.BarrelSizeMod=Vector(.01,.01,.01)
 ENT.Autoloading=false
-ENT.CycleSound="snd_jack_glcycle.wav"
+ENT.CycleSound="snd_jack_glcycle.mp3"
 ENT.MechanicsSizeMod=2.2
 ENT.TargetOrganics=false
 ENT.TargetSynthetics=true
@@ -98,7 +98,7 @@ function ENT:FireShot()
 				local Ent=util.QuickTrace(self:GetShootPos(),self:GetAttachment(1).Ang:Forward()*40000,{self}).Entity
 				if((IsValid(Ent))and not(Ent:IsWorld()))then
 					self.CurrentTarget=Ent
-					self:EmitSound("snd_jack_missilelock.wav",75,100)
+					self:EmitSound("snd_jack_missilelock.mp3",75,100)
 					self.MissileLocked=true
 					timer.Simple(1,function()
 						if(IsValid(self))then
@@ -111,7 +111,7 @@ function ENT:FireShot()
 				end
 			else
 				if(IsValid(self.CurrentTarget))then
-					self:EmitSound("snd_jack_missilelock.wav",75,100)
+					self:EmitSound("snd_jack_missilelock.mp3",75,100)
 					self.MissileLocked=true
 					timer.Simple(1,function()
 						if(IsValid(self))then
@@ -124,7 +124,7 @@ function ENT:FireShot()
 				end
 			end
 		else
-			self:EmitSound("snd_jack_missilesearch.wav",75,100)
+			self:EmitSound("snd_jack_missilesearch.mp3",75,100)
 			self.BatteryCharge=self.BatteryCharge-15
 		end
 	else
@@ -204,7 +204,7 @@ function ENT:DetachAmmoBox()
 	Box:Spawn()
 	Box:Activate()
 	Box:GetPhysicsObject():SetVelocity(self:GetPhysicsObject():GetVelocity()-self:GetForward()*20-self:GetRight()*20)
-	self:EmitSound("snd_jack_missileunload.wav")
+	self:EmitSound("snd_jack_missileunload.mp3")
 	SafeRemoveEntityDelayed(Box,30)
 end
 function ENT:RefillAmmo(box)
@@ -213,6 +213,6 @@ function ENT:RefillAmmo(box)
 	self.RoundInChamber=true
 	self:SetDTBool(2,self.RoundInChamber)
 	self.RoundsOnBelt=1
-	self:EmitSound("snd_jack_missileload.wav")
+	self:EmitSound("snd_jack_missileload.mp3")
 	SafeRemoveEntity(box)
 end

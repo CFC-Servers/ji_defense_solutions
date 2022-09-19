@@ -78,8 +78,8 @@ function ENT:Detonate()
 	else
 		sound.Play("BaseExplosionEffect.Sound",SelfPos)
 		sound.Play("weapons/explode4.wav",SelfPos,100,150)
-		sound.Play("snd_jack_bigsplodeclose.wav",SelfPos,110,100)
-		sound.Play("snd_jack_bigsplodeclose.wav",SelfPos,110,100)
+		sound.Play("snd_jack_bigsplodeclose.mp3",SelfPos,110,100)
+		sound.Play("snd_jack_bigsplodeclose.mp3",SelfPos,110,100)
 		self.Entity:EmitSound("BaseExplosionEffect.Sound")
 		sound.Play("weapons/explode3.wav",self.Entity:GetPos(),100,150)
 		local splad=EffectData()
@@ -117,7 +117,7 @@ function ENT:Use(activator,caller)
 		if not(self.Armed)then
 			if not(self.Fuzed)then
 				self.Fuzed=true
-				self:EmitSound("snd_jack_pinpull.wav",65,90)
+				self:EmitSound("snd_jack_pinpull.mp3",65,90)
 				timer.Simple(10,function()
 					if(IsValid(self))then
 						self.Armed=true
