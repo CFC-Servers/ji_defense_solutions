@@ -347,7 +347,6 @@ if(SERVER)then
 	local function CmdDet(...)
 		local args={...}
 		local ply=args[1]
-		ply:ConCommand("jacky_fougasse_det")
 		ply:ConCommand("jacky_claymore_det")
 	end
 	concommand.Add("jacky_remote_det",CmdDet)
