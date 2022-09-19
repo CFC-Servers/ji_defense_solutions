@@ -52,13 +52,13 @@ function ENT:Initialize()
 			self:GetPhysicsObject():SetVelocity(Vel)
 		end
 	end)
-	util.PrecacheSound("snd_jack_missilemotorfire.wav")
+	util.PrecacheSound("snd_jack_missilemotorfire.mp3")
 end
 function ENT:FireMotor()
 	if(self.MotorFired)then return end
 	self.MotorFired=true
-	sound.Play("snd_jack_missilemotorfire.wav",self:GetPos(),85,100)
-	sound.Play("snd_jack_missilemotorfire.wav",self:GetPos()+Vector(0,0,1),88,100)
+	sound.Play("snd_jack_missilemotorfire.mp3",self:GetPos(),85,100)
+	sound.Play("snd_jack_missilemotorfire.mp3",self:GetPos()+Vector(0,0,1),88,100)
 	self:SetDTBool(0,true)
 	timer.Simple(.5,function()
 		if(IsValid(self))then
@@ -155,9 +155,9 @@ function ENT:Detonate()
 			end
 		end
 		util.BlastDamage(self.Entity,self.Entity,SelfPos,600,300)
-		self:EmitSound("snd_jack_fragsplodeclose.wav",80,100)
-		sound.Play("snd_jack_fragsplodeclose.wav",SelfPos+Vector(0,0,1),75,80)
-		sound.Play("snd_jack_fragsplodefar.wav",SelfPos+Vector(0,0,2),100,80)
+		self:EmitSound("snd_jack_fragsplodeclose.mp3",80,100)
+		sound.Play("snd_jack_fragsplodeclose.mp3",SelfPos+Vector(0,0,1),75,80)
+		sound.Play("snd_jack_fragsplodefar.mp3",SelfPos+Vector(0,0,2),100,80)
 		for i=0,30 do
 			local Trayuss=util.QuickTrace(SelfPos,VectorRand()*200,{self.Entity})
 			if(Trayuss.Hit)then
