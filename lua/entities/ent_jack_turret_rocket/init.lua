@@ -28,13 +28,13 @@ ENT.ShellEffect="RifleShellEject"
 ENT.ProjectilesPerShot=1
 ENT.TurretSkin="models/mat_jack_rocketturret"
 ENT.ShotPitch=100
-ENT.NearShotNoise="snd_jack_turretmissilelaunch_close.wav"
-ENT.FarShotNoise="snd_jack_turretmissilelaunch_far.wav"
+ENT.NearShotNoise="snd_jack_turretmissilelaunch_close.mp3"
+ENT.FarShotNoise="snd_jack_turretmissilelaunch_far.mp3"
 ENT.AmmoType="ATrocket"
 ENT.MuzzEff="muzzle_center_M82"
 ENT.BarrelSizeMod=Vector(.01,.01,.01)
 ENT.Autoloading=false
-ENT.CycleSound="snd_jack_glcycle.wav"
+ENT.CycleSound="snd_jack_glcycle.mp3"
 ENT.MechanicsSizeMod=2.2
 ENT.TargetOrganics=false
 ENT.TargetSynthetics=true
@@ -173,7 +173,7 @@ function ENT:DetachAmmoBox()
 	Box:Spawn()
 	Box:Activate()
 	Box:GetPhysicsObject():SetVelocity(self:GetPhysicsObject():GetVelocity()-self:GetForward()*20-self:GetRight()*20)
-	self:EmitSound("snd_jack_missileunload.wav")
+	self:EmitSound("snd_jack_missileunload.mp3")
 	SafeRemoveEntityDelayed(Box,30)
 end
 function ENT:RefillAmmo(box)
@@ -182,6 +182,6 @@ function ENT:RefillAmmo(box)
 	self.RoundInChamber=true
 	self:SetDTBool(2,self.RoundInChamber)
 	self.RoundsOnBelt=1
-	self:EmitSound("snd_jack_missileload.wav")
+	self:EmitSound("snd_jack_missileload.mp3")
 	SafeRemoveEntity(box)
 end
