@@ -44,7 +44,7 @@ function ENT:Use(activator,caller)
 		JackaGenericUseEffect(activator)
 		activator:SetNetworkedInt("JackyIFFTag",math.random(1,100000))
 		activator:PrintMessage(HUD_PRINTCENTER,"IFF tag equipped.")
-		activator:EmitSound("snd_jack_tinyequip.wav",75,100)
+		activator:EmitSound("snd_jack_tinyequip.mp3",75,100)
 		self:Remove()
 	end
 end
