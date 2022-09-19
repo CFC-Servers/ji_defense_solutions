@@ -1,7 +1,3 @@
 AddCSLuaFile()
-player_manager.AddValidModel("JackaFireSuit","models/DPFilms/jetropolice/Playermodels/pm_policetrench.mdl")
-player_manager.AddValidHands("JackaFireSuit","models/DPFilms/jeapons/v_arms_metropolice.mdl",0,"00000000")
-player_manager.AddValidModel("JackaHazmatSuit","models/DPFilms/jetropolice/Playermodels/pm_police_bt.mdl")
-player_manager.AddValidHands("JackaHazmatSuit","models/DPFilms/jeapons/v_arms_metropolice.mdl",0,"00000000")
 game.AddParticles("particles/muzzleflashes_test.pcf")
 game.AddParticles("particles/muzzleflashes_test_b.pcf")
