@@ -1,58 +1,24 @@
 include("JI_DS_Shared.lua")
 if(SERVER)then
 	local ArmorDisadvantages={
-		--vests
-		["Ballistic Nylon"]=.99,
-		["Stab Vest"]=.95,
-		["Soft Kevlar"]=.95,
-		["Kevlar SAPI"]=.75,
-		["Impact Vest"]=.7,
 		--suits
 		["Hazardous Material"]=.75,
 		["Fire-Faraday"]=.75,
-		["EOD"]=.5
 	}
 	local ArmorAppearances={
 		--suits
 		["Hazardous Material"]="models/dpfilms/jetropolice/playermodels/pm_police_bt.mdl",
 		["Fire-Faraday"]="models/dpfilms/jetropolice/playermodels/pm_policetrench.mdl",
-		["EOD"]="models/juggerjaut_player.mdl"
 	}
 	local ArmorAdvantages={
-		--vests
-		["Ballistic Nylon"]={[DMG_SLASH]=.8,[DMG_CLUB]=.95,[DMG_CRUSH]=.95,[DMG_BULLET]=.85,[DMG_BUCKSHOT]=.85,[DMG_BLAST]=.6},
-		["Stab Vest"]={[DMG_SLASH]=.2,[DMG_CLUB]=.8,[DMG_CRUSH]=.8,[DMG_BULLET]=.99,[DMG_BUCKSHOT]=.99,[DMG_BLAST]=.99},
-		["Soft Kevlar"]={[DMG_SLASH]=.9,[DMG_CLUB]=.9,[DMG_CRUSH]=.9,[DMG_BULLET]=.7,[DMG_BUCKSHOT]=.6,[DMG_BLAST]=.5,[DMG_AIRBOAT]=.75},
-		["Kevlar SAPI"]={[DMG_SLASH]=.8,[DMG_CLUB]=.6,[DMG_CRUSH]=.6,[DMG_BULLET]=.4,[DMG_BUCKSHOT]=.3,[DMG_BLAST]=.4,[DMG_AIRBOAT]=.5},
-		["Impact Vest"]={[DMG_SLASH]=.5,[DMG_CLUB]=.3,[DMG_CRUSH]=.2,[DMG_BULLET]=.8,[DMG_BUCKSHOT]=.8,[DMG_BLAST]=.9,[DMG_VEHICLE]=.3},
-		--helmets
-		["Steel"]={{[DMG_SLASH]=.9,[DMG_CLUB]=.8,[DMG_CRUSH]=.8,[DMG_BLAST]=.9},.4},
-		["Kevlar Resin"]={{[DMG_SLASH]=.95,[DMG_CLUB]=.95,[DMG_CRUSH]=.95,[DMG_BLAST]=.95},.6},
-		["Polyethylene"]={{[DMG_SLASH]=.9,[DMG_CLUB]=.9,[DMG_CRUSH]=.9,[DMG_BLAST]=.9},.65},
-		["Riot"]={{[DMG_SLASH]=.8,[DMG_CLUB]=.8,[DMG_CRUSH]=.8,[DMG_BLAST]=.85},.1},
-		["Impact"]={{[DMG_SLASH]=.6,[DMG_CLUB]=.7,[DMG_CRUSH]=.6,[DMG_BLAST]=.85},.05},
 		--suits
 		["Hazardous Material"]={[DMG_BURN]=.9,[DMG_DIRECT]=.9,[DMG_SLASH]=.75,[DMG_DROWN]=.001,[DMG_PARALYZE]=.001,[DMG_NERVEGAS]=.001,[DMG_POISON]=.001,[DMG_ACID]=.001,[DMG_RADIATION]=.01},
 		["Fire-Faraday"]={[DMG_BURN]=.01,[DMG_DIRECT]=.01,[DMG_SLOWBURN]=.01,[DMG_SHOCK]=.1,[DMG_ENERGYBEAM]=.1,[DMG_PLASMA]=.2,[DMG_DISSOLVE]=.3},
-		["EOD"]={[DMG_BURN]=.8,[DMG_ACID]=.8,[DMG_SLASH]=.2,[DMG_CLUB]=.2,[DMG_CRUSH]=.2,[DMG_BULLET]=.4,[DMG_BUCKSHOT]=.3,[DMG_BLAST]=.3,[DMG_AIRBOAT]=.5,[DMG_VEHICLE]=.2,[DMG_POISON]=.75}
 	}
 	local ArmorEntities={
-		--vests
-		["Ballistic Nylon"]="ent_jack_bodyarmor_vest_bn",
-		["Stab Vest"]="ent_jack_bodyarmor_vest_sv",
-		["Soft Kevlar"]="ent_jack_bodyarmor_vest_sk",
-		["Kevlar SAPI"]="ent_jack_bodyarmor_vest_ks",
-		["Impact Vest"]="ent_jack_bodyarmor_vest_im",
-		--helmets
-		["Steel"]="ent_jack_bodyarmor_helm_st",
-		["Kevlar Resin"]="ent_jack_bodyarmor_helm_kr",
-		["Polyethylene"]="ent_jack_bodyarmor_helm_pe",
-		["Riot"]="ent_jack_bodyarmor_helm_ri",
-		["Impact"]="ent_jack_bodyarmor_helm_im",
 		--suits
 		["Hazardous Material"]="ent_jack_suit_hazmat",
 		["Fire-Faraday"]="ent_jack_suit_fire",
-		["EOD"]="ent_jack_suit_eod"
 	}
 	hook.Add("PlayerInitialSpawn","JackaModInfo",function(ply) timer.Simple(2,function() if(IsValid(ply))then ply:PrintMessage(HUD_PRINTTALK,"Full instructions for J.I. Defense Solutions can be found here: http://jackarundasgames.tumblr.com/defensesolutions",Color(0,175,255)) end end) end)
 	function JackaSetPlayerModel(ply,mod)
