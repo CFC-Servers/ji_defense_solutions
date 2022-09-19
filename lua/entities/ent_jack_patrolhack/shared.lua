@@ -3,5 +3,5 @@ ENT.PrintName		= "Patrol Viscerator"
 ENT.Author			= "Jackarunda"
 ENT.Category		= "J.I. Defense Solutions"
 ENT.Information     = "BLOOIE-SCHLANG"
-ENT.Spawnable		= false
+ENT.Spawnable		= true
 ENT.AdminSpawnable	= false

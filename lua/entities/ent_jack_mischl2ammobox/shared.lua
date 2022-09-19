@@ -3,5 +3,5 @@ ENT.PrintName		= "Misc. HL2 Ammo Box"
 ENT.Author			= "Jackarunda"
 ENT.Category			= "JI Defense Solutions"
 ENT.Information         = "BLOOIE-SCHLANG"
-ENT.Spawnable			= false
+ENT.Spawnable			= true
 ENT.AdminSpawnable		= false
