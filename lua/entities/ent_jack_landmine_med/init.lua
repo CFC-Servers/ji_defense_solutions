@@ -92,8 +92,8 @@ function ENT:Detonate(toucher)
 		end
 	end
 	self.Entity:EmitSound("BaseExplosionEffect.Sound")
-	self:EmitSound("snd_jack_fragsplodeclose.wav",90,100)
-	sound.Play("snd_jack_debris"..tostring(math.random(1,2))..".wav",SelfPos,80,100)
+	self:EmitSound("snd_jack_fragsplodeclose.mp3",90,100)
+	sound.Play("snd_jack_debris"..tostring(math.random(1,2))..".mp3",SelfPos,80,100)
 	if(self)then self:Remove() end
 end
 function ENT:PhysicsCollide(data, physobj)
@@ -138,8 +138,8 @@ function ENT:Use(activator, caller)
 end
 function ENT:Arm()
 	self.Armed=true
-	self:EmitSound("snd_jack_pinpull.wav",65,100)
-	self:EmitSound("snd_jack_pinpull.wav",65,100)
+	self:EmitSound("snd_jack_pinpull.mp3",65,100)
+	self:EmitSound("snd_jack_pinpull.mp3",65,100)
 	self:SetDTBool(0,true)
 end
 function ENT:Think()
