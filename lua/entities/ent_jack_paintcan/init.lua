@@ -64,13 +64,13 @@ function ENT:PaintObject(ply,col)
 		end
 	end
 	if(IsValid(Obj))then
-		self:EmitSound("snd_jack_spraypaint.wav")
+		self:EmitSound("snd_jack_spraypaint.mp3")
 		timer.Simple(.2,function()
 			if(IsValid(Obj))then
 				Obj:SetColor(col)
 			end
 		end)
-		Obj:EmitSound("snd_jack_spraypaint.wav")
+		Obj:EmitSound("snd_jack_spraypaint.mp3")
 		local Poof=EffectData()
 		Poof:SetOrigin(Obj:LocalToWorld(Obj:OBBCenter()))
 		Poof:SetScale(5)
