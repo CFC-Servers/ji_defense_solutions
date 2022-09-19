@@ -20,7 +20,6 @@ if(SERVER)then
 		["Hazardous Material"]="ent_jack_suit_hazmat",
 		["Fire-Faraday"]="ent_jack_suit_fire",
 	}
-	hook.Add("PlayerInitialSpawn","JackaModInfo",function(ply) timer.Simple(2,function() if(IsValid(ply))then ply:PrintMessage(HUD_PRINTTALK,"Full instructions for J.I. Defense Solutions can be found here: http://jackarundasgames.tumblr.com/defensesolutions",Color(0,175,255)) end end) end)
 	function JackaSetPlayerModel(ply,mod)
 		ply:SetModel(mod)
 		local simplemodel=player_manager.TranslateToPlayerModelName(mod)
