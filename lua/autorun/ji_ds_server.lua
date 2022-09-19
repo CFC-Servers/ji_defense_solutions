@@ -115,12 +115,7 @@ if(SERVER)then
 			if((ply.JackyArmor.Vest.Type=="Kevlar SAPI")or(ply.JackyArmor.Vest.Type=="Soft Kevlar")or(ply.JackyArmor.Vest.Type=="Ballistic Nylon"))then
 				ply:EmitSound("snd_jack_gear"..tostring(math.random(1,6))..".wav",55,math.random(90,110))
 			end
-		elseif((ply.JackyArmor)and(ply.JackyArmor.Suit)and(ply.JackyArmor.Suit.Type=="EOD"))then
-			local Snd="snd_jack_gear"..tostring(math.random(1,6))..".wav"
-			local Ptch=math.random(80,90)
-			ply:EmitSound(Snd,75,Ptch)
-			ply:EmitSound(Snd,55,Ptch)
-		end
+        end
 	end
 	hook.Add("PlayerFootstep","JackyArmorFootstep",StepSound)
 	local function RemoveArmor(ply,txt)
@@ -200,22 +195,9 @@ if(SERVER)then
 						NewScale=NewScale*mul
 					end
 				end
-				if((victim.JackyArmor.Suit.Type=="Fire-Faraday")or(victim.JackyArmor.Suit.Type=="EOD"))then
+				if victim.JackyArmor.Suit.Type=="Fire-Faraday" then
 					if(victim:IsOnFire())then
 						if(math.random(1,5)==2)then victim:Extinguish() end
-					end
-				end
-				if(victim.JackyArmor.Suit.Type=="EOD")then
-					if((dmginfo:IsDamageType(DMG_BULLET))or(dmginfo:IsDamageType(DMG_BUCKSHOT)))then
-						if(hitgroup==HITGROUP_HEAD)then
-							if(math.Rand(0,1)<.8)then
-								victim:EmitSound("snd_jack_ricochet_"..tostring(math.random(1,2))..".wav",70,100)
-								victim:ViewPunch(Angle(math.random(-20,20),math.random(-20,20),0))
-								NewScale=NewScale*.0001
-							else
-								victim:EmitSound("Drywall.ImpactHard")
-							end
-						end
 					end
 				end
 			else
@@ -318,11 +300,6 @@ if(SERVER)then
 	local function JackaDeathHook(ply)
 		if(ply.JackaSentryControl)then
 			JackaSentryControlWipe(ply,ply.JackaSentryTerminal,ply.JackaSentryControl)
-		end
-		if((ply.JackyArmor)and(ply.JackyArmor.Suit)and(ply.JackyArmor.Suit.Type=="EOD"))then
-			-- the MW2 port doesn't have the right traits to be a ragdoll
-			ply:SetModel(ply.JackyOriginalModel)
-			ply:SetPlayerColor(ply.JackyOriginalColor)
 		end
 	end
 	hook.Add("DoPlayerDeath","JackaDeathHook",JackaDeathHook)
