@@ -69,9 +69,3 @@ end
 function EFFECT:Think()
 	return false
 end
-/*---------------------------------------------------------
-	EFFECT:Render()
----------------------------------------------------------*/
-function EFFECT:Render()
-	--wat
-end

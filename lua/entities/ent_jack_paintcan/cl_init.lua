@@ -76,9 +76,7 @@ function ENT:Draw()
 	--self:DrawModel()
 	--render.SetBlend(1)
 end
-function ENT:OnRemove()
-	--fuck you kid you're a dick
-end
+
 --[[--------------------------------------------------------------
 	I hate desiging UIs so damn much
 ---------------------------------------------------------------]]--

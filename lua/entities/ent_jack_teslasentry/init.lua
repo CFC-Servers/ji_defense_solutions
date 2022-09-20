@@ -510,9 +510,6 @@ function ENT:LineOfSightBetween(Searcher,Searchee)
 		return true
 	end
 end
-function ENT:OnRemove()
-	--wat
-end
 local function MakeSpasms(ent,ragdoll)
 	if(ent.IsSpasmingFromElectrocution)then
 		local r,g,b,a=ent:GetColor()

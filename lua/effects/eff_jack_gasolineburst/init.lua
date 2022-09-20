@@ -144,17 +144,3 @@ function EFFECT:Init(data)
 	end
 
 end
-
-/*---------------------------------------------------------
-	EFFECT:Think()
----------------------------------------------------------*/
-function EFFECT:Think()
-	return false
-end
-
-/*---------------------------------------------------------
-	EFFECT:Render()
----------------------------------------------------------*/
-function EFFECT:Render()
-	--fuck you kid you're a dick
-end
