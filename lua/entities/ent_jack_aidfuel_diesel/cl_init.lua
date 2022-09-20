@@ -31,7 +31,5 @@ function ENT:Draw()
 	--self.Entity:DrawModel()
 	--render.SetBlend(1)
 end
-function ENT:OnRemove()
-	--fuck you kid you're a dick
-end
+
 language.Add("ent_jack_aidfuel_diesel","Diesel Fuel Can")
