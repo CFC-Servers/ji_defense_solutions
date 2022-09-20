@@ -91,7 +91,5 @@ function ENT:Draw()
 	self.Turbine:DrawModel()
 	self.Entity:DrawModel()
 end
-function ENT:OnRemove()
-	--fuck you kid you're a dick
-end
+
 language.Add("ent_jack_generator","Gas Turbine Generator")

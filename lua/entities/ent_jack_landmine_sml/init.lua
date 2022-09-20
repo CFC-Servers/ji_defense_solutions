@@ -130,9 +130,3 @@ function ENT:Arm()
 	self:EmitSound("snd_jack_pinpull.mp3",65,110)
 	self:SetDTBool(0,true)
 end
-function ENT:Think()
-	--fag
-end
-function ENT:OnRemove()
-	--gay
-end

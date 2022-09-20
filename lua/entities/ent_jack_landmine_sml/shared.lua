@@ -1,5 +1,3 @@
-
-
 ENT.Type 			= "anim"
 ENT.PrintName		= "Small Landmine"
 ENT.Author			= "Jackarunda"

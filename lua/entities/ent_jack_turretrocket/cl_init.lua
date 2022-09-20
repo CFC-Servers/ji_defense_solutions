@@ -19,6 +19,3 @@ function ENT:Draw()
 		render.DrawSprite(Pos+Back*20,100,100,Color(255,220,190,255))
 	end
 end
-function ENT:OnRemove()
-	--eat a dick
-end

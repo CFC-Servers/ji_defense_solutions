@@ -1,14 +1,5 @@
 include('shared.lua')
 local Mat=surface.GetTextureID("sprites/mat_jack_clacker")
-function ENT:Initialize()
-	--cunt
-end
-function ENT:Draw()
-	--self.Entity:DrawModel()
-end
-function ENT:OnRemove()
-	--wat
-end
 language.Add("ent_jack_claymore","M18 Claymore")
 local function NotifyReceive(data)
 	data:ReadEntity().JackaClaymoreNotification=300

@@ -115,9 +115,7 @@ function ENT:Draw()
 		render.DrawSprite(PosAng.Pos+PosAng.Ang:Up()*5-PosAng.Ang:Forward()*8+PosAng.Ang:Right()*5,50,50,Color(255,255,255,255),100)
 	end
 end
-function ENT:OnRemove()
-	--fuck you kid you're a dick
-end
+
 language.Add("ent_jack_turret_base","LAWL")
 --[[--------------------------------------------------------------
 	I hate desiging UIs so damn much
