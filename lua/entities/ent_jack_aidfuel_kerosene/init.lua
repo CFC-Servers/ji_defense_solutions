@@ -55,11 +55,11 @@ end
 function ENT:BeginBurnin()
 	if(self.FuelLeft<=0)then return end
 	self.Burning=true
-	self:EmitSound("snd_jack_littleignite.wav",75,100)
+	self:EmitSound("snd_jack_littleignite.mp3",75,100)
 end
 function ENT:StahpBurnin()
 	self.Burning=false
-	self:EmitSound("snd_jack_littleignite.wav",75,100)
+	self:EmitSound("snd_jack_littleignite.mp3",75,100)
 end
 function ENT:Think()
 	local SelfPos=self:LocalToWorld(self:OBBCenter())

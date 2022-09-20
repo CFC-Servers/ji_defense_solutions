@@ -75,8 +75,8 @@ function ENT:Asplode()
 			OhLawdyJeezusItsaFaar:Fire("StartFire","",0)
 		end
 	end
-	sound.Play("snd_jack_firebomb.wav",SelfPos,85,130)
-	sound.Play("snd_jack_gasolineburn.wav",SelfPos,80,100)
+	sound.Play("snd_jack_firebomb.mp3",SelfPos,85,130)
+	sound.Play("snd_jack_gasolineburn.mp3",SelfPos,80,100)
 	self:Remove()
 end
 function ENT:Use(activator,caller)

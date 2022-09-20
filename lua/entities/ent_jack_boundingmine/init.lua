@@ -55,8 +55,8 @@ function ENT:Launch(toucher)
 	Poof:SetScale(1)
 	util.Effect("eff_jack_sminepop",Poof,true,true)
 	util.SpriteTrail(self,0,Color(50,50,50,255),false,8,20,.5,1/(15+1)*0.5,"trails/smoke.vmt")
-	self:EmitSound("snd_jack_sminepop.wav")
-	sound.Play("snd_jack_sminepop.wav",self:GetPos(),120,80)
+	self:EmitSound("snd_jack_sminepop.mp3")
+	sound.Play("snd_jack_sminepop.mp3",self:GetPos(),120,80)
 	timer.Simple(math.Rand(.4,.5),function()
 		if(IsValid(self))then
 			self:Detonate()
@@ -85,7 +85,7 @@ function ENT:Detonate()
 	if(self.Exploded)then return end
 	self.Exploded=true
 	local SelfPos=self:GetPos()
-	sound.Play("snd_jack_fragsplodeclose.wav",SelfPos,75,100)
+	sound.Play("snd_jack_fragsplodeclose.mp3",SelfPos,75,100)
 	local Poo=EffectData()
 	Poo:SetOrigin(SelfPos)
 	Poo:SetScale(1)
@@ -93,7 +93,7 @@ function ENT:Detonate()
 	Poo:SetNormal(Vector(0,0,0))
 	util.Effect("eff_jack_shrapnelburst",Poo,true,true)
 	util.BlastDamage(self.Entity,self.Entity,SelfPos,750,150)
-	sound.Play("snd_jack_fragsplodeclose.wav",SelfPos,75,100)
+	sound.Play("snd_jack_fragsplodeclose.mp3",SelfPos,75,100)
 	util.ScreenShake(SelfPos,99999,99999,1,750)
 	for i=0,70 do
 		local Trayuss=util.QuickTrace(SelfPos,VectorRand()*200-self:GetUp()*100,{self.Entity})
@@ -112,7 +112,7 @@ end
 function ENT:StartTouch(ent)
 	if(self.State=="Armed")then
 		self.State="Preparing"
-		self:EmitSound("snd_jack_metallicclick.wav",60,100)
+		self:EmitSound("snd_jack_metallicclick.mp3",60,100)
 		timer.Simple(math.Rand(.75,1.25),function() if(IsValid(self))then self:Launch(ent) end end)
 	end
 end
@@ -120,7 +120,7 @@ function ENT:EndTouch(ent)
 	if(self.State=="Armed")then
 		timer.Simple(math.Rand(1,2),function() if(IsValid(self))then self:Launch(ent) end end)
 		self.State="Preparing"
-		self:EmitSound("snd_jack_metallicclick.wav",60,100)
+		self:EmitSound("snd_jack_metallicclick.mp3",60,100)
 	end
 end
 function ENT:OnTakeDamage(dmginfo)
@@ -144,7 +144,7 @@ function ENT:Use(activator,caller)
 			Fff:SetNormal(Tr.HitNormal)
 			Fff:SetScale(1)
 			util.Effect("eff_jack_sminebury",Fff,true,true)
-			self:EmitSound("snd_jack_pinpull.wav")
+			self:EmitSound("snd_jack_pinpull.mp3")
 			activator:EmitSound("Dirt.BulletImpact")
 			self.ShootDir=Tr.HitNormal
 			self:DrawShadow(false)

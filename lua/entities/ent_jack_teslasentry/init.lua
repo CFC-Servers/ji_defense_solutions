@@ -70,7 +70,7 @@ function ENT:PhysicsCollide(data, physobj)
 end
 function ENT:Break()
 	if not(self.Broken)then
-		self:EmitSound("snd_jack_turretbreak.wav")
+		self:EmitSound("snd_jack_turretbreak.mp3")
 		self.Broken=true
 		self:Disengage()
 	end
@@ -93,7 +93,7 @@ function ENT:Use(activator,caller)
 	if(self.Broken)then return end
 	if not(self.State=="Off")then return end
 	if not(self.MenuOpen)then
-		self:EmitSound("snd_jack_uisuccess.wav",65,100)
+		self:EmitSound("snd_jack_uisuccess.mp3",65,100)
 		self.MenuOpen=true
 		umsg.Start("JackaTeslaTurretOpenMenu",activator)
 		umsg.Entity(self)
@@ -112,7 +112,7 @@ function ENT:FindRepairKit()
 end
 function ENT:Fix(kit)
 	self.StructuralIntegrity=300
-	self:EmitSound("snd_jack_turretrepair.wav",70,100)
+	self:EmitSound("snd_jack_turretrepair.mp3",70,100)
 	timer.Simple(3.25,function()
 		if(IsValid(self))then
 			self.Broken=false
@@ -135,7 +135,7 @@ end
 function ENT:Engage()
 	if not(self.State=="Off")then return end
 	if not((self.HasBatteryOne)and(self.HasBatteryTwo)and(self.BatteryCharge>0))then return end
-	self:EmitSound("snd_jack_turretstartup.wav")
+	self:EmitSound("snd_jack_turretstartup.mp3")
 	self.State="Engaging"
 end
 function ENT:DetachBattery()
@@ -157,7 +157,7 @@ function ENT:DetachBattery()
 	Box:SetAngles(-self:GetForward():Angle())
 	Box:Spawn()
 	Box:Activate()
-	self:EmitSound("snd_jack_turretbatteryunload.wav")
+	self:EmitSound("snd_jack_turretbatteryunload.mp3")
 end
 function ENT:RefillPower(box)
 	if not(self.HasBatteryOne)then
@@ -172,12 +172,12 @@ function ENT:RefillPower(box)
 	self.HasBattery=true
 	self:SetDTInt(2,math.Round((self.BatteryCharge/6000)*100))
 	SafeRemoveEntity(box)
-	self:EmitSound("snd_jack_turretbatteryload.wav")
+	self:EmitSound("snd_jack_turretbatteryload.mp3")
 end
 function ENT:Disengage()
 	if not(self.State=="Engaged")then return end
 	self.State="Disengaging"
-	self:EmitSound("snd_jack_turretshutdown.wav")
+	self:EmitSound("snd_jack_turretshutdown.mp3")
 end
 function ENT:GetPoz()
 	return self:GetPos()+self:GetUp()*(30+(self.UpAmount*1.6))
@@ -232,7 +232,7 @@ function ENT:Think()
 			self.UpAmount=39
 			self.State="Engaged"
 		else
-			self:EmitSound("snd_jack_turretservo.wav",70,90)
+			self:EmitSound("snd_jack_turretservo.mp3",70,90)
 		end
 		if(self.NextAlertTime<CurTime())then
 			self.NextAlertTime=CurTime()+1
@@ -248,7 +248,7 @@ function ENT:Think()
 			self.UpAmount=0
 			self.State="Off"
 		else
-			self:EmitSound("snd_jack_turretservo.wav",70,90)
+			self:EmitSound("snd_jack_turretservo.mp3",70,90)
 		end
 		self:SetDTFloat(0,self.UpAmount)
 		self:NextThink(CurTime()+.05)
@@ -264,7 +264,7 @@ function ENT:Think()
 			effectdata:SetScale(1) --length of strands
 			effectdata:SetRadius(3) --thickness of strands
 			util.Effect("Sparks",effectdata,true,true)
-			self:EmitSound("snd_jack_turretfizzle.wav",70,100)
+			self:EmitSound("snd_jack_turretfizzle.mp3",70,100)
 		else
 			local effectdata=EffectData()
 			effectdata:SetOrigin(self:GetPoz())
@@ -317,7 +317,7 @@ function ENT:Think()
 		self.CapacitorCharge=self.CapacitorCharge+1
 		local ChargeTaken=self.CapacitorChargeRate/8
 		self.BatteryCharge=self.BatteryCharge-ChargeTaken
-		self:EmitSound("snd_jack_chargecapacitor.wav",70-((self.CapacitorCharge/self.CapacitorMaxCharge)*20),70+((self.CapacitorCharge/self.CapacitorMaxCharge)*90))
+		self:EmitSound("snd_jack_chargecapacitor.mp3",70-((self.CapacitorCharge/self.CapacitorMaxCharge)*20),70+((self.CapacitorCharge/self.CapacitorMaxCharge)*90))
 	end
 	self:NextThink(CurTime()+.025)
 	return true
@@ -421,9 +421,9 @@ function ENT:ElectricalArcEffect(Attacker,Victim,Powa)
 	end
 	local Randim=math.Rand(0.95,1.05)
 	local SoundMod=math.Clamp((((50-self.CapacitorMaxCharge)/50)*30),-40,40)
-	sound.Play("snd_jack_zapang.wav",SelfPos,90-SoundMod/2,110*Randim+SoundMod)
-	sound.Play("snd_jack_zapang.wav",VictimPos,80-SoundMod/2,111*Randim+SoundMod)
-	sound.Play("snd_jack_smallthunder.wav",SelfPos,120,100)
+	sound.Play("snd_jack_zapang.mp3",SelfPos,90-SoundMod/2,110*Randim+SoundMod)
+	sound.Play("snd_jack_zapang.mp3",VictimPos,80-SoundMod/2,111*Randim+SoundMod)
+	sound.Play("snd_jack_smallthunder.mp3",SelfPos,120,100)
 end
 function ENT:ArcToGround(Victim,Powa)
 	if(Victim:IsWorld())then return end
@@ -481,7 +481,7 @@ function ENT:ArcToGround(Victim,Powa)
 		end
 		local Randim=math.Rand(0.95,1.05)
 		local SoundMod=math.Clamp((((50-self.CapacitorCharge)/50)*30),-40,40)
-		sound.Play("snd_jack_zapang.wav",Trayuss.HitPos,80-SoundMod/2,110*Randim+SoundMod)
+		sound.Play("snd_jack_zapang.mp3",Trayuss.HitPos,80-SoundMod/2,110*Randim+SoundMod)
 		if(self.CapacitorCharge>=50)then
 			util.Decal("Scorch",Trayuss.HitPos+Trayuss.HitNormal,Trayuss.HitPos-Trayuss.HitNormal)
 		else
@@ -494,8 +494,8 @@ function ENT:HostileAlert()
 	Flash:SetOrigin(self:GetPoz())
 	Flash:SetScale(2)
 	util.Effect("eff_jack_redflash",Flash,true,true)
-	self:EmitSound("snd_jack_friendlylarm.wav",85,95)
-	sound.Play("snd_jack_friendlylarm.wav",self:GetPos(),80,95)
+	self:EmitSound("snd_jack_friendlylarm.mp3",85,95)
+	sound.Play("snd_jack_friendlylarm.mp3",self:GetPos(),80,95)
 	self.BatteryCharge=self.BatteryCharge-.5
 end
 function ENT:LineOfSightBetween(Searcher,Searchee)
@@ -558,14 +558,14 @@ concommand.Add("JackaTeslaTurretBattery",Battery)
 local function CloseCancel(...)
 	local args={...}
 	local self=Entity(tonumber(args[3][1]))
-	self:EmitSound("snd_jack_uiselect.wav",65,100)
+	self:EmitSound("snd_jack_uiselect.mp3",65,100)
 	self.MenuOpen=false
 end
 concommand.Add("JackaTeslaTurretCloseMenu_Cancel",CloseCancel)
 local function CloseOn(...)
 	local args={...}
 	local self=Entity(tonumber(args[3][1]))
-	self:EmitSound("snd_jack_uiselect.wav",65,100)
+	self:EmitSound("snd_jack_uiselect.mp3",65,100)
 	self.MenuOpen=false
 	if(self.State=="Off")then
 		self:Engage()
