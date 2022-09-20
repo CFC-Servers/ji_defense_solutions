@@ -1,7 +1,7 @@
 include("shared.lua")
 local PenetrationDistanceMultiplierTable={[MAT_VENT]=5,[MAT_GRATE]=10,[MAT_SLOSH]=5,[MAT_DIRT]=4,[MAT_FOLIAGE]=4,[MAT_FLESH]=1.3,[MAT_ALIENFLESH]=1.5,[MAT_ANTLION]=1.5,[MAT_SAND]=3.75,[MAT_PLASTIC]=2,[MAT_GLASS]=0.75,[MAT_TILE]=0.75,[MAT_WOOD]=1,[MAT_CONCRETE]=0.35,[MAT_METAL]=0.2,[MAT_COMPUTER]=0.4,[45]=1.7}
 function ENT:Initialize()
-	self.Entity:SetModel("models/hunter/plates/plate.mdl")
+	self.Entity:SetModel("models/Items/AR2_Grenade.mdl")
 	self.Entity:PhysicsInit(SOLID_VPHYSICS)
 	self.Entity:SetMoveType(MOVETYPE_VPHYSICS)	
 	self.Entity:SetSolid(SOLID_VPHYSICS)
