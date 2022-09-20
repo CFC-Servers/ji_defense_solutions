@@ -187,7 +187,6 @@ function ENT:Initialize()
 	self:SetDTBool(0,self.HasAmmoBox)
 	self:SetDTInt(3,0)
 	self.IFFTags={}
-	PrecacheParticleSystem(self.MuzzEff)
 end
 function ENT:GetShootPos()
 	return self:GetPos()+self:GetUp()*55+self:GetForward()*5
@@ -755,7 +754,14 @@ function ENT:FireShot()
 			end
 			return
 		end
-		--self.Entity:ResetSequence(3) --prollem with this is the flash
+
+		local PosAng = self:GetAttachment( 1 )
+		local muzzleFlash = EffectData()
+		muzzleFlash:SetStart( PosAng.Pos + PosAng.Ang:Forward() * self.BarrelSizeMod.z * 4 )
+		muzzleFlash:SetAngles( PosAng.Ang )
+		muzzleFlash:SetFlags( 1 )
+		util.Effect( "MuzzleFlash", muzzleFlash, true, true )
+
 		self:ManipulateBoneScale(3,Vector(self.BarrelSizeMod.x,self.BarrelSizeMod.y,self.BarrelSizeMod.z*.75))
 		timer.Simple(.1,function()
 			if(IsValid(self))then
@@ -820,18 +826,7 @@ function ENT:FireShot()
 				Scayul=2.5
 			end
 		end
-		local PosAng=self:GetAttachment(1)
-		local ThePos=PosAng.Pos+PosAng.Ang:Forward()*self.BarrelSizeMod.z*4
-		if(math.random(1,2)==1)then
-			ParticleEffect("muzzleflash_suppressed",ThePos,PosAng.Ang,self)
-		else
-			ParticleEffect(self.MuzzEff,ThePos,PosAng.Ang,self)
-			local effectd=EffectData()
-			effectd:SetStart(ThePos)
-			effectd:SetNormal(PosAng.Ang:Forward())
-			effectd:SetScale(1)
-			util.Effect("eff_jack_turretmuzzlelight",effectd,true,true)
-		end
+
 		if(self.RoundsOnBelt>0)then
 			if(self.Autoloading)then
 				self.RoundsOnBelt=self.RoundsOnBelt-1
