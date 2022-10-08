@@ -4,7 +4,7 @@ function EFFECT:Init( data )
     self.Scayul = data:GetScale() ^ 0.5
     self.Delay = math.Clamp( 0.06 * data:GetScale(), 0.025, 0.06 )
     self.EndTime = CurTime() + self.Delay
-    self.Entity:SetRenderBoundsWS( self.StartPos, self.EndPos )
+    self:SetRenderBoundsWS( self.StartPos, self.EndPos )
     local dlightend = DynamicLight( 0 )
     dlightend.Pos = self.EndPos
     dlightend.Size = 500 * self.Scayul
@@ -25,7 +25,7 @@ function EFFECT:Think()
 end
 
 function EFFECT:Render()
-    self.Entity:SetRenderBoundsWS( self.StartPos, self.EndPos )
+    self:SetRenderBoundsWS( self.StartPos, self.EndPos )
 
     local Beamtwo = CreateMaterial( "xeno/beamgauss", "UnlitGeneric", {
         ["$basetexture"] = "sprites/spotlight",

@@ -1,8 +1,8 @@
 --box
---By Jackarunda
+
 AddCSLuaFile('cl_init.lua')
 AddCSLuaFile('shared.lua')
-include('shared.lua')
+include( "shared.lua" )
 ENT.HasBattery=true
 ENT.BatteryCharge=3000
 ENT.BatteryMaxCharge=3000
@@ -15,7 +15,7 @@ function ENT:SpawnFunction(ply,tr)
 	local SpawnPos=tr.HitPos + tr.HitNormal*16
 	local ent=ents.Create("ent_jack_turretbattery")
 	ent:SetPos(SpawnPos)
-	ent:SetNetworkedEntity("Owenur",ply)
+	ent:SetNWEntity("Owenur",ply)
 	ent:Spawn()
 	ent:Activate()
 	local effectdata=EffectData()
@@ -24,13 +24,13 @@ function ENT:SpawnFunction(ply,tr)
 	return ent
 end
 function ENT:Initialize()
-	self.Entity:SetModel("models/Items/car_battery01.mdl")
-	self.Entity:SetMaterial("models/mat_jack_turretbattery")
-	self.Entity:PhysicsInit(SOLID_VPHYSICS)
-	self.Entity:SetMoveType(MOVETYPE_VPHYSICS)	
-	self.Entity:SetSolid(SOLID_VPHYSICS)
-	self.Entity:DrawShadow(true)
-	local phys = self.Entity:GetPhysicsObject()
+	self:SetModel("models/Items/car_battery01.mdl")
+	self:SetMaterial("models/mat_jack_turretbattery")
+	self:PhysicsInit(SOLID_VPHYSICS)
+	self:SetMoveType(MOVETYPE_VPHYSICS)	
+	self:SetSolid(SOLID_VPHYSICS)
+	self:DrawShadow(true)
+	local phys = self:GetPhysicsObject()
 	if phys:IsValid() then
 		phys:Wake()
 		phys:SetMass(60)
@@ -46,22 +46,16 @@ function ENT:Initialize()
 			end
 		end)
 	end
-	self.Entity:SetUseType(SIMPLE_USE)
+	self:SetUseType(SIMPLE_USE)
 end
 function ENT:PhysicsCollide(data, physobj)
 	if((data.Speed>80)and(data.DeltaTime>0.2))then
-		self.Entity:EmitSound("DryWall.ImpactHard")
+		self:EmitSound("DryWall.ImpactHard")
 	end
 end
 function ENT:OnTakeDamage(dmginfo)
-	self.Entity:TakePhysicsDamage(dmginfo)
+	self:TakePhysicsDamage(dmginfo)
 end
 function ENT:Use(activator,caller)
 	activator:PickupObject(self)
-end
-function ENT:Think()
-	--pfahahaha
-end
-function ENT:OnRemove()
-	--aw fuck you
 end

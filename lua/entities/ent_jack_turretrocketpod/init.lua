@@ -1,13 +1,13 @@
 --box
---By Jackarunda
+
 AddCSLuaFile('cl_init.lua')
 AddCSLuaFile('shared.lua')
-include('shared.lua')
+include( "shared.lua" )
 function ENT:SpawnFunction(ply,tr)
 	local SpawnPos=tr.HitPos + tr.HitNormal*16
 	local ent=ents.Create("ent_jack_turretrocketpod")
 	ent:SetPos(SpawnPos)
-	ent:SetNetworkedEntity("Owenur",ply)
+	ent:SetNWEntity("Owenur",ply)
 	ent:Spawn()
 	ent:Activate()
 	local effectdata=EffectData()
@@ -16,37 +16,31 @@ function ENT:SpawnFunction(ply,tr)
 	return ent
 end
 function ENT:Initialize()
-	self.Entity:SetModel("models/weapons/w_rocket_jauncher.mdl")
-	self.Entity:SetMaterial("models/weapons/w_Rocket_jauncher/w_rpg_sheet_rocket")
+	self:SetModel("models/weapons/w_rocket_jauncher.mdl")
+	self:SetMaterial("models/weapons/w_Rocket_jauncher/w_rpg_sheet_rocket")
 	if(self.Empty)then
-		self.Entity:SetMaterial("models/weapons/w_Rocket_jauncher/w_rpg_sheet_burnt")
+		self:SetMaterial("models/weapons/w_Rocket_jauncher/w_rpg_sheet_burnt")
 		self:SetCollisionGroup(COLLISION_GROUP_WEAPON)
 	end
-	self.Entity:PhysicsInit(SOLID_VPHYSICS)
-	self.Entity:SetMoveType(MOVETYPE_VPHYSICS)	
-	self.Entity:SetSolid(SOLID_VPHYSICS)
-	self.Entity:DrawShadow(true)
-	local phys = self.Entity:GetPhysicsObject()
+	self:PhysicsInit(SOLID_VPHYSICS)
+	self:SetMoveType(MOVETYPE_VPHYSICS)	
+	self:SetSolid(SOLID_VPHYSICS)
+	self:DrawShadow(true)
+	local phys = self:GetPhysicsObject()
 	if phys:IsValid() then
 		phys:Wake()
 		phys:SetMass(70)
 	end
-	self.Entity:SetUseType(SIMPLE_USE)
+	self:SetUseType(SIMPLE_USE)
 end
 function ENT:PhysicsCollide(data, physobj)
 	if((data.Speed>80)and(data.DeltaTime>0.2))then
-		self.Entity:EmitSound("DryWall.ImpactHard")
+		self:EmitSound("DryWall.ImpactHard")
 	end
 end
 function ENT:OnTakeDamage(dmginfo)
-	self.Entity:TakePhysicsDamage(dmginfo)
+	self:TakePhysicsDamage(dmginfo)
 end
 function ENT:Use(activator,caller)
 	if not(self.Empty)then activator:PickupObject(self) end
-end
-function ENT:Think()
-	--pfahahaha
-end
-function ENT:OnRemove()
-	--aw fuck you
 end

@@ -1,8 +1,8 @@
 --box
---By Jackarunda
+
 AddCSLuaFile('cl_init.lua')
 AddCSLuaFile('shared.lua')
-include('shared.lua')
+include( "shared.lua" )
 ENT.Base="ent_jack_turretammobox_base"
 ENT.AmmoType="12GAshotshell"
 ENT.NumberOfRounds=200
@@ -10,7 +10,7 @@ function ENT:SpawnFunction(ply,tr)
 	local SpawnPos=tr.HitPos + tr.HitNormal*16
 	local ent=ents.Create("ent_jack_turretammobox_shot")
 	ent:SetPos(SpawnPos)
-	ent:SetNetworkedEntity("Owenur",ply)
+	ent:SetNWEntity("Owenur",ply)
 	ent:Spawn()
 	ent:Activate()
 	local effectdata=EffectData()
