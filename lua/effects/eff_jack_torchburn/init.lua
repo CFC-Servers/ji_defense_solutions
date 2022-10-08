@@ -37,26 +37,24 @@ function EFFECT:Init( data )
         end
     end
 
-    if true then
-        local Particle = Emitter:Add( "sprites/mat_jack_smoke" .. tostring( math.random( 1, 3 ) ), SelfPos + VectorRand() * math.Rand( 0, 3 ) )
+    local Particle = Emitter:Add( "sprites/mat_jack_smoke" .. tostring( math.random( 1, 3 ) ), SelfPos + VectorRand() * math.Rand( 0, 3 ) )
 
-        if Particle then
-            Particle:SetVelocity( Vector( 0, 0, 0 ) )
-            Particle:SetLifeTime( 0 )
-            Particle:SetDieTime( math.Rand( .5, 2 ) )
-            local shadevariation = math.Rand( -10, 10 )
-            Particle:SetColor( math.Clamp( 255 + shadevariation + math.Rand( -5, 5 ), 0, 255 ), math.Clamp( 255 + shadevariation + math.Rand( -5, 5 ), 0, 255 ), math.Clamp( 255 + shadevariation + math.Rand( -5, 5 ), 0, 255 ) )
-            Particle:SetStartAlpha( math.Rand( 50, 100 ) )
-            Particle:SetEndAlpha( 0 )
-            Particle:SetStartSize( math.Rand( 0, 1 ) * Scayul )
-            Particle:SetEndSize( math.Rand( 10, 30 ) * Scayul )
-            Particle:SetRoll( math.Rand( -360, 360 ) )
-            Particle:SetRollDelta( math.Rand( -5, 5 ) )
-            Particle:SetAirResistance( 500 )
-            Particle:SetGravity( Vector( 0, 0, 400 ) + VectorRand() * math.Rand( 0, 300 ) )
-            Particle:SetCollide( false )
-            Particle:SetLighting( true )
-        end
+    if Particle then
+        Particle:SetVelocity( Vector( 0, 0, 0 ) )
+        Particle:SetLifeTime( 0 )
+        Particle:SetDieTime( math.Rand( .5, 2 ) )
+        local shadevariation = math.Rand( -10, 10 )
+        Particle:SetColor( math.Clamp( 255 + shadevariation + math.Rand( -5, 5 ), 0, 255 ), math.Clamp( 255 + shadevariation + math.Rand( -5, 5 ), 0, 255 ), math.Clamp( 255 + shadevariation + math.Rand( -5, 5 ), 0, 255 ) )
+        Particle:SetStartAlpha( math.Rand( 50, 100 ) )
+        Particle:SetEndAlpha( 0 )
+        Particle:SetStartSize( math.Rand( 0, 1 ) * Scayul )
+        Particle:SetEndSize( math.Rand( 10, 30 ) * Scayul )
+        Particle:SetRoll( math.Rand( -360, 360 ) )
+        Particle:SetRollDelta( math.Rand( -5, 5 ) )
+        Particle:SetAirResistance( 500 )
+        Particle:SetGravity( Vector( 0, 0, 400 ) + VectorRand() * math.Rand( 0, 300 ) )
+        Particle:SetCollide( false )
+        Particle:SetLighting( true )
     end
 
     local dlight = DynamicLight( data:GetEntity():EntIndex() )

@@ -98,45 +98,43 @@ function ENT:Detonate()
     local SelfPos = self:GetPos()
     local Pos = SelfPos
 
-    if true then
-        util.ScreenShake( SelfPos, 99999, 99999, 1, 750 )
-        local Boom = EffectData()
-        Boom:SetOrigin( SelfPos )
-        Boom:SetScale( 2.25 )
-        util.Effect( "eff_jack_genericboom", Boom, true, true )
+    util.ScreenShake( SelfPos, 99999, 99999, 1, 750 )
+    local Boom = EffectData()
+    Boom:SetOrigin( SelfPos )
+    Boom:SetScale( 2.25 )
+    util.Effect( "eff_jack_genericboom", Boom, true, true )
 
-        for key, thing in pairs( ents.FindInSphere( SelfPos, 500 ) ) do
-            if thing:IsNPC() and self:Visible( thing ) then
-                if table.HasValue( { "npc_strider", "npc_combinegunship", "npc_helicopter", "npc_turret_floor", "npc_turret_ground", "npc_turret_ceiling" }, thing:GetClass() ) then
-                    thing:SetHealth( 1 )
-                    thing:Fire( "selfdestruct", "", .5 )
-                end
+    for key, thing in pairs( ents.FindInSphere( SelfPos, 500 ) ) do
+        if thing:IsNPC() and self:Visible( thing ) then
+            if table.HasValue( { "npc_strider", "npc_combinegunship", "npc_helicopter", "npc_turret_floor", "npc_turret_ground", "npc_turret_ceiling" }, thing:GetClass() ) then
+                thing:SetHealth( 1 )
+                thing:Fire( "selfdestruct", "", .5 )
             end
         end
-
-        util.BlastDamage( self, self, SelfPos, 600, 400 )
-        self:EmitSound( "snd_jack_fragsplodeclose.mp3", 80, 100 )
-        sound.Play( "snd_jack_fragsplodeclose.mp3", SelfPos + Vector( 0, 0, 1 ), 75, 80 )
-        sound.Play( "snd_jack_fragsplodefar.mp3", SelfPos + Vector( 0, 0, 2 ), 100, 80 )
-
-        for i = 0, 40 do
-            local Trayuss = util.QuickTrace( SelfPos, VectorRand() * 200, { self } )
-
-            if Trayuss.Hit then
-                util.Decal( "Scorch", Trayuss.HitPos + Trayuss.HitNormal, Trayuss.HitPos - Trayuss.HitNormal )
-            end
-        end
-
-        for key, obj in pairs( ents.FindInSphere( SelfPos, 250 ) ) do
-            if IsValid( obj:GetPhysicsObject() ) then
-                if obj:Visible( self ) then
-                    if obj:GetPhysicsObject():GetMass() < 800 then
-                        constraint.RemoveAll( obj )
-                    end
-                end
-            end
-        end
-
-        self:Remove()
     end
+
+    util.BlastDamage( self, self, SelfPos, 600, 400 )
+    self:EmitSound( "snd_jack_fragsplodeclose.mp3", 80, 100 )
+    sound.Play( "snd_jack_fragsplodeclose.mp3", SelfPos + Vector( 0, 0, 1 ), 75, 80 )
+    sound.Play( "snd_jack_fragsplodefar.mp3", SelfPos + Vector( 0, 0, 2 ), 100, 80 )
+
+    for i = 0, 40 do
+        local Trayuss = util.QuickTrace( SelfPos, VectorRand() * 200, { self } )
+
+        if Trayuss.Hit then
+            util.Decal( "Scorch", Trayuss.HitPos + Trayuss.HitNormal, Trayuss.HitPos - Trayuss.HitNormal )
+        end
+    end
+
+    for key, obj in pairs( ents.FindInSphere( SelfPos, 250 ) ) do
+        if IsValid( obj:GetPhysicsObject() ) then
+            if obj:Visible( self ) then
+                if obj:GetPhysicsObject():GetMass() < 800 then
+                    constraint.RemoveAll( obj )
+                end
+            end
+        end
+    end
+
+    self:Remove()
 end
