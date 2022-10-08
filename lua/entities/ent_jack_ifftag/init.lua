@@ -41,7 +41,7 @@ function ENT:Use(activator,caller)
 	if((Tagged)and(Tagged!=0))then
 		activator:PrintMessage(HUD_PRINTCENTER,"You have an IFF tag equipped already.")
 	else
-		JackaGenericUseEffect(activator)
+		JID.genericUseEffect(activator)
 		activator:SetNetworkedInt("JackyIFFTag",math.random(1,100000))
 		activator:PrintMessage(HUD_PRINTCENTER,"IFF tag equipped.")
 		activator:EmitSound("snd_jack_tinyequip.mp3",75,100)

@@ -45,7 +45,7 @@ function ENT:OnTakeDamage(dmginfo)
 end
 function ENT:Use(activator,caller)
 	if(self.FuelLeft<=0)then return end
-	JackaGenericUseEffect(activator)
+	JID.genericUseEffect(activator)
 	if not(self.Burning)then
 		self:BeginBurnin()
 	else
