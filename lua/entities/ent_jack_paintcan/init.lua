@@ -1,5 +1,5 @@
 --box
---By Jackarunda
+
 AddCSLuaFile('cl_init.lua')
 AddCSLuaFile('shared.lua')
 include('shared.lua')
@@ -79,12 +79,7 @@ function ENT:PaintObject(ply,col)
 		self:Remove()
 	end
 end
-function ENT:Think()
-	--naw
-end
-function ENT:OnRemove()
-	--aw fuck you
-end
+
 local function MenuClosePaint(...)
 	local args={...}
 	local ply=args[1]

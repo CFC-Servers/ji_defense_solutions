@@ -2,7 +2,7 @@ AddCSLuaFile( "cl_init.lua" )
 AddCSLuaFile( "shared.lua" )
 include( "shared.lua" )
 
-function ENT:SpawnFunction( ply, tr )
+function ENT:SpawnFunction( _, tr )
     local SpawnPos = tr.HitPos + tr.HitNormal * 16
     local ent = ents.Create( "ent_jack_ifftag" )
     ent:SetPos( SpawnPos )
@@ -31,7 +31,7 @@ function ENT:Initialize()
     end
 end
 
-function ENT:PhysicsCollide( data, physobj )
+function ENT:PhysicsCollide( data )
     if data.Speed > 80 and data.DeltaTime > 0.2 then
         self:EmitSound( "DryWall.ImpactHard" )
     end
@@ -41,7 +41,7 @@ function ENT:OnTakeDamage( dmginfo )
     self:TakePhysicsDamage( dmginfo )
 end
 
-function ENT:Use( activator, caller )
+function ENT:Use( activator )
     local Tagged = activator:GetNWInt( "JackyIFFTag" )
 
     if Tagged and Tagged ~= 0 then

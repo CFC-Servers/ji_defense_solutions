@@ -23,7 +23,7 @@ function ENT:Draw()
 	end
 end
 function ENT:OnRemove()
-	-- slimy homosexual
+	
 end
 language.Add("ent_jack_landmine_sml","Landmine")
 

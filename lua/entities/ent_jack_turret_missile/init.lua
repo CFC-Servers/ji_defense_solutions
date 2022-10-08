@@ -51,7 +51,6 @@ function ENT:SpawnFunction(ply,tr)
 	local effectdata=EffectData()
 	effectdata:SetEntity(ent)
 	util.Effect("propspawn",effectdata)
-	//HA GARRY I FUCKING BEAT YOU AND YOUR STUPID RULES
 	local Settings=physenv.GetPerformanceSettings()
 	if(Settings.MaxVelocity<7500)then
 		Settings.MaxVelocity=7500

@@ -1,5 +1,5 @@
 --turret
---By Jackarunda
+
 AddCSLuaFile('cl_init.lua')
 AddCSLuaFile('shared.lua')
 include('shared.lua')
@@ -1019,9 +1019,7 @@ function ENT:FindRepairKit()
 	end
 	return nil
 end
---[[--------------------------------------------------------------
---                    Chat mothafucka                           --
---------------------------------------------------------------]]--
+
 local function SentryChat(ply,txt)
 	local Found=false
 	if(string.sub(txt,1,12)=="sentry lock ")then

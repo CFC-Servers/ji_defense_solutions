@@ -1,5 +1,5 @@
 --box
---By Jackarunda
+
 AddCSLuaFile('cl_init.lua')
 AddCSLuaFile('shared.lua')
 include('shared.lua')
@@ -43,10 +43,4 @@ function ENT:OnTakeDamage(dmginfo)
 end
 function ENT:Use(activator,caller)
 	if not(self.Empty)then activator:PickupObject(self) end
-end
-function ENT:Think()
-	--pfahahaha
-end
-function ENT:OnRemove()
-	--aw fuck you
 end

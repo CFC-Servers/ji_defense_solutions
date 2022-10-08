@@ -49,7 +49,6 @@ function ENT:SpawnFunction(ply,tr)
 	local effectdata=EffectData()
 	effectdata:SetEntity(ent)
 	util.Effect("propspawn",effectdata)
-	//HA GARRY I FUCKING BEAT YOU AND YOUR STUPID RULES
 	local Settings=physenv.GetPerformanceSettings()
 	if(Settings.MaxVelocity<7500)then
 		Settings.MaxVelocity=7500
@@ -57,7 +56,7 @@ function ENT:SpawnFunction(ply,tr)
     physenv.SetPerformanceSettings(Settings)
 	return ent
 end
-function ENT:GetCenterMassOf(ent) --make this a member function
+function ENT:GetCenterMassOf(ent)
 	if not(IsValid(ent))then return Vector(0,0,0) end
 	local Pos=ent:LocalToWorld(ent:OBBCenter())
 	local Hull
