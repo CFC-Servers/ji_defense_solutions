@@ -22,7 +22,6 @@ function ENT:Initialize()
     self:SetColor( Color( 153, 147, 111 ) )
     self:PhysicsInit( SOLID_VPHYSICS )
     self:SetMoveType( MOVETYPE_VPHYSICS )
-    self:SetSolid( SOLID_VPHYSICS )
     self:DrawShadow( true )
     self.Exploded = false
     local phys = self:GetPhysicsObject()
@@ -46,26 +45,30 @@ function ENT:Launch( toucher )
     self:DrawShadow( true )
     self.State = "Flying"
 
-    local Tr = util.QuickTrace( self:LocalToWorld( self:OBBCenter() ) + self:GetUp() * 20, -self:GetUp() * 40, { self, toucher } )
+    local traceResult = util.QuickTrace( self:LocalToWorld( self:OBBCenter() ) + self:GetUp() * 20, -self:GetUp() * 40, { self, toucher } )
 
-    if Tr.Hit then
+    if traceResult.Hit then
         timer.Simple( .1, function()
-            util.Decal( "Scorch", Tr.HitPos + Tr.HitNormal, Tr.HitPos - Tr.HitNormal )
+            util.Decal( "Scorch", traceResult.HitPos + traceResult.HitNormal, traceResult.HitPos - traceResult.HitNormal )
         end )
     end
 
-    constraint.RemoveAll( self )
+    self:SetParent()
+    local phys = self:GetPhysicsObject()
+    if IsValid( phys ) then
+        phys:EnableMotion( true )
+    end
 
-    if Tr.Hit then
-        self:SetPos( self:GetPos() + Tr.HitNormal * 11 )
+    if traceResult.Hit then
+        self:SetPos( self:GetPos() + traceResult.HitNormal * 11 )
     end
 
     self:GetPhysicsObject():ApplyForceCenter( self:GetUp() * 16000 )
     local Poof = EffectData()
 
-    if Tr.Hit then
-        Poof:SetOrigin( Tr.HitPos )
-        Poof:SetNormal( Tr.HitNormal )
+    if traceResult.Hit then
+        Poof:SetOrigin( traceResult.HitPos )
+        Poof:SetNormal( traceResult.HitNormal )
     else
         Poof:SetOrigin( self:GetPos() )
         Poof:SetNormal( Vector( 0, 0, 1 ) )
@@ -83,19 +86,19 @@ function ENT:Launch( toucher )
         end
     end )
 
-    Tr = util.QuickTrace( self:GetPos() + self:GetUp() * 20, self:GetUp() * 30, { self } )
+    traceResult = util.QuickTrace( self:GetPos() + self:GetUp() * 20, self:GetUp() * 30, { self } )
 
-    if Tr.Hit and Tr.Entity:IsPlayer() then
-        timer.Simple( .5, function()
-            if IsValid( Tr.Entity ) and IsValid( self ) then
+    if traceResult.Hit and traceResult.Entity:IsPlayer() then
+        timer.Simple( 0.5, function()
+            if IsValid( traceResult.Entity ) and IsValid( self ) then
                 local Bam = DamageInfo()
                 Bam:SetDamage( 100 )
                 Bam:SetDamageType( DMG_BLAST )
                 Bam:SetDamageForce( self:GetUp() * 1000 )
-                Bam:SetDamagePosition( Tr.HitPos )
+                Bam:SetDamagePosition( traceResult.HitPos )
                 Bam:SetAttacker( self )
                 Bam:SetInflictor( self )
-                Tr.Entity:TakeDamageInfo( Bam )
+                traceResult.Entity:TakeDamageInfo( Bam )
             end
         end )
     end
@@ -174,29 +177,37 @@ function ENT:OnTakeDamage( dmginfo )
 end
 
 function ENT:Use( activator )
-    if self.State == "Inactive" and activator:IsPlayer() then
-        local Tr = util.QuickTrace( activator:GetShootPos(), activator:GetAimVector() * 100, { activator, self } )
+    if self.State ~= "Inactive" then return end
+    if not activator:IsPlayer() then return end
 
-        if Tr.Hit and IsValid( Tr.Entity:GetPhysicsObject() ) then
-            local Ang = Tr.HitNormal:Angle()
-            Ang:RotateAroundAxis( Ang:Right(), -90 )
-            local Pos = Tr.HitPos - Tr.HitNormal * 7.25
-            self:SetAngles( Ang )
-            self:SetPos( Pos )
-            constraint.Weld( self, Tr.Entity, 0, 0, 100000, true )
-            local Fff = EffectData()
-            Fff:SetOrigin( Tr.HitPos )
-            Fff:SetNormal( Tr.HitNormal )
-            Fff:SetScale( 1 )
-            util.Effect( "eff_jack_sminebury", Fff, true, true )
-            self:EmitSound( "snd_jack_pinpull.mp3" )
-            activator:EmitSound( "Dirt.BulletImpact" )
-            self.ShootDir = Tr.HitNormal
-            self:DrawShadow( false )
-            self.State = "Armed"
-            JID.genericUseEffect( activator )
-        else
-            activator:PickupObject( self )
-        end
+    local traceResult = util.QuickTrace( activator:GetShootPos(), activator:GetAimVector() * 100, { activator, self } )
+
+    if not traceResult.Hit or not IsValid( traceResult.Entity:GetPhysicsObject() ) then
+        return activator:PickupObject( self )
     end
+
+    local Ang = traceResult.HitNormal:Angle()
+    Ang:RotateAroundAxis( Ang:Right(), -90 )
+    local Pos = traceResult.HitPos - traceResult.HitNormal * 7.25
+    self:SetAngles( Ang )
+    self:SetPos( Pos )
+
+    if traceResult.Entity == game.GetWorld() then
+        local phys = self:GetPhysicsObject()
+        phys:EnableMotion( false )
+    else
+        self:SetParent( traceResult.Entity )
+    end
+
+    local Fff = EffectData()
+    Fff:SetOrigin( traceResult.HitPos )
+    Fff:SetNormal( traceResult.HitNormal )
+    Fff:SetScale( 1 )
+    util.Effect( "eff_jack_sminebury", Fff, true, true )
+    self:EmitSound( "snd_jack_pinpull.mp3" )
+    activator:EmitSound( "Dirt.BulletImpact" )
+    self.ShootDir = traceResult.HitNormal
+    self:DrawShadow( false )
+    self.State = "Armed"
+    JID.genericUseEffect( activator )
 end
