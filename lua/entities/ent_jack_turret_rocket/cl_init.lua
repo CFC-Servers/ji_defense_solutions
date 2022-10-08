@@ -2,7 +2,7 @@ include( "shared.lua" )
 ENT.Base = "ent_jack_turret_base"
 language.Add( "ent_jack_turret_missile", "Missile Sentry" )
 ENT.AmmoPic = "sprites/mat_jack_ammosprite_agm65"
-ENT.LabelText = "AGM-65 Maverick-u Rocket Launcher"
+ENT.LabelText = [[AGM-65 Maverick-u "Rocket Launcher"]]
 ENT.MechanicsSizeMod = 2.2
 local Burnt = Material( "models/weapons/w_Rocket_jauncher/w_rpg_sheet_burnt" )
 local matLight = Material( "sprites/mat_jack_basicglow" )

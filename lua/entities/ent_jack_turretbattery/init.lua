@@ -5,7 +5,7 @@ ENT.HasBattery = true
 ENT.BatteryCharge = 3000
 ENT.BatteryMaxCharge = 3000
 
-function ENT:ExternalCharge( amt )
+function ENT:ExternalCharge()
     self.BatteryCharge = self.BatteryMaxCharge
     self.Dead = false
     self:SetCollisionGroup( COLLISION_GROUP_NONE )
