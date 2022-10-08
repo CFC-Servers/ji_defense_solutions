@@ -2,8 +2,6 @@ AddCSLuaFile( "cl_init.lua" )
 AddCSLuaFile( "shared.lua" )
 include( "shared.lua" )
 
-local UsableMats = { MAT_DIRT, MAT_FOLIAGE, MAT_SAND, MAT_SLOSH }
-
 function ENT:SpawnFunction( ply, tr )
     local SpawnPos = tr.HitPos + tr.HitNormal * 20
     local ent = ents.Create( "ent_jack_boundingmine" )
@@ -179,7 +177,7 @@ function ENT:Use( activator )
     if self.State == "Inactive" and activator:IsPlayer() then
         local Tr = util.QuickTrace( activator:GetShootPos(), activator:GetAimVector() * 100, { activator, self } )
 
-        if Tr.Hit and table.HasValue( UsableMats, Tr.MatType ) and IsValid( Tr.Entity:GetPhysicsObject() ) then
+        if Tr.Hit and IsValid( Tr.Entity:GetPhysicsObject() ) then
             local Ang = Tr.HitNormal:Angle()
             Ang:RotateAroundAxis( Ang:Right(), -90 )
             local Pos = Tr.HitPos - Tr.HitNormal * 7.25
