@@ -666,9 +666,6 @@ end
 
 hook.Add( "CreateEntityRagdoll", "JackSpasmLectricSentreh", MakeSpasms )
 
---[[-------------------------------------------
-	Damnit
----------------------------------------------]]
 local function Battery( ... )
     local args = { ... }
 

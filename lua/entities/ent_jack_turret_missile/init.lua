@@ -191,7 +191,7 @@ function ENT:FireMissal()
     Ang:RotateAroundAxis( Ang:Up(), 90 )
     Miss:SetAngles( Ang )
     Miss.InitialAng = Ang
-    Miss.Target = self.CurrentTarget -- go get em tiger
+    Miss.Target = self.CurrentTarget
     Miss:Spawn()
     Miss:Activate()
     constraint.NoCollide( self, Miss )

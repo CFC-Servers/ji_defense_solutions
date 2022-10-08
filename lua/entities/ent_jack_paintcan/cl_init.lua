@@ -73,15 +73,8 @@ function ENT:Draw()
     self.Can5:DrawModel()
     render.SetColorModulation( .9, .9, .825 )
     self.Tape:DrawModel()
-    --render.SetBlend(.5)
-    --self:DrawModel()
-    --render.SetBlend(1)
 end
 
---[[--------------------------------------------------------------
-	I hate desiging UIs so damn much
----------------------------------------------------------------]]
---
 local function OpenMenu( data )
     local Tab = {}
     Tab.Self = data:ReadEntity()

@@ -2,9 +2,6 @@ local ShockWave = Material( "sprites/mat_jack_shockwave_white" )
 local Wake = Material( "effects/splashwake1" )
 local Shit = Material( "sprites/mat_jack_ignorezsprite" )
 
---[[---------------------------------------------------------
-	EFFECT:Init(data)
----------------------------------------------------------]]
 function EFFECT:Init( data )
     local vOffset = data:GetOrigin()
     local Scayul = data:GetScale()

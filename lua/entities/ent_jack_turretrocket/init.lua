@@ -1,4 +1,3 @@
---gernaaaayud
 AddCSLuaFile( "cl_init.lua" )
 AddCSLuaFile( "shared.lua" )
 include( "shared.lua" )
@@ -17,7 +16,6 @@ function ENT:Initialize()
     if phys:IsValid() then
         phys:Wake()
         phys:SetMass( 15 )
-        --phys:EnableGravity(false)
         phys:EnableDrag( false )
     end
 
@@ -43,7 +41,6 @@ function ENT:Initialize()
         Settins.MaxVelocity = 3000
         physenv.SetPerformanceSettings( Settins )
     end
-    --if not(self.InitialVel)then self.InitialVel=Vector(0,0,0) end
 end
 
 function ENT:FireMotor()
@@ -102,14 +99,12 @@ function ENT:Detonate()
     local Pos = SelfPos
 
     if true then
-        --[[-  EFFECTS  -]]
         util.ScreenShake( SelfPos, 99999, 99999, 1, 750 )
         local Boom = EffectData()
         Boom:SetOrigin( SelfPos )
         Boom:SetScale( 2.25 )
         util.Effect( "eff_jack_genericboom", Boom, true, true )
 
-        --ParticleEffect("100lb_air",SelfPos,self:GetAngles())
         for key, thing in pairs( ents.FindInSphere( SelfPos, 500 ) ) do
             if thing:IsNPC() and self:Visible( thing ) then
                 if table.HasValue( { "npc_strider", "npc_combinegunship", "npc_helicopter", "npc_turret_floor", "npc_turret_ground", "npc_turret_ceiling" }, thing:GetClass() ) then

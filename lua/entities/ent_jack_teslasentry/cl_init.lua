@@ -102,10 +102,6 @@ end
 
 usermessage.Hook( "JackysElectriTwitchClientSentry", ElectriTwitchClient )
 
---[[--------------------------------------------------------------
-	I hate desiging UIs so damn much
----------------------------------------------------------------]]
---
 local function OpenMenu( data )
     local Tab = {}
     Tab.Self = data:ReadEntity()

@@ -1,36 +1,7 @@
---turret
 AddCSLuaFile( "cl_init.lua" )
 AddCSLuaFile( "shared.lua" )
 include( "shared.lua" )
 
---[[ Hull Size Order
-HULL_TINY	 3	
-HULL_TINY_CENTERED	 6	
-HULL_SMALL_CENTERED	 1	
-HULL_HUMAN	 0	
-HULL_WIDE_SHORT	 4	
-HULL_WIDE_HUMAN	 2	
-HULL_MEDIUM	 5	 
-HULL_MEDIUM_TALL	 9
-HULL_LARGE	 7 
-HULL_LARGE_CENTERED	 8	
-muzzleflash_g3
-muzzleflash_m14
-muzzleflash_ak47
-muzzleflash_ak74
-muzzleflash_6
-muzzleflash_pistol_rbull
-muzzleflash_pistol
-muzzleflash_suppressed
-muzzleflash_pistol_deagle
-muzzleflash_OTS
-muzzleflash_M3
-muzzleflash_smg
-muzzleflash_SR25
-muzzleflash_shotgun
-muzzle_center_M82
-muzzleflash_m79
---]]
 local HULL_TARGETING = {
     [0] = 0,
     [HULL_TINY] = -5,
@@ -205,7 +176,6 @@ end
 function ENT:Initialize()
     self:SetAngles( Angle( 0, 0, 0 ) )
     self:SetModel( "models/combine_turrets/floor_turret.mdl" )
-    --self:SetMaterial(self.TurretSkin)
     self:SetMaterial( "models/mat_jack_turret" )
     self:SetColor( Color( 50, 50, 50 ) )
     self:PhysicsInit( SOLID_VPHYSICS )
@@ -290,7 +260,6 @@ function ENT:Use( activator, caller )
 
     if self.Broken then return end
 
-    -- lol dude
     if activator == self.CurrentTarget then
         self:EmitSound( "snd_jack_denied.mp3", 75, 100 )
 
@@ -322,7 +291,6 @@ function ENT:Use( activator, caller )
         umsg.Bool( table.HasValue( self.TargetingGroup, HULL_LARGE ) )
         umsg.Bool( table.HasValue( self.TargetingGroup, HULL_LARGE_CENTERED ) )
         umsg.Bool( self.TargetSynthetics )
-        --umsg.Bool(((Tag)and(Tag!=0)))
         umsg.Bool( table.HasValue( self.IFFTags, Tag ) )
         umsg.Bool( self.WillWarn )
         umsg.Bool( self.TargetOrganics )
@@ -575,15 +543,6 @@ function ENT:Think()
                         self:StandDown()
                     end
 
-                    --[[
-					if(OldTarget==self.CurrentTarget)then
-						local TargVel=self.CurrentTarget:GetPhysicsObject():GetVelocity()
-						local MyVel=self:GetPhysicsObject():GetVelocity()
-						if((TargVel-MyVel):Length()<30)then
-							self:HoldFire()
-						end
-					end
-					--]]
                     self.NextScanTime = Time + 1 / self.ScanRate * 2
                 end
 
@@ -1305,10 +1264,6 @@ end
 
 hook.Add( "PlayerSay", "JackaSentryChat", SentryChat )
 
---[[--------------------------------------------------------------
-	UI hooks for controlling
---------------------------------------------------------------]]
---
 local function CloseOn( ... )
     local args = { ... }
 

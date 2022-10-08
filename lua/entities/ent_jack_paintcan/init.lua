@@ -1,6 +1,5 @@
---box
-AddCSLuaFile( 'cl_init.lua' )
-AddCSLuaFile( 'shared.lua' )
+AddCSLuaFile( "cl_init.lua" )
+AddCSLuaFile( "shared.lua" )
 include( "shared.lua" )
 
 function ENT:SpawnFunction( ply, tr )
@@ -63,7 +62,7 @@ function ENT:PaintObject( ply, col )
         local Dist = ( found:GetPos() - SelfPos ):Length()
         local Phys = found:GetPhysicsObject()
 
-        if not ( found == self ) and not ( found == ply ) and Dist < Closest and IsValid( Phys ) and not found:IsWorld() and not ( found:GetClass() == "ent_jack_paintcan" ) then
+        if not found == self and not found == ply and Dist < Closest and IsValid( Phys ) and not found:IsWorld() and not ( found:GetClass() == "ent_jack_paintcan" ) then
             if Phys:GetVolume() < 650000 then
                 local Kol = found:GetColor()
 
