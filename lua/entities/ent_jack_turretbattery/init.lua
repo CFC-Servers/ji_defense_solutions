@@ -1,5 +1,5 @@
-AddCSLuaFile( 'cl_init.lua' )
-AddCSLuaFile( 'shared.lua' )
+AddCSLuaFile( "cl_init.lua" )
+AddCSLuaFile( "shared.lua" )
 include( "shared.lua" )
 ENT.HasBattery = true
 ENT.BatteryCharge = 3000
@@ -44,10 +44,8 @@ function ENT:Initialize()
         self:SetCollisionGroup( COLLISION_GROUP_WEAPON )
 
         timer.Simple( 60, function()
-            if IsValid( self ) then
-                if self.Dead then
-                    self:Remove()
-                end
+            if IsValid( self ) and self.Dead then
+                self:Remove()
             end
         end )
     end
@@ -55,7 +53,7 @@ function ENT:Initialize()
     self:SetUseType( SIMPLE_USE )
 end
 
-function ENT:PhysicsCollide( data, physobj )
+function ENT:PhysicsCollide( data )
     if data.Speed > 80 and data.DeltaTime > 0.2 then
         self:EmitSound( "DryWall.ImpactHard" )
     end
@@ -65,6 +63,6 @@ function ENT:OnTakeDamage( dmginfo )
     self:TakePhysicsDamage( dmginfo )
 end
 
-function ENT:Use( activator, caller )
+function ENT:Use( activator )
     activator:PickupObject( self )
 end
