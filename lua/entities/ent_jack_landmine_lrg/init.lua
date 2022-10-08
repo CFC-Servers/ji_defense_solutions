@@ -45,7 +45,7 @@ function ENT:Detonate()
 
     for key, found in pairs( ents.FindInSphere( SelfPos, 75 ) ) do
         if IsValid( found:GetPhysicsObject() ) and found:Visible( self ) then
-            if found:GetPhysicsObject():GetMass() < 1000 and not found.JackyArmoredPanel then
+            if found:GetPhysicsObject():GetMass() < 1000 then
                 constraint.RemoveAll( found )
                 found:Fire( "enablemotion", 0, 0 )
             end

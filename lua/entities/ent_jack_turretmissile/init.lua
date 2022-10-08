@@ -166,7 +166,7 @@ function ENT:Detonate()
 		end
 		for key,obj in pairs(ents.FindInSphere(SelfPos,200))do
 			if(IsValid(obj:GetPhysicsObject()))then
-				if((obj:Visible(self))and not(obj.JackyArmoredPanel))then
+				if obj:Visible(self) then
 					if(obj:GetPhysicsObject():GetMass()<500)then
 						constraint.RemoveAll(obj)
 					end

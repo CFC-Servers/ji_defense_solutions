@@ -49,7 +49,7 @@ function ENT:Detonate()
     --if(self.Counterweight)then self.Counterweight:Remove() end
     for key, object in pairs( ents.FindInSphere( SelfPos, 150 ) ) do
         if IsValid( object:GetPhysicsObject() ) then
-            if object:Visible( self ) and not object.JackyArmoredPanel then
+            if object:Visible( self ) then
                 constraint.RemoveAll( object )
             end
         end

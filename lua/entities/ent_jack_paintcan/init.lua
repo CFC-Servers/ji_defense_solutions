@@ -64,7 +64,7 @@ function ENT:PaintObject( ply, col )
         local Phys = found:GetPhysicsObject()
 
         if not ( found == self ) and not ( found == ply ) and Dist < Closest and IsValid( Phys ) and not found:IsWorld() and not ( found:GetClass() == "ent_jack_paintcan" ) then
-            if Phys:GetVolume() < 650000 or found.JackyArmoredPanel then
+            if Phys:GetVolume() < 650000 then
                 local Kol = found:GetColor()
 
                 if not ( Kol.r == col.r and Kol.g == col.g and Kol.b == col.b ) then
