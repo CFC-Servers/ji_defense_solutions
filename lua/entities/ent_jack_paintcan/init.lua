@@ -28,7 +28,7 @@ function ENT:Initialize()
 		phys:SetMass(10)
 	end
 	self.MenuOpen=false
-	self:SetNetworkedInt("JackIndex",self:EntIndex())
+	self:SetNWInt("JackIndex",self:EntIndex())
 end
 function ENT:PhysicsCollide(data, physobj)
 	if((data.Speed>80)and(data.DeltaTime>0.2))then

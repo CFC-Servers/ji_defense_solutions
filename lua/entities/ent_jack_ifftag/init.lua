@@ -42,13 +42,13 @@ function ENT:OnTakeDamage( dmginfo )
 end
 
 function ENT:Use( activator, caller )
-    local Tagged = activator:GetNetworkedInt( "JackyIFFTag" )
+    local Tagged = activator:GetNWInt( "JackyIFFTag" )
 
     if Tagged and Tagged ~= 0 then
         activator:PrintMessage( HUD_PRINTCENTER, "You have an IFF tag equipped already." )
     else
         JID.genericUseEffect( activator )
-        activator:SetNetworkedInt( "JackyIFFTag", math.random( 1, 100000 ) )
+        activator:SetNWInt( "JackyIFFTag", math.random( 1, 100000 ) )
         activator:PrintMessage( HUD_PRINTCENTER, "IFF tag equipped." )
         activator:EmitSound( "snd_jack_tinyequip.mp3", 75, 100 )
         self:Remove()
@@ -56,7 +56,7 @@ function ENT:Use( activator, caller )
 end
 
 local function Death( ply )
-    ply:SetNetworkedInt( "JackyIFFTag", 0 )
+    ply:SetNWInt( "JackyIFFTag", 0 )
 end
 
 hook.Add( "DoPlayerDeath", "JackyIFFTagRemoval", Death )

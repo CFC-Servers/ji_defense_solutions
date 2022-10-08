@@ -195,7 +195,7 @@ function ENT:OpenTheMenu(tab)
 	tg1box:SetText("Target SizeClass 1 (e.g. bird)")
 	tg1box:SetChecked(tab.TGBird)
 	tg1box.OnChange=function(wat,check)
-		RunConsoleCommand("JackaTurretTargetingChange",tostring(self:GetNetworkedInt("JackIndex")),tostring(HULL_TINY),tostring(check))
+		RunConsoleCommand("JackaTurretTargetingChange",tostring(self:GetNWInt("JackIndex")),tostring(HULL_TINY),tostring(check))
 	end
 	
 	local tg2box=vgui.Create("DCheckBoxLabel",MainPanel)
@@ -204,7 +204,7 @@ function ENT:OpenTheMenu(tab)
 	tg2box:SetText("Size Class 2 (e.g. cat)")
 	tg2box:SetChecked(tab.TGCat)
 	tg2box.OnChange=function(wat,check)
-		RunConsoleCommand("JackaTurretTargetingChange",tostring(self:GetNetworkedInt("JackIndex")),tostring(HULL_TINY_CENTERED),tostring(check))
+		RunConsoleCommand("JackaTurretTargetingChange",tostring(self:GetNWInt("JackIndex")),tostring(HULL_TINY_CENTERED),tostring(check))
 	end
 	
 	local tg3box=vgui.Create("DCheckBoxLabel",MainPanel)
@@ -213,7 +213,7 @@ function ENT:OpenTheMenu(tab)
 	tg3box:SetText("Size Class 3 (e.g. dog)")
 	tg3box:SetChecked(tab.TGDog)
 	tg3box.OnChange=function(wat,check)
-		RunConsoleCommand("JackaTurretTargetingChange",tostring(self:GetNetworkedInt("JackIndex")),tostring(HULL_SMALL_CENTERED),tostring(check))
+		RunConsoleCommand("JackaTurretTargetingChange",tostring(self:GetNWInt("JackIndex")),tostring(HULL_SMALL_CENTERED),tostring(check))
 	end
 	
 	local tg4box=vgui.Create("DCheckBoxLabel",MainPanel)
@@ -222,7 +222,7 @@ function ENT:OpenTheMenu(tab)
 	tg4box:SetText("Size Class 4 (e.g. human)")
 	tg4box:SetChecked(tab.TGHuman)
 	tg4box.OnChange=function(wat,check)
-		RunConsoleCommand("JackaTurretTargetingChange",tostring(self:GetNetworkedInt("JackIndex")),tostring(HULL_HUMAN),tostring(check))
+		RunConsoleCommand("JackaTurretTargetingChange",tostring(self:GetNWInt("JackIndex")),tostring(HULL_HUMAN),tostring(check))
 	end
 	
 	local tg5box=vgui.Create("DCheckBoxLabel",MainPanel)
@@ -231,7 +231,7 @@ function ENT:OpenTheMenu(tab)
 	tg5box:SetText("Size Class 5 (e.g. gorilla)")
 	tg5box:SetChecked(tab.TGGorilla)
 	tg5box.OnChange=function(wat,check)
-		RunConsoleCommand("JackaTurretTargetingChange",tostring(self:GetNetworkedInt("JackIndex")),tostring(HULL_WIDE_SHORT),tostring(check))
+		RunConsoleCommand("JackaTurretTargetingChange",tostring(self:GetNWInt("JackIndex")),tostring(HULL_WIDE_SHORT),tostring(check))
 	end
 	
 	local tg6box=vgui.Create("DCheckBoxLabel",MainPanel)
@@ -240,7 +240,7 @@ function ENT:OpenTheMenu(tab)
 	tg6box:SetText("Size Class 6 (e.g. bear)")
 	tg6box:SetChecked(tab.TGBear)
 	tg6box.OnChange=function(wat,check)
-		RunConsoleCommand("JackaTurretTargetingChange",tostring(self:GetNetworkedInt("JackIndex")),tostring(HULL_WIDE_HUMAN),tostring(check))
+		RunConsoleCommand("JackaTurretTargetingChange",tostring(self:GetNWInt("JackIndex")),tostring(HULL_WIDE_HUMAN),tostring(check))
 	end
 	
 	local tg7box=vgui.Create("DCheckBoxLabel",MainPanel)
@@ -249,7 +249,7 @@ function ENT:OpenTheMenu(tab)
 	tg7box:SetText("Size Class 7 (e.g. horse)")
 	tg7box:SetChecked(tab.TGHorse)
 	tg7box.OnChange=function(wat,check)
-		RunConsoleCommand("JackaTurretTargetingChange",tostring(self:GetNetworkedInt("JackIndex")),tostring(HULL_MEDIUM),tostring(check))
+		RunConsoleCommand("JackaTurretTargetingChange",tostring(self:GetNWInt("JackIndex")),tostring(HULL_MEDIUM),tostring(check))
 	end
 	
 	local tg8box=vgui.Create("DCheckBoxLabel",MainPanel)
@@ -258,7 +258,7 @@ function ENT:OpenTheMenu(tab)
 	tg8box:SetText("Size Class 8 (e.g. moose)")
 	tg8box:SetChecked(tab.TGMoose)
 	tg8box.OnChange=function(wat,check)
-		RunConsoleCommand("JackaTurretTargetingChange",tostring(self:GetNetworkedInt("JackIndex")),tostring(HULL_MEDIUM_TALL),tostring(check))
+		RunConsoleCommand("JackaTurretTargetingChange",tostring(self:GetNWInt("JackIndex")),tostring(HULL_MEDIUM_TALL),tostring(check))
 	end
 	
 	local tg9box=vgui.Create("DCheckBoxLabel",MainPanel)
@@ -267,7 +267,7 @@ function ENT:OpenTheMenu(tab)
 	tg9box:SetText("Size Class 9 (e.g. shark)")
 	tg9box:SetChecked(tab.TGShark)
 	tg9box.OnChange=function(wat,check)
-		RunConsoleCommand("JackaTurretTargetingChange",tostring(self:GetNetworkedInt("JackIndex")),tostring(HULL_LARGE),tostring(check))
+		RunConsoleCommand("JackaTurretTargetingChange",tostring(self:GetNWInt("JackIndex")),tostring(HULL_LARGE),tostring(check))
 	end
 	
 	local tg10box=vgui.Create("DCheckBoxLabel",MainPanel)
@@ -276,7 +276,7 @@ function ENT:OpenTheMenu(tab)
 	tg10box:SetText("Size Class 10 (e.g. elephant)")
 	tg10box:SetChecked(tab.TGElephant)
 	tg10box.OnChange=function(wat,check)
-		RunConsoleCommand("JackaTurretTargetingChange",tostring(self:GetNetworkedInt("JackIndex")),tostring(HULL_LARGE_CENTERED),tostring(check))
+		RunConsoleCommand("JackaTurretTargetingChange",tostring(self:GetNWInt("JackIndex")),tostring(HULL_LARGE_CENTERED),tostring(check))
 	end
 	
 	local tgsynbox=vgui.Create("DCheckBoxLabel",MainPanel)
@@ -285,7 +285,7 @@ function ENT:OpenTheMenu(tab)
 	tgsynbox:SetText("Synthetics")
 	tgsynbox:SetChecked(tab.TGSyn)
 	tgsynbox.OnChange=function(wat,check)
-		RunConsoleCommand("JackaTurretTargetingTypeChange",tostring(self:GetNetworkedInt("JackIndex")),"TargetSynthetics",tostring(check))
+		RunConsoleCommand("JackaTurretTargetingTypeChange",tostring(self:GetNWInt("JackIndex")),"TargetSynthetics",tostring(check))
 	end
 	
 	local tgorgbox=vgui.Create("DCheckBoxLabel",MainPanel)
@@ -294,7 +294,7 @@ function ENT:OpenTheMenu(tab)
 	tgorgbox:SetText("Organics")
 	tgorgbox:SetChecked(tab.TGOrg)
 	tgorgbox.OnChange=function(wat,check)
-		RunConsoleCommand("JackaTurretTargetingTypeChange",tostring(self:GetNetworkedInt("JackIndex")),"TargetOrganics",tostring(check))
+		RunConsoleCommand("JackaTurretTargetingTypeChange",tostring(self:GetNWInt("JackIndex")),"TargetOrganics",tostring(check))
 	end
 	--[[
 	local chanselect=vgui.Create("DNumSlider",MainPanel)
@@ -490,7 +490,7 @@ function ENT:OpenTheMenu(tab)
 	ammobutton:SetVisible(true)
 	ammobutton.DoClick=function()
 		DermaPanel:Close()
-		RunConsoleCommand("JackaTurretAmmo",tostring(self:GetNetworkedInt("JackIndex")))
+		RunConsoleCommand("JackaTurretAmmo",tostring(self:GetNWInt("JackIndex")))
 	end
 	
 	local battbutton = vgui.Create("Button",MainPanel)
@@ -500,7 +500,7 @@ function ENT:OpenTheMenu(tab)
 	battbutton:SetVisible(true)
 	battbutton.DoClick=function()
 		DermaPanel:Close()
-		RunConsoleCommand("JackaTurretBattery",tostring(self:GetNetworkedInt("JackIndex")))
+		RunConsoleCommand("JackaTurretBattery",tostring(self:GetNWInt("JackIndex")))
 	end
 	
 	local exitbutton = vgui.Create("Button",MainPanel)
@@ -510,7 +510,7 @@ function ENT:OpenTheMenu(tab)
 	exitbutton:SetVisible(true)
 	exitbutton.DoClick=function()
 		DermaPanel:Close()
-		RunConsoleCommand("JackaTurretCloseMenu_Cancel",tostring(self:GetNetworkedInt("JackIndex")))
+		RunConsoleCommand("JackaTurretCloseMenu_Cancel",tostring(self:GetNWInt("JackIndex")))
 	end
 	
 	local On=(self:GetDTInt(0)!=0)
@@ -539,9 +539,9 @@ function ENT:OpenTheMenu(tab)
 	powerbutton.DoClick=function()
 		DermaPanel:Close()
 		if(On)then
-			RunConsoleCommand("JackaTurretCloseMenu_Off",tostring(self:GetNetworkedInt("JackIndex")))
+			RunConsoleCommand("JackaTurretCloseMenu_Off",tostring(self:GetNWInt("JackIndex")))
 		else
-			RunConsoleCommand("JackaTurretCloseMenu_On",tostring(self:GetNetworkedInt("JackIndex")))
+			RunConsoleCommand("JackaTurretCloseMenu_On",tostring(self:GetNWInt("JackIndex")))
 		end
 	end
 	
@@ -556,7 +556,7 @@ function ENT:OpenTheMenu(tab)
 	syncbutton:SetVisible(true)
 	syncbutton.DoClick=function()
 		DermaPanel:Close()
-		RunConsoleCommand("JackaTurretIFF",tostring(self:GetNetworkedInt("JackIndex")))
+		RunConsoleCommand("JackaTurretIFF",tostring(self:GetNWInt("JackIndex")))
 	end
 	
 	local buttbutton = vgui.Create("Button",MainPanel)
@@ -566,7 +566,7 @@ function ENT:OpenTheMenu(tab)
 	buttbutton:SetVisible(true)
 	buttbutton.DoClick=function()
 		DermaPanel:Close()
-		RunConsoleCommand("JackaTurretUpright",tostring(self:GetNetworkedInt("JackIndex")))
+		RunConsoleCommand("JackaTurretUpright",tostring(self:GetNWInt("JackIndex")))
 	end
 	
 	local warnbox=vgui.Create("DCheckBoxLabel",MainPanel)
@@ -575,7 +575,7 @@ function ENT:OpenTheMenu(tab)
 	warnbox:SetText("Warn")
 	warnbox:SetChecked(tab.Warn)
 	warnbox.OnChange=function(wat,check)
-		RunConsoleCommand("JackaTurretWarn",tostring(self:GetNetworkedInt("JackIndex")),tostring(check))
+		RunConsoleCommand("JackaTurretWarn",tostring(self:GetNWInt("JackIndex")),tostring(check))
 	end
 	
 	local litbox=vgui.Create("DCheckBoxLabel",MainPanel)
@@ -584,6 +584,6 @@ function ENT:OpenTheMenu(tab)
 	litbox:SetText("Illuminate")
 	litbox:SetChecked(tab.Light)
 	litbox.OnChange=function(wat,check)
-		RunConsoleCommand("JackaTurretLight",tostring(self:GetNetworkedInt("JackIndex")),tostring(check))
+		RunConsoleCommand("JackaTurretLight",tostring(self:GetNWInt("JackIndex")),tostring(check))
 	end
 end

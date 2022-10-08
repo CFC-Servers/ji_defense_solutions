@@ -132,7 +132,7 @@ function ENT:OpenTheMenu(tab)
 	exitbutton:SetVisible(true)
 	exitbutton.DoClick=function()
 		DermaPanel:Close()
-		RunConsoleCommand("JackaSprayPaintClose",tostring(self:GetNetworkedInt("JackIndex")))
+		RunConsoleCommand("JackaSprayPaintClose",tostring(self:GetNWInt("JackIndex")))
 	end
 	
 	local gobutton = vgui.Create("Button",MainPanel)
@@ -143,7 +143,7 @@ function ENT:OpenTheMenu(tab)
 	gobutton.DoClick=function()
 		DermaPanel:Close()
 		local Col=Mixer:GetColor()
-		RunConsoleCommand("JackaSprayPaintGo",tostring(self:GetNetworkedInt("JackIndex")),Col.r,Col.g,Col.b)
+		RunConsoleCommand("JackaSprayPaintGo",tostring(self:GetNWInt("JackIndex")),Col.r,Col.g,Col.b)
 	end
 end
 language.Add("ent_jack_aidfuel_paintcan","Spray Paint")

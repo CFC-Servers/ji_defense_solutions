@@ -55,7 +55,7 @@ function ENT:Initialize()
 	self.NextAlertTime=0
 	self:SetDTBool(1,self.HasBatteryOne)
 	self:SetDTBool(2,self.HasBatteryTwo)
-	self:SetNetworkedInt("JackIndex",self:EntIndex())
+	self:SetNWInt("JackIndex",self:EntIndex())
 end
 function ENT:PhysicsCollide(data, physobj)
 	if((data.Speed>80)and(data.DeltaTime>0.2))then

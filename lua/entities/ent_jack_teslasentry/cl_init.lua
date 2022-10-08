@@ -140,7 +140,7 @@ function ENT:OpenTheMenu(tab)
 	capselect:SetDecimals(0)
 	capselect:SetValue(tab.CapCharge)
 	capselect.ValueChanged=function(shitballs,value)
-		RunConsoleCommand("JackaTeslaTurretSetCap",tostring(self:GetNetworkedInt("JackIndex")),tostring(value))
+		RunConsoleCommand("JackaTeslaTurretSetCap",tostring(self:GetNWInt("JackIndex")),tostring(value))
 	end
 	
 	local battbutton = vgui.Create("Button",MainPanel)
@@ -150,7 +150,7 @@ function ENT:OpenTheMenu(tab)
 	battbutton:SetVisible(true)
 	battbutton.DoClick=function()
 		DermaPanel:Close()
-		RunConsoleCommand("JackaTeslaTurretBattery",tostring(self:GetNetworkedInt("JackIndex")))
+		RunConsoleCommand("JackaTeslaTurretBattery",tostring(self:GetNWInt("JackIndex")))
 	end
 	
 	local exitbutton = vgui.Create("Button",MainPanel)
@@ -160,7 +160,7 @@ function ENT:OpenTheMenu(tab)
 	exitbutton:SetVisible(true)
 	exitbutton.DoClick=function()
 		DermaPanel:Close()
-		RunConsoleCommand("JackaTeslaTurretCloseMenu_Cancel",tostring(self:GetNetworkedInt("JackIndex")))
+		RunConsoleCommand("JackaTeslaTurretCloseMenu_Cancel",tostring(self:GetNWInt("JackIndex")))
 	end
 	
 	local powerbutton = vgui.Create("Button",MainPanel)
@@ -170,6 +170,6 @@ function ENT:OpenTheMenu(tab)
 	powerbutton:SetVisible(true)
 	powerbutton.DoClick=function()
 		DermaPanel:Close()
-		RunConsoleCommand("JackaTeslaTurretCloseMenu_On",tostring(self:GetNetworkedInt("JackIndex")))
+		RunConsoleCommand("JackaTeslaTurretCloseMenu_On",tostring(self:GetNWInt("JackIndex")))
 	end
 end

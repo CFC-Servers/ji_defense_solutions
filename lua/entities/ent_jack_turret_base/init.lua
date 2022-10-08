@@ -183,7 +183,7 @@ function ENT:Initialize()
 	self:ManipulateBoneScale(3,self.BarrelSizeMod)
 	self:ManipulateBoneScale(1,Vector(self.MechanicsSizeMod,1,1))
 	if((self.AmmoType=="AAmissile")or(self.AmmoType=="ATrocket"))then self:ManipulateBoneScale(4,Vector(.01,.01,.01)) end
-	self:SetNetworkedInt("JackIndex",self:EntIndex())
+	self:SetNWInt("JackIndex",self:EntIndex())
 	self:SetDTBool(0,self.HasAmmoBox)
 	self:SetDTInt(3,0)
 	self.IFFTags={}
@@ -225,7 +225,7 @@ function ENT:Use(activator,caller)
 	if(activator==self.CurrentTarget)then self:EmitSound("snd_jack_denied.mp3",75,100) return end -- lol dude
 	if(self.IsLocked)then self:EmitSound("snd_jack_denied.mp3",75,100) return end
 	if not(self.MenuOpen)then
-		local Tag=activator:GetNetworkedInt("JackyIFFTag")
+		local Tag=activator:GetNWInt("JackyIFFTag")
 		self:EmitSound("snd_jack_uisuccess.mp3",65,100)
 		self.MenuOpen=true
 		umsg.Start("JackaTurretOpenMenu",activator)
@@ -546,7 +546,7 @@ function ENT:ScanForTarget()
 									Closest=Dist
 								end
 							elseif(potential:IsPlayer())then
-								local Tag=potential:GetNetworkedInt("JackyIFFTag")
+								local Tag=potential:GetNWInt("JackyIFFTag")
 								if((Tag)and(Tag!=0))then
 									if(table.HasValue(self.IFFTags,Tag))then
 										if(math.random(1,3)==2)then self:FriendlyAlert() end
@@ -576,7 +576,7 @@ function ENT:ScanForTarget()
 			self.FiredAtCurrentTarget=false
 		end
 		if(BestCandidate:IsPlayer())then
-			local Tag=BestCandidate:GetNetworkedInt("JackyIFFTag")
+			local Tag=BestCandidate:GetNWInt("JackyIFFTag")
 			if((Tag)and(Tag!=0))then
 				if(table.HasValue(self.IFFTags,Tag))then self:FriendlyAlert() return nil end
 			end
@@ -1156,7 +1156,7 @@ local function IFFTag(...)
 	local ply=args[1]
 	self:EmitSound("snd_jack_uiselect.mp3",65,100)
 	self.MenuOpen=false
-	local Tag=ply:GetNetworkedInt("JackyIFFTag")
+	local Tag=ply:GetNWInt("JackyIFFTag")
 	if((Tag)and(Tag!=0))then
 		if not(table.HasValue(self.IFFTags,Tag))then
 			if not(Tag==0)then table.ForceInsert(self.IFFTags,Tag) end
