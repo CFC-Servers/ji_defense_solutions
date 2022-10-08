@@ -29,47 +29,28 @@ function ENT:OnTakeDamage( dmginfo )
     self:TakePhysicsDamage( dmginfo )
 end
 
-function ENT:Think()
-    if not self.Exploded and self.Type == "HEDP" and self.Type == "Dummy" then
-        local vel = self:GetPhysicsObject():GetVelocity()
-        if vel:Length() > 200 then
-            self:SetAngles( vel:GetNormalized():Angle() )
-            self:GetPhysicsObject():SetVelocity( vel )
-        end
-        self:NextThink( CurTime() + 0.01 )
-        return true
-    end
-end
-
-function ENT:OnRemove()
-end
-
 function ENT:Detonate()
     if self.Exploding then return end
     self.Exploding = true
-    local SelfPos = self:GetPos()
+    local pos = self:GetPos()
 
-    if true then
-        util.ScreenShake( SelfPos, 99999, 99999, 1, 750 )
+    util.ScreenShake( pos, 99999, 99999, 1, 750 )
 
-        if self.Type == "HE" then
-            local explode = ents.Create( "env_explosion" )
-            explode:SetPos( self:GetPos() )
-            explode:SetOwner( self:GetNWEntity( "Owner" ) )
-            explode:Spawn()
-            explode:Activate()
-            explode:SetKeyValue( "iMagnitude", "190" )
-            explode:Fire( "Explode", 0, 0 )
+    local explode = ents.Create( "env_explosion" )
+    explode:SetPos( self:GetPos() )
+    explode:SetOwner( self:GetNWEntity( "Owner" ) )
+    explode:Spawn()
+    explode:Activate()
+    explode:SetKeyValue( "iMagnitude", "190" )
+    explode:Fire( "Explode", 0, 0 )
+
+    for _ = 0, 30 do
+        local Trayuss = util.QuickTrace( pos, VectorRand() * 200, { self } )
+
+        if Trayuss.Hit then
+            util.Decal( "FadingScorch", Trayuss.HitPos + Trayuss.HitNormal, Trayuss.HitPos - Trayuss.HitNormal )
         end
-
-        for _ = 0, 30 do
-            local Trayuss = util.QuickTrace( SelfPos, VectorRand() * 200, { self } )
-
-            if Trayuss.Hit then
-                util.Decal( "FadingScorch", Trayuss.HitPos + Trayuss.HitNormal, Trayuss.HitPos - Trayuss.HitNormal )
-            end
-        end
-
-        self:Remove()
     end
+
+    self:Remove()
 end

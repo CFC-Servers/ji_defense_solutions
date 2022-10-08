@@ -66,7 +66,7 @@ function ENT:PhysicsCollide( data )
         data.HitEntity.Generator = self
     end
 
-    timer.Simple( .01, function()
+    timer.Simple( 0.01, function()
         if not IsValid( self ) or not IsValid( data.HitEntity ) then return end
         if data.HitEntity.PlugPosition then
             local Cable = constraint.Rope( self, data.HitEntity, 0, 0, Vector( 0, 0, 0 ), data.HitEntity.PlugPosition, 1, 499, 1500, 2, "cable/cable2", false )
