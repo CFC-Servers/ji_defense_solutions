@@ -134,7 +134,7 @@ end
 function ENT:Use(activator, caller)
 	if not(self.Armed)then
 		self:Arm()
-		JackaGenericUseEffect(activator)
+		JID.genericUseEffect(activator)
 	end
 end
 function ENT:Arm()

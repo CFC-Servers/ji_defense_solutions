@@ -88,7 +88,7 @@ end
 function ENT:Use(activator,caller)
 	if(self.StructuralIntegrity<=0)then
 		local Kit=self:FindRepairKit()
-		if(IsValid(Kit))then self:Fix(Kit);JackaGenericUseEffect(activator) end
+		if(IsValid(Kit))then self:Fix(Kit);JID.genericUseEffect(activator) end
 	end
 	if(self.Broken)then return end
 	if not(self.State=="Off")then return end

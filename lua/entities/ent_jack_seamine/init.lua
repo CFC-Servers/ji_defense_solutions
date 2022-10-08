@@ -123,7 +123,7 @@ function ENT:Use(activator,caller)
 						self.Armed=true
 					end
 				end)
-				JackaGenericUseEffect(activator)
+				JID.genericUseEffect(activator)
 			end
 		end
 	end
