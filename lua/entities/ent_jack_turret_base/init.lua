@@ -219,7 +219,7 @@ end
 function ENT:Use(activator,caller)
 	if(self.StructuralIntegrity<=0)then
 		local Kit=self:FindRepairKit()
-		if(IsValid(Kit))then self:Fix(Kit);JackaGenericUseEffect(activator) end
+		if(IsValid(Kit))then self:Fix(Kit);JID.genericUseEffect(activator) end
 	end
 	if(self.Broken)then return end
 	if(activator==self.CurrentTarget)then self:EmitSound("snd_jack_denied.mp3",75,100) return end -- lol dude
@@ -1064,7 +1064,7 @@ local function CloseOn(...)
 	if(self:GetDTInt(0)==TS_NOTHING)then
 		if(self.StartUp)then
 			self:StartUp()
-			JackaGenericUseEffect(args[1])
+			JID.genericUseEffect(args[1])
 		end
 	end
 end
@@ -1076,7 +1076,7 @@ local function CloseOff(...)
 	self.MenuOpen=false
 	if not(self:GetDTInt(0)==TS_NOTHING)then
 		self:HardShutDown()
-		JackaGenericUseEffect(args[1])
+		JID.genericUseEffect(args[1])
 	end
 end
 concommand.Add("JackaTurretCloseMenu_Off",CloseOff)
@@ -1101,7 +1101,7 @@ local function Ammo(...)
 				end
 			else
 				self:DetachAmmoBox()
-				JackaGenericUseEffect(args[1])
+				JID.genericUseEffect(args[1])
 			end
 		else
 			args[1]:PrintMessage(HUD_PRINTCENTER,"Current tube not empty.")
@@ -1113,13 +1113,13 @@ local function Ammo(...)
 				local Box=self:FindAmmo()
 				if(IsValid(Box))then
 					self:RefillAmmo(Box)
-					JackaGenericUseEffect(args[1])
+					JID.genericUseEffect(args[1])
 				else
 					args[1]:PrintMessage(HUD_PRINTCENTER,"No ammunition present.")
 				end
 			else
 				self:DetachAmmoBox()
-				JackaGenericUseEffect(args[1])
+				JID.genericUseEffect(args[1])
 			end
 		else
 			args[1]:PrintMessage(HUD_PRINTCENTER,"Current box not empty.")
@@ -1203,13 +1203,13 @@ local function Battery(...)
 			local Box=self:FindBattery()
 			if(IsValid(Box))then
 				self:RefillPower(Box)
-				JackaGenericUseEffect(args[1])
+				JID.genericUseEffect(args[1])
 			else
 				args[1]:PrintMessage(HUD_PRINTCENTER,"No battery present.")
 			end
 		else
 			self:DetachBattery()
-			JackaGenericUseEffect(args[1])
+			JID.genericUseEffect(args[1])
 		end
 	else
 		args[1]:PrintMessage(HUD_PRINTCENTER,"Current battery not dead.")
@@ -1230,7 +1230,7 @@ local function Upright(...)
 		Ang:RotateAroundAxis(Ang:Right(),AngDiff.p)
 		self:SetAngles(Ang)
 		self:EmitSound("weapons/iceaxe/iceaxe_swing1.wav",70,80)
-		JackaGenericUseEffect(ply)
+		JID.genericUseEffect(ply)
 		self:GetPhysicsObject():ApplyForceCenter(VectorRand())
 	end
 	self.MenuOpen=false

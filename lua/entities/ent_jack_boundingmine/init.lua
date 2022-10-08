@@ -149,7 +149,7 @@ function ENT:Use(activator,caller)
 			self.ShootDir=Tr.HitNormal
 			self:DrawShadow(false)
 			self.State="Armed"
-			JackaGenericUseEffect(activator)
+			JID.genericUseEffect(activator)
 		else
 			activator:PickupObject(self)
 		end

@@ -1,4 +1,3 @@
-hook.Add( "PlayerDisconnected", "JackaPlyDisconn", Disconn )
 local function CmdDet( ... )
     local args = { ... }
     local ply = args[1]
@@ -6,7 +5,7 @@ local function CmdDet( ... )
 end
 concommand.Add( "jacky_remote_det", CmdDet )
 
-function JackaGenericUseEffect( ply )
+function JID.genericUseEffect( ply )
     if ply:IsPlayer() then
         local Wep = ply:GetActiveWeapon()
         if IsValid( Wep ) then Wep:SendWeaponAnim( ACT_VM_DRAW ) end

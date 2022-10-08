@@ -186,7 +186,7 @@ local function DetonateClaymores(ply)
 		end
 	end
 	if(FoundEm)then
-		JackaGenericUseEffect(ply)
+		JID.genericUseEffect(ply)
 		ply:EmitSound("snd_jack_detonator.mp3",70,100)
 	end
 end
