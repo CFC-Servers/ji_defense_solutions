@@ -29,7 +29,7 @@ function ENT:SpawnFunction(ply,tr)
 	local SpawnPos=tr.HitPos + tr.HitNormal*16
 	local ent=ents.Create("ent_jack_turret_rifle")
 	ent:SetPos(SpawnPos)
-	ent:SetNetworkedEntity("Owenur",ply)
+	ent:SetNWEntity("Owenur",ply)
 	ent.TargetingGroup={0}
 	ent:Spawn()
 	ent:Activate()

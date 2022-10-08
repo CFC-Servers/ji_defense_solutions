@@ -44,7 +44,7 @@ function ENT:SpawnFunction(ply,tr)
 	local SpawnPos=tr.HitPos + tr.HitNormal*16
 	local ent=ents.Create("ent_jack_turret_missile")
 	ent:SetPos(SpawnPos)
-	ent:SetNetworkedEntity("Owenur",ply)
+	ent:SetNWEntity("Owenur",ply)
 	ent.TargetingGroup={5,9,7,8}
 	ent:Spawn()
 	ent:Activate()
@@ -151,7 +151,7 @@ function ENT:FireMissal()
 	--fire round
 	local Miss=ents.Create("ent_jack_turretmissile")
 	Miss.ParentLauncher=self.Entity
-	Miss:SetNetworkedEntity("Owenur",self.Entity)
+	Miss:SetNWEntity("Owenur",self.Entity)
 	Miss:SetPos(SelfPos-self:GetRight()*5)
 	local Ang=Dir:Angle()
 	Ang:RotateAroundAxis(Ang:Up(),90)

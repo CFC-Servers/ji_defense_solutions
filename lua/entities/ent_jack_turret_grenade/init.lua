@@ -42,7 +42,7 @@ function ENT:SpawnFunction(ply,tr)
 	local SpawnPos=tr.HitPos + tr.HitNormal*16
 	local ent=ents.Create("ent_jack_turret_grenade")
 	ent:SetPos(SpawnPos)
-	ent:SetNetworkedEntity("Owenur",ply)
+	ent:SetNWEntity("Owenur",ply)
 	ent.TargetingGroup={5,9,7,8}
 	ent:Spawn()
 	ent:Activate()
@@ -133,7 +133,7 @@ function ENT:FireShot()
 		local Grenade=ents.Create("ent_jack_40mmgrenade")
 		Grenade.ParentLauncher=self.Entity
 		self.MostRecentGrenade=Grenade
-		Grenade:SetNetworkedEntity("Owenur",self.Entity)
+		Grenade:SetNWEntity("Owenur",self.Entity)
 		Grenade:SetPos(SelfPos)
 		local Ang=Dir:Angle()
 		Grenade:SetAngles(Ang)

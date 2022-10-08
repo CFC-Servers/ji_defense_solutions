@@ -16,7 +16,7 @@ function ENT:SpawnFunction(ply, tr)
 	local SpawnPos = tr.HitPos + tr.HitNormal*50
 	local ent = ents.Create("ent_jack_teslasentry")
 	ent:SetPos(SpawnPos)
-	ent:SetNetworkedEntity("Owenur",ply)
+	ent:SetNWEntity("Owenur",ply)
 	ent:Spawn()
 	ent:Activate()
 	local effectdata=EffectData()
