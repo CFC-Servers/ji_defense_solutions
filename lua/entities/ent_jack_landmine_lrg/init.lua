@@ -17,15 +17,15 @@ function ENT:SpawnFunction(ply, tr)
 	return ent
 end
 function ENT:Initialize()
-	self.Entity:SetModel("models/props_pipes/pipe03_connector01.mdl")
-	self.Entity:SetMaterial("models/mat_jack_monotone_abu")
-	self.Entity:SetColor(Color(50,50,50))
-	self.Entity:PhysicsInit(SOLID_VPHYSICS)
-	self.Entity:SetMoveType(MOVETYPE_VPHYSICS)	
-	self.Entity:SetSolid(SOLID_VPHYSICS)
-	self.Entity:DrawShadow(true)
+	self:SetModel("models/props_pipes/pipe03_connector01.mdl")
+	self:SetMaterial("models/mat_jack_monotone_abu")
+	self:SetColor(Color(50,50,50))
+	self:PhysicsInit(SOLID_VPHYSICS)
+	self:SetMoveType(MOVETYPE_VPHYSICS)	
+	self:SetSolid(SOLID_VPHYSICS)
+	self:DrawShadow(true)
 	self.Exploded=false
-	local phys = self.Entity:GetPhysicsObject()
+	local phys = self:GetPhysicsObject()
 	if phys:IsValid() then
 		phys:Wake()
 		phys:SetMass(40)
@@ -50,7 +50,7 @@ function ENT:Detonate(toucher)
 		end
 	end
 	local EffectType=1
-	local Traec=util.QuickTrace(self:GetPos(),Vector(0,0,-5),self.Entity)
+	local Traec=util.QuickTrace(self:GetPos(),Vector(0,0,-5),self)
 	if(Traec.Hit)then
 		if((Traec.MatType==MAT_DIRT)or(Traec.MatType==MAT_SAND))then
 			EffectType=1
@@ -91,7 +91,7 @@ function ENT:Detonate(toucher)
 			end
 		end
 	end
-	self.Entity:EmitSound("BaseExplosionEffect.Sound")
+	self:EmitSound("BaseExplosionEffect.Sound")
 	self:EmitSound("snd_jack_fragsplodeclose.mp3",90,80)
 	self:EmitSound("snd_jack_fragsplodeclose.mp3",90,80)
 	sound.Play("snd_jack_debris"..tostring(math.random(1,2))..".mp3",SelfPos,80,85)
@@ -103,13 +103,13 @@ end
 function ENT:StartTouch(ent)
 	if(self.Armed)then
 		self:Detonate(ent)
-		local Tr=util.QuickTrace(self:GetPos(),Vector(0,0,-5),self.Entity)
+		local Tr=util.QuickTrace(self:GetPos(),Vector(0,0,-5),self)
 		if(Tr.Hit)then
 			util.Decal("Scorch",Tr.HitPos+Tr.HitNormal,Tr.HitPos-Tr.HitNormal)
 		end
 	else
 		if(self.NextBounceNoiseTime<CurTime())then
-			self.Entity:EmitSound("SolidMetal.ImpactSoft")
+			self:EmitSound("SolidMetal.ImpactSoft")
 			self.NextBounceNoiseTime=CurTime()+0.4
 		end
 	end
@@ -117,7 +117,7 @@ end
 function ENT:EndTouch(ent)
 	if(self.Armed)then
 		self:Detonate(ent)
-		local Tr=util.QuickTrace(self:GetPos(),Vector(0,0,-5),self.Entity)
+		local Tr=util.QuickTrace(self:GetPos(),Vector(0,0,-5),self)
 		if(Tr.Hit)then
 			util.Decal("Scorch",Tr.HitPos+Tr.HitNormal,Tr.HitPos-Tr.HitNormal)
 		end

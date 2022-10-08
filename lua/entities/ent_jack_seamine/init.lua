@@ -19,15 +19,15 @@ function ENT:Initialize()
 	local Ang=self:GetAngles()
 	Ang:RotateAroundAxis(Ang:Right(),180)
 	self:SetAngles(Ang)
-	self.Entity:SetModel("models/magnet/submine/submine.mdl")
-	self.Entity:SetMaterial("models/mat_jack_dullscratchedmetal")
-	self.Entity:SetColor(Color(160,170,175))
-	self.Entity:PhysicsInit(SOLID_VPHYSICS)
-	self.Entity:SetMoveType(MOVETYPE_VPHYSICS)	
-	self.Entity:SetSolid(SOLID_VPHYSICS)
-	self.Entity:DrawShadow(true)
+	self:SetModel("models/magnet/submine/submine.mdl")
+	self:SetMaterial("models/mat_jack_dullscratchedmetal")
+	self:SetColor(Color(160,170,175))
+	self:PhysicsInit(SOLID_VPHYSICS)
+	self:SetMoveType(MOVETYPE_VPHYSICS)	
+	self:SetSolid(SOLID_VPHYSICS)
+	self:DrawShadow(true)
 	self.Exploded=false
-	local phys = self.Entity:GetPhysicsObject()
+	local phys = self:GetPhysicsObject()
 	if phys:IsValid() then
 		phys:Wake()
 		phys:SetMass(220)
@@ -46,7 +46,7 @@ function ENT:Initialize()
 	self.Counterweight:SetNoDraw(true)
 	self.Counterweight:GetPhysicsObject():SetMass(70)
 	self:DeleteOnRemove(self.Counterweight)
-	constraint.Weld(self.Entity,self.Counterweight,0,0,0,true)
+	constraint.Weld(self,self.Counterweight,0,0,0,true)
 	--]]
 	self:SetUseType(SIMPLE_USE)
 end
@@ -80,20 +80,20 @@ function ENT:Detonate()
 		sound.Play("weapons/explode4.wav",SelfPos,100,150)
 		sound.Play("snd_jack_bigsplodeclose.mp3",SelfPos,110,100)
 		sound.Play("snd_jack_bigsplodeclose.mp3",SelfPos,110,100)
-		self.Entity:EmitSound("BaseExplosionEffect.Sound")
-		sound.Play("weapons/explode3.wav",self.Entity:GetPos(),100,150)
+		self:EmitSound("BaseExplosionEffect.Sound")
+		sound.Play("weapons/explode3.wav",self:GetPos(),100,150)
 		local splad=EffectData()
 		splad:SetOrigin(SelfPos)
 		splad:SetScale(4)
 		util.Effect("eff_jack_genericboom",splad,true,true)
 	end
-	util.BlastDamage(self.Entity,self.Entity,SelfPos,1000,500)
+	util.BlastDamage(self,self,SelfPos,1000,500)
 	util.ScreenShake(SelfPos,99999,99999,1,1000)
 	self:Remove()
 end
 function ENT:PhysicsCollide(data, physobj)
 	if((data.Speed>80)and(data.DeltaTime>0.2))then
-		self.Entity:EmitSound("Canister.ImpactHard")
+		self:EmitSound("Canister.ImpactHard")
 	end
 	if(data.Speed>5)then
 		if(self.Armed)then
@@ -108,7 +108,7 @@ function ENT:OnTakeDamage(dmginfo)
 			self:Detonate()
 		end
 	end
-	self.Entity:TakePhysicsDamage(dmginfo)
+	self:TakePhysicsDamage(dmginfo)
 end
 function ENT:Use(activator,caller)
 	if(activator:IsPlayer())then

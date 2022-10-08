@@ -16,13 +16,13 @@ function ENT:SpawnFunction(ply,tr)
 	return ent
 end
 function ENT:Initialize()
-	self.Entity:SetModel("models/props_phx/wheels/magnetic_small_base.mdl")
-	self.Entity:PhysicsInit(SOLID_VPHYSICS)
-	self.Entity:SetMoveType(MOVETYPE_VPHYSICS)	
-	self.Entity:SetSolid(SOLID_VPHYSICS)
-	self.Entity:DrawShadow(true)
-	self.Entity:SetUseType(SIMPLE_USE)
-	local phys = self.Entity:GetPhysicsObject()
+	self:SetModel("models/props_phx/wheels/magnetic_small_base.mdl")
+	self:PhysicsInit(SOLID_VPHYSICS)
+	self:SetMoveType(MOVETYPE_VPHYSICS)	
+	self:SetSolid(SOLID_VPHYSICS)
+	self:DrawShadow(true)
+	self:SetUseType(SIMPLE_USE)
+	local phys = self:GetPhysicsObject()
 	if phys:IsValid() then
 		phys:Wake()
 		phys:SetMass(10)
@@ -32,11 +32,11 @@ function ENT:Initialize()
 end
 function ENT:PhysicsCollide(data, physobj)
 	if((data.Speed>80)and(data.DeltaTime>0.2))then
-		self.Entity:EmitSound("Computer.ImpactHard")
+		self:EmitSound("Computer.ImpactHard")
 	end
 end
 function ENT:OnTakeDamage(dmginfo)
-	self.Entity:TakePhysicsDamage(dmginfo)
+	self:TakePhysicsDamage(dmginfo)
 end
 function ENT:Use(activator,caller)
 	if not(self.MenuOpen)then

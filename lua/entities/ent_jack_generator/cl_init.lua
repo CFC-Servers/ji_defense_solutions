@@ -89,7 +89,7 @@ function ENT:Draw()
 	Ang2:RotateAroundAxis(Ang2:Right(),-90)
 	self.Turbine:SetRenderAngles(Ang2)
 	self.Turbine:DrawModel()
-	self.Entity:DrawModel()
+	self:DrawModel()
 end
 
 language.Add("ent_jack_generator","Gas Turbine Generator")

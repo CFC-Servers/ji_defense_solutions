@@ -163,16 +163,16 @@ function ENT:WillTargetThisSize(siz)
 end
 function ENT:Initialize()
 	self:SetAngles(Angle(0,0,0))
-	self.Entity:SetModel("models/combine_turrets/floor_turret.mdl")
-	--self.Entity:SetMaterial(self.TurretSkin)
-	self.Entity:SetMaterial("models/mat_jack_turret")
-	self.Entity:SetColor(Color(50,50,50))
-	self.Entity:PhysicsInit(SOLID_VPHYSICS)
-	self.Entity:SetMoveType(MOVETYPE_VPHYSICS)	
-	self.Entity:SetSolid(SOLID_VPHYSICS)
-	self.Entity:SetUseType(SIMPLE_USE)
-	self.Entity:DrawShadow(true)
-	local phys = self.Entity:GetPhysicsObject()
+	self:SetModel("models/combine_turrets/floor_turret.mdl")
+	--self:SetMaterial(self.TurretSkin)
+	self:SetMaterial("models/mat_jack_turret")
+	self:SetColor(Color(50,50,50))
+	self:PhysicsInit(SOLID_VPHYSICS)
+	self:SetMoveType(MOVETYPE_VPHYSICS)	
+	self:SetSolid(SOLID_VPHYSICS)
+	self:SetUseType(SIMPLE_USE)
+	self:DrawShadow(true)
+	local phys = self:GetPhysicsObject()
 	if phys:IsValid() then
 		phys:Wake()
 		phys:SetMass(200)
@@ -193,7 +193,7 @@ function ENT:GetShootPos()
 end
 function ENT:PhysicsCollide(data, physobj)
 	if((data.Speed>80)and(data.DeltaTime>0.2))then
-		if(IsValid(self.Entity))then self.Entity:EmitSound("Canister.ImpactHard") end
+		if(IsValid(self))then self:EmitSound("Canister.ImpactHard") end
 	end
 	if(data.Speed>750)then
 		self.StructuralIntegrity=self.StructuralIntegrity-data.Speed/10
@@ -206,7 +206,7 @@ function ENT:PhysicsCollide(data, physobj)
 	end
 end
 function ENT:OnTakeDamage(dmginfo)
-	self.Entity:TakePhysicsDamage(dmginfo)
+	self:TakePhysicsDamage(dmginfo)
 	if((dmginfo:IsDamageType(DMG_BUCKSHOT))or(dmginfo:IsDamageType(DMG_BULLET))or(dmginfo:IsDamageType(DMG_BLAST))or(dmginfo:IsDamageType(DMG_CLUB)))then
 		self.StructuralIntegrity=self.StructuralIntegrity-dmginfo:GetDamage()
 		if(self.StructuralIntegrity<=0)then
@@ -654,7 +654,7 @@ function ENT:Alert(targ)
 		self.BatteryCharge=self.BatteryCharge-.5*self.MechanicsSizeMod
 		if(self.WillLight)then
 			self.flashlight=ents.Create("env_projectedtexture")
-			self.flashlight:SetParent(self.Entity)
+			self.flashlight:SetParent(self)
 			-- The local positions are the offsets from parent..
 			self.flashlight:SetLocalPos(Vector(0,0,50))
 			self.flashlight:SetLocalAngles(Angle(0,0,0))
@@ -790,7 +790,7 @@ function ENT:FireShot()
 			Spred=Spred*.4
 		end
 		local Bellit={
-			Attacker=self.Entity,
+			Attacker=self,
 			Damage=self.ShotPower,
 			Force=self.ShotPower/60,
 			Num=self.ProjectilesPerShot,

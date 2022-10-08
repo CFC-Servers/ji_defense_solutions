@@ -90,7 +90,7 @@ function ENT:Draw()
 			cam.End3D2D()
 		end
 	end
-	self.Entity:DrawModel()
+	self:DrawModel()
 	local Pos,Ang=self:GetBonePosition(1)
 	Ang:RotateAroundAxis(Ang:Up(),90)
 	Ang:RotateAroundAxis(Ang:Forward(),90)

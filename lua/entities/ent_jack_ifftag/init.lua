@@ -15,14 +15,14 @@ function ENT:SpawnFunction(ply,tr)
 	return ent
 end
 function ENT:Initialize()
-	self.Entity:SetModel("models/Items/AR2_Grenade.mdl")
-	self.Entity:SetMaterial("models/mat_jack_scratchedmetal")
-	self.Entity:PhysicsInit(SOLID_VPHYSICS)
-	self.Entity:SetMoveType(MOVETYPE_VPHYSICS)	
-	self.Entity:SetSolid(SOLID_VPHYSICS)
-	self.Entity:DrawShadow(true)
-	self.Entity:SetColor(Color(128,128,128,255))
-	local phys = self.Entity:GetPhysicsObject()
+	self:SetModel("models/Items/AR2_Grenade.mdl")
+	self:SetMaterial("models/mat_jack_scratchedmetal")
+	self:PhysicsInit(SOLID_VPHYSICS)
+	self:SetMoveType(MOVETYPE_VPHYSICS)	
+	self:SetSolid(SOLID_VPHYSICS)
+	self:DrawShadow(true)
+	self:SetColor(Color(128,128,128,255))
+	local phys = self:GetPhysicsObject()
 	if phys:IsValid() then
 		phys:Wake()
 		phys:SetMass(10)
@@ -30,11 +30,11 @@ function ENT:Initialize()
 end
 function ENT:PhysicsCollide(data, physobj)
 	if((data.Speed>80)and(data.DeltaTime>0.2))then
-		self.Entity:EmitSound("DryWall.ImpactHard")
+		self:EmitSound("DryWall.ImpactHard")
 	end
 end
 function ENT:OnTakeDamage(dmginfo)
-	self.Entity:TakePhysicsDamage(dmginfo)
+	self:TakePhysicsDamage(dmginfo)
 end
 function ENT:Use(activator,caller)
 	local Tagged=activator:GetNetworkedInt("JackyIFFTag")

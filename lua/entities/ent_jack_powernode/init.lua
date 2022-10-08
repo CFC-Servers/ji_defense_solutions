@@ -31,12 +31,12 @@ function ENT:SpawnFunction(ply,tr)
 	return ent
 end
 function ENT:Initialize()
-	self.Entity:SetModel("models/props_lab/powerbox02d.mdl")
-	self.Entity:PhysicsInit(SOLID_VPHYSICS)
-	self.Entity:SetMoveType(MOVETYPE_VPHYSICS)	
-	self.Entity:SetSolid(SOLID_VPHYSICS)
-	self.Entity:DrawShadow(true)
-	local phys = self.Entity:GetPhysicsObject()
+	self:SetModel("models/props_lab/powerbox02d.mdl")
+	self:PhysicsInit(SOLID_VPHYSICS)
+	self:SetMoveType(MOVETYPE_VPHYSICS)	
+	self:SetSolid(SOLID_VPHYSICS)
+	self:DrawShadow(true)
+	local phys = self:GetPhysicsObject()
 	if phys:IsValid() then
 		phys:Wake()
 		phys:SetMass(50)
@@ -45,12 +45,12 @@ function ENT:Initialize()
 	self.GeneratorConn=nil
 	self.Dependents={}
 	self.Connections={}
-	self.Entity:SetColor(Color(150,150,150))
-	self.Entity:SetUseType(SIMPLE_USE)
+	self:SetColor(Color(150,150,150))
+	self:SetUseType(SIMPLE_USE)
 end
 function ENT:PhysicsCollide(data,physobj)
 	if((data.Speed>80)and(data.DeltaTime>0.2))then
-		self.Entity:EmitSound("SolidMetal.ImpactHard")
+		self:EmitSound("SolidMetal.ImpactHard")
 	end
 	if not(data.HitEntity:IsWorld())then
 		if(data.HitEntity:GetClass()=="ent_jack_generator")then
@@ -97,7 +97,7 @@ function ENT:PhysicsCollide(data,physobj)
 	end
 end
 function ENT:OnTakeDamage(dmginfo)
-	self.Entity:TakePhysicsDamage(dmginfo)
+	self:TakePhysicsDamage(dmginfo)
 end
 function ENT:Use(activator,caller)
 	activator:PickupObject(self)

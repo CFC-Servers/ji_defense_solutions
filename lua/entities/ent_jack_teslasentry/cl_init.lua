@@ -64,7 +64,7 @@ function ENT:Draw()
 	if(self:GetDTBool(1))then self.BatOne:DrawModel() end
 	if(self:GetDTBool(2))then self.BatTwo:DrawModel() end
 	self.Dissipator:DrawModel()
-	self.Entity:DrawModel()
+	self:DrawModel()
 end
 function ENT:OnRemove()
 	--wtf

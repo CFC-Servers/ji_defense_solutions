@@ -18,7 +18,7 @@ function ENT:Draw()
 	self.Prettiness:SetRenderAngles(Ang)
 	self.Prettiness:DrawModel()
 	--render.SetBlend(.5)
-	--self.Entity:DrawModel()
+	--self:DrawModel()
 	--render.SetBlend(1)
 end
 
