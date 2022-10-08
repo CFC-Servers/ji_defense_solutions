@@ -2,7 +2,7 @@
 
 AddCSLuaFile('cl_init.lua')
 AddCSLuaFile('shared.lua')
-include('shared.lua')
+include( "shared.lua" )
 ENT.MotorPower=0
 local HULL_TARGETING={
 	[HULL_TINY]=-5,

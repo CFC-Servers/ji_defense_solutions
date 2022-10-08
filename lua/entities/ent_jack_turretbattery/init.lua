@@ -2,7 +2,7 @@
 
 AddCSLuaFile('cl_init.lua')
 AddCSLuaFile('shared.lua')
-include('shared.lua')
+include( "shared.lua" )
 ENT.HasBattery=true
 ENT.BatteryCharge=3000
 ENT.BatteryMaxCharge=3000

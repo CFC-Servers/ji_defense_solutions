@@ -2,7 +2,7 @@
 
 AddCSLuaFile('cl_init.lua')
 AddCSLuaFile('shared.lua')
-include('shared.lua')
+include( "shared.lua" )
 ENT.Base="ent_jack_turretammobox_base"
 ENT.AmmoType="5.56x45mm"
 ENT.NumberOfRounds=325

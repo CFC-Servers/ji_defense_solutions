@@ -2,7 +2,7 @@
 
 AddCSLuaFile('cl_init.lua')
 AddCSLuaFile('shared.lua')
-include('shared.lua')
+include( "shared.lua" )
 function ENT:SpawnFunction(ply,tr)
 	local SpawnPos=tr.HitPos + tr.HitNormal*16
 	local ent=ents.Create("ent_jack_turretrocketpod")
