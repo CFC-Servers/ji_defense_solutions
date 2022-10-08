@@ -3,7 +3,11 @@ AddCSLuaFile( "shared.lua" )
 include( "shared.lua" )
 ENT.PlugPosition = Vector( 0, 0, 0 )
 
-local FuelsTable = { "models/props_explosive/explosive_butane_can.mdl", "models/props_explosive/explosive_butane_can02.mdl", "models/props_junk/gascan001a.mdl", "models/props_c17/oildrum001_explosive.mdl", "models/props_junk/propane_tank001a.mdl" }
+local fuelsEntsTable = {
+    ["ent_jack_aidfuel_gasoline"] = true,
+    ["ent_jack_aidfuel_kerosene"] = true,
+    ["ent_jack_aidfuel_propane"] = true,
+}
 
 function ENT:SpawnFunction( ply, tr )
     local SpawnPos = tr.HitPos + tr.HitNormal * 16
@@ -189,11 +193,9 @@ end
 
 function ENT:Refuel()
     for _, found in pairs( ents.FindInSphere( self:GetPos(), 125 ) ) do
-        if string.find( found:GetClass(), "ent_jack_aidfuel_" ) or found:GetClass() == "prop_physics" and table.HasValue( FuelsTable, found:GetModel() ) then
-            if found.FuelLeft then
-                if not ( found.FuelLeft <= 0 ) then
-                    self:FuelWith( found )
-                end
+        if fuelsEntsTable[found:GetClass()] then
+            if found.FuelLeft and found.FuelLeft > 0 then
+                self:FuelWith( found )
             else
                 self:FuelWith( found )
             end
