@@ -8,8 +8,8 @@ end )
 
 local function DrawNotification()
     local ply = LocalPlayer()
-
-    if not ply.JackaClaymoreNotification and ply.JackaClaymoreNotification <= 0 then return end
+    if not ply.JackaClaymoreNotification then return end
+    if ply.JackaClaymoreNotification <= 0 then return end
 
     local w = ScrW()
     local h = ScrH()
