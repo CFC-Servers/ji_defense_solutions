@@ -431,10 +431,10 @@ function ENT:ArcToGround(Victim,Powa)
 	if(Trayuss.Hit)then
 		local NewStart=Victim:GetPos()+Vector(0,0,5)
 		ToVector=Trayuss.HitPos-NewStart
-		Dist=ToVector:Length()	
+		local Dist=ToVector:Length()	
 		if(Dist>150)then
 			WanderDirection=Vector(0,0,-1)
-			NumPoints=math.Clamp((math.ceil(30*(Dist/1000))+1),1,50)
+			local NumPoints = math.Clamp((math.ceil(30*(Dist/1000))+1),1,50)
 			PointTable={}
 			PointTable[1]=NewStart
 			for i=2,NumPoints do
