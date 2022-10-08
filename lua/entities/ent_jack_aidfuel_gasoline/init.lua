@@ -34,7 +34,7 @@ function ENT:Initialize()
     self.Asploded = false
 end
 
-function ENT:PhysicsCollide( data, physobj )
+function ENT:PhysicsCollide( data )
     if data.Speed > 80 and data.DeltaTime > 0.2 then
         self:EmitSound( "Wade.StepRight" )
         self:EmitSound( "Wade.StepLeft" )

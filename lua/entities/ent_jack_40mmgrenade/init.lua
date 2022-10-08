@@ -19,7 +19,7 @@ function ENT:Initialize()
     self.ExplosiveMul = 0.5
 end
 
-function ENT:PhysicsCollide( data, physobj )
+function ENT:PhysicsCollide( data )
     if data.Speed > 80 and data.DeltaTime > 0.2 then
         self:Detonate()
     end
