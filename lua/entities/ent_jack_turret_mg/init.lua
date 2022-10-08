@@ -31,7 +31,7 @@ function ENT:SpawnFunction( ply, tr )
     local SpawnPos = tr.HitPos + tr.HitNormal * 16
     local ent = ents.Create( "ent_jack_turret_mg" )
     ent:SetPos( SpawnPos )
-    ent:SetNWEntity( "Owenur", ply )
+    ent:SetNWEntity( "Owner", ply )
 
     ent.TargetingGroup = { 0, 4, 2, 5, 9 }
 

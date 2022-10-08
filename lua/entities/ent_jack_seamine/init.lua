@@ -6,7 +6,7 @@ function ENT:SpawnFunction( ply, tr )
     local SpawnPos = tr.HitPos + tr.HitNormal * 32
     local ent = ents.Create( "ent_jack_seamine" )
     ent:SetPos( SpawnPos )
-    ent:SetNWEntity( "Owenur", ply )
+    ent:SetNWEntity( "Owner", ply )
     ent:Spawn()
     ent:Activate()
     local effectdata = EffectData()

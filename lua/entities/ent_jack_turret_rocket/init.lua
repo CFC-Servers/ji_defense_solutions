@@ -45,7 +45,7 @@ function ENT:SpawnFunction( ply, tr )
     local SpawnPos = tr.HitPos + tr.HitNormal * 16
     local ent = ents.Create( "ent_jack_turret_rocket" )
     ent:SetPos( SpawnPos )
-    ent:SetNWEntity( "Owenur", ply )
+    ent:SetNWEntity( "Owner", ply )
 
     ent.TargetingGroup = { 5, 9, 7, 8 }
 
@@ -150,7 +150,7 @@ function ENT:FireShot()
         --fire round
         local Miss = ents.Create( "ent_jack_turretrocket" )
         Miss.ParentLauncher = self
-        Miss:SetNWEntity( "Owenur", self )
+        Miss:SetNWEntity( "Owner", self )
         Miss:SetPos( SelfPos - self:GetRight() * 5 + Dir * 40 + Vector( 0, 0, 5 ) )
         local Ang = Dir:Angle()
         Ang:RotateAroundAxis( Ang:Up(), 90 )

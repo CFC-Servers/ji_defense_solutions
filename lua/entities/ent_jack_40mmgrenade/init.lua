@@ -55,7 +55,7 @@ function ENT:Detonate()
         if self.Type == "HE" then
             local explode = ents.Create( "env_explosion" )
             explode:SetPos( self:GetPos() )
-            explode:SetOwner( self:GetNWEntity( "Owenur" ) )
+            explode:SetOwner( self:GetNWEntity( "Owner" ) )
             explode:Spawn()
             explode:Activate()
             explode:SetKeyValue( "iMagnitude", "190" )
