@@ -4,6 +4,8 @@ AddCSLuaFile( "cl_init.lua" )
 AddCSLuaFile( "shared.lua" )
 include( "shared.lua" )
 
+util.AddNetworkString( "JID_ClaymoreNotify" )
+
 local PlantableMats = { MAT_WOOD, MAT_DIRT, MAT_SAND, MAT_SLOSH, MAT_FOLIAGE }
 
 function ENT:SpawnFunction( ply, tr )
@@ -21,25 +23,27 @@ function ENT:SpawnFunction( ply, tr )
 end
 
 function ENT:Initialize()
-    self:SetModel( "models/hunter/plates/plate025x025.mdl" )
-    self:SetColor( Color( 153, 147, 111 ) )
+    self:SetModel( "models/hunter/blocks/cube025x025x025.mdl" )
+    self:SetColor( Color( 153, 147, 111, 0 ) )
     self:SetRenderMode( RENDERMODE_TRANSALPHA )
     self:PhysicsInit( SOLID_VPHYSICS )
     self:SetMoveType( MOVETYPE_VPHYSICS )
     self:SetSolid( SOLID_VPHYSICS )
-    self:DrawShadow( true )
+    self:DrawShadow( false )
     self.Exploded = false
+
+    local TheAngle = self:GetAngles()
+    TheAngle:RotateAroundAxis( TheAngle:Right(), 90 )
+    local phys = self:GetPhysicsObject()
+
     self.PrettyModel = ents.Create( "prop_dynamic" )
     self.PrettyModel:SetPos( self:GetPos() + self:GetForward() * 6 )
     self.PrettyModel:SetModel( "models/Weapons/w_clayjore.mdl" )
     self.PrettyModel:SetMaterial( "models/mat_jack_claymore" )
-    local TheAngle = self:GetAngles()
-    TheAngle:RotateAroundAxis( TheAngle:Right(), 90 )
     self.PrettyModel:SetAngles( TheAngle )
     self.PrettyModel:SetParent( self )
     self.PrettyModel:Spawn()
     self.PrettyModel:Activate()
-    local phys = self:GetPhysicsObject()
 
     if phys:IsValid() then
         phys:Wake()
@@ -175,9 +179,10 @@ end
 
 function ENT:NotifySetup( ply )
     self.Activator = ply
-    umsg.Start( "JackaClaymoreNotify", ply )
-    umsg.Entity( ply )
-    umsg.End()
+
+    net.Start( "JID_ClaymoreNotify" )
+    net.Send( ply )
+
     numpad.OnDown( ply, KEY_PAD_0, "JackaClaymoreDet" )
     ply.JackaClaymoresCanFire = true
 end
