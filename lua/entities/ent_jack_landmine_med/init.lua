@@ -64,11 +64,9 @@ function ENT:Detonate()
     plooie:SetScale( .75 )
     plooie:SetRadius( EffectType )
     plooie:SetNormal( vector_up )
-    --util.Effect("eff_jack_minesplode_l",plooie,true,true)
     util.Effect( "eff_jack_minesplode", plooie, true, true )
 
-    --ParticleEffect("50lb_main",SelfPos,vector_up:Angle())
-    for key, playa in pairs( ents.FindInSphere( SelfPos, 50 ) ) do
+    for _, playa in pairs( ents.FindInSphere( SelfPos, 50 ) ) do
         local Clayus = playa:GetClass()
 
         if playa:IsPlayer() or playa:IsNPC() or Clayuss == "prop_vehicle_jeep" or Clayuss == "prop_vehicle_jeep" or Clayus == "prop_vehicle_airboat" then
@@ -101,7 +99,7 @@ function ENT:Detonate()
     end
 end
 
-function ENT:PhysicsCollide( data, physobj )
+function ENT:PhysicsCollide( data )
     if data.HitEntity:IsWorld() then
         self:StartTouch( data.HitEntity )
     end
@@ -139,14 +137,12 @@ function ENT:OnTakeDamage( dmginfo )
         self:TakePhysicsDamage( dmginfo )
     end
 
-    if self.Armed then
-        if math.random( 1, 15 ) == 3 then
-            self:Detonate()
-        end
+    if self.Armed and math.random( 1, 15 ) == 3 then
+        self:Detonate()
     end
 end
 
-function ENT:Use( activator, caller )
+function ENT:Use( activator )
     if not self.Armed then
         self:Arm()
         JID.genericUseEffect( activator )

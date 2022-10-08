@@ -9,9 +9,6 @@ function ENT:Initialize()
 end
 
 function ENT:Draw()
-    --local Matricks=Matrix()
-    --Matricks:Scale(Vector(.85,.85,.85))
-    --self:EnableMatrix("RenderMultiply",Matricks)
     self:DrawModel()
     self.Pin:SetRenderOrigin( self:GetPos() + self:GetRight() * 4 - self:GetForward() * 1 )
     local Ang = self:GetAngles()

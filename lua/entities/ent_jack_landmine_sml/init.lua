@@ -38,7 +38,7 @@ function ENT:Initialize()
     self:SetAngles( Angle( 90, 0, 0 ) )
 end
 
-function ENT:Detonate( toucher )
+function ENT:Detonate()
     if self.Exploded then return end
     self.Exploded = true
     local SelfPos = self:LocalToWorld( self:OBBCenter() )
@@ -137,14 +137,12 @@ function ENT:OnTakeDamage( dmginfo )
         self:TakePhysicsDamage( dmginfo )
     end
 
-    if self.Armed then
-        if math.random( 1, 15 ) == 3 then
-            self:Detonate()
-        end
+    if self.Armed and math.random( 1, 15 ) == 3 then
+        self:Detonate()
     end
 end
 
-function ENT:Use( activator, caller )
+function ENT:Use( activator )
     if not self.Armed then
         self:Arm()
         JID.genericUseEffect( activator )

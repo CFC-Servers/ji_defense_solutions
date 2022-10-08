@@ -38,18 +38,16 @@ function ENT:Initialize()
     self:SetAngles( Angle( 90, 0, 0 ) )
 end
 
-function ENT:Detonate( toucher )
+function ENT:Detonate()
     if self.Exploded then return end
     self.Exploded = true
     local SelfPos = self:LocalToWorld( self:OBBCenter() )
 
     for key, found in pairs( ents.FindInSphere( SelfPos, 75 ) ) do
-        if IsValid( found:GetPhysicsObject() ) then
-            if found:Visible( self ) then
-                if found:GetPhysicsObject():GetMass() < 1000 and not found.JackyArmoredPanel then
-                    constraint.RemoveAll( found )
-                    found:Fire( "enablemotion", 0, 0 )
-                end
+        if IsValid( found:GetPhysicsObject() ) and found:Visible( self ) then
+            if found:GetPhysicsObject():GetMass() < 1000 and not found.JackyArmoredPanel then
+                constraint.RemoveAll( found )
+                found:Fire( "enablemotion", 0, 0 )
             end
         end
     end
@@ -114,7 +112,7 @@ function ENT:Detonate( toucher )
     end
 end
 
-function ENT:PhysicsCollide( data, physobj )
+function ENT:PhysicsCollide( data )
     if data.HitEntity:IsWorld() then
         self:StartTouch( data.HitEntity )
     end
@@ -157,7 +155,7 @@ function ENT:OnTakeDamage( dmginfo )
     end
 end
 
-function ENT:Use( activator, caller )
+function ENT:Use( activator )
     if not self.Armed then
         self:Arm()
         JID.genericUseEffect( activator )

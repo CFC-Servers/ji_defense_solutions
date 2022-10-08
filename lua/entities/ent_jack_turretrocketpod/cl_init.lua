@@ -1,7 +1,7 @@
 include( "shared.lua" )
 
 function ENT:Draw()
-	self:DrawModel()
+    self:DrawModel()
 end
 
-language.Add("ent_jack_turretrocketpod","Sentry Rocket Pod")
+language.Add( "ent_jack_turretrocketpod", "Sentry Rocket Pod" )
