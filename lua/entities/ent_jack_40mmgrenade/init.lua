@@ -45,10 +45,10 @@ function ENT:Detonate()
     explode:Fire( "Explode", 0, 0 )
 
     for _ = 0, 30 do
-        local Trayuss = util.QuickTrace( pos, VectorRand() * 200, { self } )
+        local effectTrace = util.QuickTrace( pos, VectorRand() * 200, { self } )
 
-        if Trayuss.Hit then
-            util.Decal( "FadingScorch", Trayuss.HitPos + Trayuss.HitNormal, Trayuss.HitPos - Trayuss.HitNormal )
+        if effectTrace.Hit then
+            util.Decal( "FadingScorch", effectTrace.HitPos + effectTrace.HitNormal, effectTrace.HitPos - effectTrace.HitNormal )
         end
     end
 
