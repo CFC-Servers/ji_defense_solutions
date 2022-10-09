@@ -146,7 +146,7 @@ local function GetEntityVolume( ent )
         return 0
     end
 
-    local volume = Phys:GetVolume()
+    local volume = phys:GetVolume()
 
     if volume then
         local model = ent:GetModel()
@@ -154,7 +154,7 @@ local function GetEntityVolume( ent )
             return 0
         end
 
-        return Vol
+        return volume
     else
         return 0
     end
