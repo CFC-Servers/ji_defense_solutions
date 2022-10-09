@@ -1217,17 +1217,6 @@ local function IFFTag( ... )
     else
         ply:PrintMessage( HUD_PRINTCENTER, "You don't have an IFF tag equipped." )
     end
-
-    umsg.Start( "JackyIFFList" )
-    umsg.Entity( turret )
-    local lisd = ""
-
-    for _, tag in pairs( turret.IFFTags ) do
-        lisd = lisd .. " " .. tostring( tag )
-    end
-
-    umsg.String( lisd )
-    umsg.End()
 end
 
 concommand.Add( "JackaTurretIFF", IFFTag )

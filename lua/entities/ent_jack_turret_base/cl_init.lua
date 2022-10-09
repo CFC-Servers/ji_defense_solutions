@@ -36,20 +36,7 @@ function ENT:Initialize()
     self.Battery:SetNoDraw( true )
 
     self.AmmoPicID = surface.GetTextureID( self.AmmoPic )
-    self.IFFTags = {}
 end
-
-local function Receive( data )
-    local self = data:ReadEntity()
-    self.IFFTags = {}
-    local str = data:ReadString()
-
-    for key, tag in pairs( string.Split( str, " " ) ) do
-        table.ForceInsert( self.IFFTags, tonumber( tag ) )
-    end
-end
-
-usermessage.Hook( "JackyIFFList", Receive )
 
 function ENT:Draw()
     local OrigR, OrigG, OrigB = render.GetColorModulation()
