@@ -134,27 +134,30 @@ local function GetCenterMass( ent )
     return Pos
 end
 
-local function GetVolyum( ent )
-    local Phys = ent:GetPhysicsObject()
-    local Class = ent:GetClass()
+local function GetEntityVolume( ent )
+    local phys = ent:GetPhysicsObject()
+    local class = ent:GetClass()
     if ent:IsPlayer() then return 45000 end
 
-    if IsValid( Phys ) then
-        local Vol = Phys:GetVolume()
-
-        if Vol then
-            local Mod = ent:GetModel()
-            if Mod and string.find( Mod, "/gibs/" ) then return 0 end
-
-            return Vol
-        else
-            return 0
+    if not IsValid( phys ) then
+        if TARGET_TABLE[class] ~= nil then
+            return TARGET_TABLE[class]
         end
-    elseif TARGET_TABLE[Class] ~= nil then
-        return TARGET_TABLE[Class]
+        return 0
     end
 
-    return 0
+    local volume = Phys:GetVolume()
+
+    if volume then
+        local model = ent:GetModel()
+        if model and string.find( model, "/gibs/" ) then
+            return 0
+        end
+
+        return Vol
+    else
+        return 0
+    end
 end
 
 local function IsSynthetic( ent )
@@ -374,7 +377,7 @@ function ENT:Think()
     if State == TS_IDLING then
         if self.NextWatchTime < Time then
             for _, potential in pairs( ents.FindInSphere( SelfPos, self.MaxTrackRange ) ) do
-                if GetVolyum( potential ) > 0 and self:MotionCheck( potential ) and self:CanSee( potential ) then
+                if GetEntityVolume( potential ) > 0 and self:MotionCheck( potential ) and self:CanSee( potential ) then
                     local TrueVec = ( SelfPos - potential:GetPos() ):GetNormalized()
                     local LookVec = self:GetForward()
                     local DotProduct = LookVec:Dot( TrueVec )
@@ -515,7 +518,7 @@ function ENT:ScanForTarget()
     local BestCandidate = nil
 
     for _, potential in pairs( ents.FindInSphere( SelfPos, self.MaxTrackRange ) ) do
-        local Size = GetVolyum( potential )
+        local Size = GetEntityVolume( potential )
 
         if Size > 0 and self:WillTargetThisSize( Size ) then
             if not ( potential == self ) and not potential:IsWorld() and self:CanSee( potential ) then
