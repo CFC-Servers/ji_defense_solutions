@@ -512,84 +512,81 @@ function ENT:ClearHead()
     end
 end
 
-function ENT:ScanForTarget()
-    local SelfPos = self:GetShootPos()
-    local Closest = self.MaxTrackRange
-    local BestCandidate = nil
+local function IsBetterCanidate( turret, ent, shootPos, turretPos, closestCanidate )
+    if turret == ent then return end
+    if ent:IsWorld() then return end
+    if not turret:CanSee( ent ) then return end
 
-    for _, potential in pairs( ents.FindInSphere( SelfPos, self.MaxTrackRange ) ) do
-        local Size = GetEntityVolume( potential )
+    local size = GetEntityVolume( ent )
+    if size <= 0 then return end
+    if not turret:WillTargetThisSize( size ) then return end
 
-        if Size > 0 and self:WillTargetThisSize( Size ) then
-            if not ( potential == self ) and not potential:IsWorld() and self:CanSee( potential ) then
-                local Synth = IsSynthetic( potential )
+    local synthetic = IsSynthetic( ent )
 
-                if Synth and self.TargetSynthetics or not Synth and self.TargetOrganics then
-                    local TargPos = potential:GetPos()
-                    local Ang = ( TargPos - SelfPos ):GetNormalized():Angle()
-                    local TargAng = self:WorldToLocalAngles( Ang )
+    if not ( synthetic and turret.TargetSynthetics or not synthethic and turret.TargetOrganics ) then return end
 
-                    if TargAng.y > -90 and TargAng.y < 90 and TargAng.p > -90 and TargAng.p < 90 then
-                        local Dist = ( TargPos - SelfPos ):Length()
+    local targetPos = ent:GetPos()
+    local ang = ( targetPos - shootPos ):GetNormalized():Angle()
 
-                        if Dist < Closest then
-                            if Synth then
-                                if self:MotionCheck( potential ) then
-                                    BestCandidate = potential
-                                    Closest = Dist
-                                end
-                            elseif string.find( potential:GetClass(), "ragdoll" ) then
-                                if self:MotionCheck( potential ) then
-                                    BestCandidate = potential
-                                    Closest = Dist
-                                end
-                            elseif potential:IsPlayer() then
-                                local Tag = potential:GetNWInt( "JackyIFFTag" )
+    local distance = ( targetPos - turretPos ):Length()
+    if distance > closestCanidate then return end
 
-                                if Tag and Tag ~= 0 then
-                                    if table.HasValue( self.IFFTags, Tag ) then
-                                        if math.random( 1, 3 ) == 2 then
-                                            self:FriendlyAlert()
-                                        end
-                                    else
-                                        BestCandidate = potential
-                                        Closest = Dist
-                                    end
-                                else
-                                    BestCandidate = potential
-                                    Closest = Dist
-                                end
-                            else
-                                BestCandidate = potential
-                                Closest = Dist
-                            end
-                        end
-                    end
+    local targetAngle = turret:WorldToLocalAngles( ang )
+
+    if targetAngle.y <= -90 then return end
+    if targetAngle.y >= 90 then return end
+    if targetAngle.p <= -90 then return end
+    if targetAngle.p >= 90 then return end
+
+
+    if synthetic and turret:MotionCheck( ent ) then
+        return ent, distance
+    end
+
+    if ent:IsPlayer() then
+        local tag = ent:GetNWInt( "JackyIFFTag" )
+
+        if tag and tag ~= 0 then
+            if table.HasValue( turret.IFFTags, tag ) then
+                if math.random( 1, 3 ) == 2 then
+                    turret:FriendlyAlert()
                 end
+            else
+                return ent, distance
             end
+        else
+            return ent, distance
+        end
+    end
+
+    return ent, distance
+end
+
+function ENT:ScanForTarget()
+    local shootPos = self:GetShootPos()
+    local closestCanidate = self.MaxTrackRange
+    local turretPos = self:GetPos()
+    local bestTarget = nil
+
+    for _, potential in pairs( ents.FindInSphere( turretPos, self.MaxTrackRange ) ) do
+        local betterCanidate, canidateDistance = IsBetterCanidate( self, potential, shootPos, turretPos, closestCanidate )
+        if betterCanidate then
+            bestTarget = betterCanidate
+            closestCanidate = canidateDistance
         end
     end
 
     self.BatteryCharge = self.BatteryCharge - self.MaxTrackRange / 2000
 
-    if BestCandidate then
-        if BestCandidate == self.CurrentTarget and self.FiredAtCurrentTarget and not self:MotionCheck( BestCandidate ) then
+    if bestTarget then
+        if bestTarget == self.CurrentTarget and self.FiredAtCurrentTarget and not self:MotionCheck( bestTarget ) then
             return nil
-        elseif BestCandidate ~= self.CurrentTarget then
+        elseif bestTarget ~= self.CurrentTarget then
             self.FiredAtCurrentTarget = false
-        end
-
-        if BestCandidate:IsPlayer() then
-            local Tag = BestCandidate:GetNWInt( "JackyIFFTag" )
-
-            if Tag and Tag ~= 0 and table.HasValue( self.IFFTags, Tag ) then
-                self:FriendlyAlert()
-                return nil
-            end
         end
     end
 
-    return BestCandidate
+    return bestTarget
 end
 
 function ENT:MotionCheck( ent )
