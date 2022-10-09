@@ -51,6 +51,9 @@ end
 
 usermessage.Hook( "JackyIFFList", Receive )
 
+net.Receive( "JID_IFFList", function()
+end )
+
 function ENT:Draw()
     local OrigR, OrigG, OrigB = render.GetColorModulation()
     local SelfPos = self:GetPos()
