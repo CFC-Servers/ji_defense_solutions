@@ -1029,7 +1029,7 @@ function ENT:Fix( kit )
 end
 
 function ENT:FindRepairKit()
-    for _, potential in pairs( ents.FindInSphere( self:GetPos(), 40 ) ) do
+    for _, potential in pairs( ents.FindInSphere( self:GetPos(), 100 ) ) do
         if potential:GetClass() == "ent_jack_turretrepairkit" then return potential end
     end
 
