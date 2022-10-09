@@ -873,18 +873,17 @@ end
 function ENT:StandBy()
     self:SetDTInt( 0, TS_IDLING )
 
-    if self.WeaponOut then
-        self:ResetSequence( 0 )
+    if not self.WeaponOut then return end
+    self:ResetSequence( 0 )
 
-        if not ( self.AmmoType == "AAmissile" or self.AmmoType == "ATrocket" ) then
-            self:EmitSound( "snd_jack_turretasleep.mp3", 70, 100 )
-        end
-
-        self.WeaponOut = false
-        self.BatteryCharge = self.BatteryCharge - .5 * self.MechanicsSizeMod
-        SafeRemoveEntity( self.flashlight )
-        self:SetDTBool( 3, false )
+    if not ( self.AmmoType == "AAmissile" or self.AmmoType == "ATrocket" ) then
+        self:EmitSound( "snd_jack_turretasleep.mp3", 70, 100 )
     end
+
+    self.WeaponOut = false
+    self.BatteryCharge = self.BatteryCharge - .5 * self.MechanicsSizeMod
+    SafeRemoveEntity( self.flashlight )
+    self:SetDTBool( 3, false )
 end
 
 function ENT:CanSee( ent )
@@ -937,6 +936,7 @@ function ENT:DetachAmmoBox()
     self.RoundsOnBelt = 0
     self.HasAmmoBox = false
     self:SetDTBool( 0, self.HasAmmoBox )
+
     local Box = ents.Create( BOXES[self.AmmoType] )
     Box.AmmoType = self.AmmoType
     Box.Empty = true
@@ -944,6 +944,7 @@ function ENT:DetachAmmoBox()
     Box:SetAngles( self:GetRight():Angle() )
     Box:Spawn()
     Box:Activate()
+
     self:EmitSound( "snd_jack_turretammounload.mp3" )
     SafeRemoveEntityDelayed( Box, 30 )
 end
@@ -968,7 +969,9 @@ function ENT:RefillPower( box )
     self:SetDTBool( 1, self.HasBattery )
     self.BatteryCharge = self.MaxCharge
     self:SetDTInt( 2, math.Round( self.BatteryCharge / self.MaxCharge * 100 ) )
+
     SafeRemoveEntity( box )
+
     self:SetDTBool( 3, false )
     self:EmitSound( "snd_jack_turretbatteryload.mp3" )
 end
@@ -977,12 +980,14 @@ function ENT:DetachBattery()
     self.BatteryCharge = 0
     self.HasBattery = false
     self:SetDTBool( 1, self.HasBattery )
+
     local Box = ents.Create( "ent_jack_turretbattery" )
     Box.Dead = true
     Box:SetPos( self:GetPos() + self:GetRight() * 10 + self:GetUp() * 10 )
     Box:SetAngles( self:GetForward():Angle() )
     Box:Spawn()
     Box:Activate()
+
     self:EmitSound( "snd_jack_turretbatteryunload.mp3" )
 end
 
@@ -997,17 +1002,16 @@ function ENT:FindBattery()
 end
 
 function ENT:Break()
-    if not self.Broken then
-        self:EmitSound( "snd_jack_turretbreak.mp3" )
-        self.Broken = true
-        self:SetDTInt( 0, TS_NOTHING )
-        self.IsLocked = false
-        self.LockPass = ""
-        self.CurrentTarget = nil
+    if self.Broken then return end
+    self:EmitSound( "snd_jack_turretbreak.mp3" )
+    self.Broken = true
+    self:SetDTInt( 0, TS_NOTHING )
+    self.IsLocked = false
+    self.LockPass = ""
+    self.CurrentTarget = nil
 
-        SafeRemoveEntity( self.flashlight )
-        self:SetDTBool( 3, false )
-    end
+    SafeRemoveEntity( self.flashlight )
+    self:SetDTBool( 3, false )
 end
 
 function ENT:Fix( kit )
@@ -1031,6 +1035,7 @@ function ENT:Fix( kit )
     Empty:SetCollisionGroup( COLLISION_GROUP_WEAPON )
     Empty:GetPhysicsObject():ApplyForceCenter( Vector( 0, 0, 1000 ) )
     Empty:GetPhysicsObject():AddAngleVelocity( VectorRand() * 1000 )
+
     SafeRemoveEntityDelayed( Empty, 20 )
     SafeRemoveEntity( kit )
 end
@@ -1080,7 +1085,7 @@ end
 
 hook.Add( "PlayerSay", "JackaSentryChat", SentryChat )
 
-local function CloseOn( ... )
+local function closeOn( ... )
     local args = { ... }
 
     local turret = Entity( tonumber( args[3][1] ) )
@@ -1093,9 +1098,9 @@ local function CloseOn( ... )
     end
 end
 
-concommand.Add( "JackaTurretCloseMenu_On", CloseOn )
+concommand.Add( "JackaTurretCloseMenu_On", closeOn )
 
-local function CloseOff( ... )
+local function closeOff( ... )
     local args = { ... }
 
     local turret = Entity( tonumber( args[3][1] ) )
@@ -1108,9 +1113,9 @@ local function CloseOff( ... )
     end
 end
 
-concommand.Add( "JackaTurretCloseMenu_Off", CloseOff )
+concommand.Add( "JackaTurretCloseMenu_Off", closeOff )
 
-local function CloseCancel( ... )
+local function closeCancel( ... )
     local args = { ... }
 
     local turret = Entity( tonumber( args[3][1] ) )
@@ -1118,9 +1123,9 @@ local function CloseCancel( ... )
     turret.MenuOpen = false
 end
 
-concommand.Add( "JackaTurretCloseMenu_Cancel", CloseCancel )
+concommand.Add( "JackaTurretCloseMenu_Cancel", closeCancel )
 
-local function Ammo( ... )
+local function addAmmo( ... )
     local args = { ... }
 
     local turret = Entity( tonumber( args[3][1] ) )
@@ -1169,9 +1174,9 @@ local function Ammo( ... )
     turret.MenuOpen = false
 end
 
-concommand.Add( "JackaTurretAmmo", Ammo )
+concommand.Add( "JackaTurretAmmo", addAmmo )
 
-local function TargetingGroup( ... )
+local function targetingGroup( ... )
     local args = { ... }
 
     local turret = Entity( tonumber( args[3][1] ) )
@@ -1187,9 +1192,9 @@ local function TargetingGroup( ... )
     turret:EmitSound( "snd_jack_uiselect.mp3", 65, 100 )
 end
 
-concommand.Add( "JackaTurretTargetingChange", TargetingGroup )
+concommand.Add( "JackaTurretTargetingChange", targetingGroup )
 
-local function TargetingGroupType( ... )
+local function targetingGroupType( ... )
     local args = { ... }
 
     local turret = Entity( tonumber( args[3][1] ) )
@@ -1199,7 +1204,7 @@ local function TargetingGroupType( ... )
     turret:EmitSound( "snd_jack_uiselect.mp3", 65, 100 )
 end
 
-concommand.Add( "JackaTurretTargetingTypeChange", TargetingGroupType )
+concommand.Add( "JackaTurretTargetingTypeChange", targetingGroupType )
 
 local function IFFTag( ... )
     local args = { ... }
@@ -1228,7 +1233,7 @@ end
 
 concommand.Add( "JackaTurretIFF", IFFTag )
 
-local function Warn( ... )
+local function warn( ... )
     local args = { ... }
 
     local turret = Entity( tonumber( args[3][1] ) )
@@ -1237,9 +1242,9 @@ local function Warn( ... )
     turret:EmitSound( "snd_jack_uiselect.mp3", 65, 100 )
 end
 
-concommand.Add( "JackaTurretWarn", Warn )
+concommand.Add( "JackaTurretWarn", warn )
 
-local function Light( ... )
+local function light( ... )
     local args = { ... }
 
     local turret = Entity( tonumber( args[3][1] ) )
@@ -1248,9 +1253,9 @@ local function Light( ... )
     turret:EmitSound( "snd_jack_uiselect.mp3", 65, 100 )
 end
 
-concommand.Add( "JackaTurretLight", Light )
+concommand.Add( "JackaTurretLight", light )
 
-local function Battery( ... )
+local function addBattery( ... )
     local args = { ... }
 
     local turret = Entity( tonumber( args[3][1] ) )
@@ -1280,9 +1285,9 @@ local function Battery( ... )
     turret.MenuOpen = false
 end
 
-concommand.Add( "JackaTurretBattery", Battery )
+concommand.Add( "JackaTurretBattery", addBattery )
 
-local function Upright( ... )
+local function upright( ... )
     local args = { ... }
 
     local ply = args[1]
@@ -1305,4 +1310,4 @@ local function Upright( ... )
     turret.MenuOpen = false
 end
 
-concommand.Add( "JackaTurretUpright", Upright )
+concommand.Add( "JackaTurretUpright", upright )
