@@ -192,7 +192,7 @@ function ENT:Initialize()
     self:SetDTInt( 0, TS_NOTHING )
     self:ResetSequence( 0 )
     self:ManipulateBoneScale( 0, Vector( 1.5, 1.1, 1 ) )
-    self:ManipulateBoneScale( 3, self.BarrelSizeMod )
+    self:SetNWVector( "BarrelSizeMod", self.BarrelSizeMod )
     self:ManipulateBoneScale( 1, Vector( self.MechanicsSizeMod, 1, 1 ) )
 
     if self.AmmoType == "AAmissile" or self.AmmoType == "ATrocket" then
@@ -748,11 +748,11 @@ function ENT:FireShot()
         muzzleFlash:SetAngles( PosAng.Ang )
         muzzleFlash:SetFlags( 1 )
         util.Effect( "MuzzleFlash", muzzleFlash, true, true )
-        self:ManipulateBoneScale( 3, Vector( self.BarrelSizeMod.x, self.BarrelSizeMod.y, self.BarrelSizeMod.z * .75 ) )
+        self:SetNWVector( "BarrelSizeMod", Vector( self.BarrelSizeMod.x, self.BarrelSizeMod.y, self.BarrelSizeMod.z * .75 ) )
 
         timer.Simple( .1, function()
             if IsValid( self ) then
-                self:ManipulateBoneScale( 3, self.BarrelSizeMod )
+                self:SetNWVector( "BarrelSizeMod", self.BarrelSizeMod )
             end
         end )
 

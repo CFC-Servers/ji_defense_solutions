@@ -88,6 +88,13 @@ function ENT:Draw()
         self:ManipulateBoneAngles( 2, Angle( 0, 0, currentSwing ) )
     end
 
+    local currentBarrelSizeMod = self:GetNWVector( "BarrelSizeMod" )
+
+    if currentBarrelSizeMod ~= self.LastBarrelSizeMod then
+        self.LastBarrelSizeMod = currentBarrelSizeMod
+        self:ManipulateBoneScale( 3, currentBarrelSizeMod )
+    end
+
     if State == 2 or State == 3 or State == 4 then
         Ang:RotateAroundAxis( Ang:Forward(), math.sin( CurTime() * 7 ) * 90 )
     else
