@@ -887,16 +887,16 @@ function ENT:StandBy()
 end
 
 function ENT:CanSee( ent )
-    local TrDat = {}
-    TrDat.start = self:GetShootPos()
-    TrDat.endpos = ent:LocalToWorld( ent:OBBCenter() ) + Vector( 0, 0, 5 )
+    local traceTable = {
+        start = self:GetShootPos(),
+        endpos = ent:WorldSpaceCenter(),
+        filter = { self, ent },
+        mask = MASK_SHOT
+    }
 
-    TrDat.filter = { self, ent }
+    local traceResult = util.TraceLine( traceTable )
 
-    TrDat.mask = MASK_SHOT
-    local Tr = util.TraceLine( TrDat )
-
-    return not Tr.Hit
+    return not traceResult.Hit
 end
 
 function ENT:HardShutDown()
