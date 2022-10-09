@@ -922,7 +922,7 @@ end
 
 function ENT:FindAmmo()
     for _, potential in pairs( ents.FindInSphere( self:GetPos(), 40 ) ) do
-        if potential:GetClass() == BOXES[self.AmmoType] and potential.Empty then
+        if potential:GetClass() == BOXES[self.AmmoType] and not potential.Empty then
             return potential
         end
     end
@@ -1147,6 +1147,8 @@ local function Ammo( ... )
         if turret.RoundsOnBelt <= 0 then
             if not turret.HasAmmoBox then
                 local Box = turret:FindAmmo()
+
+                print( Box )
 
                 if IsValid( Box ) then
                     turret:RefillAmmo( Box )
