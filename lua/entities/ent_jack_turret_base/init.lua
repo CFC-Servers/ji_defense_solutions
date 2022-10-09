@@ -158,19 +158,14 @@ local function GetVolyum( ent )
 end
 
 local function IsSynthetic( ent )
-    local Tr = util.QuickTrace( ent:GetPos(), Vector( 0, 0, 500 ), nil )
+    local mat = ent:GetMaterialType()
 
-    if Tr.Hit then
-        if ORGANIC_TABLE[Tr.MatType] then
-            return false
-        elseif SYNTHETIC_TABLE[Tr.MatType] then
-            return true
-        else
-            return false
-        end
-    else
+    if ORGANIC_TABLE[mat] then
+        return false
+    elseif SYNTHETIC_TABLE[mat] then
         return true
     end
+    return false
 end
 
 function ENT:ExternalCharge( amt )
