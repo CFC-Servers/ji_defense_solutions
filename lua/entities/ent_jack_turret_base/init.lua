@@ -299,75 +299,6 @@ function ENT:Use( activator, caller )
     end
 end
 
-function ENT:TakeNegativeInputs( key )
-    if self.Broken then return end
-    if self:GetDTInt( 0 ) == TS_NOTHING then return end
-    local Time = CurTime()
-
-    if key == IN_ATTACK2 then
-        self.ControllingPly:SetFOV( 90, .1 )
-
-        for i = 0, 10 do
-            self:EmitSound( "snd_jack_turretservo.mp3", 70, 70 + i )
-        end
-    end
-end
-
-function ENT:TakeInputs( key )
-    if self.Broken then return end
-    local Time = CurTime()
-
-    if key == IN_JUMP then
-        JackaSentryControlWipe( self.ControllingPly, self.ControllingTerminal, self )
-
-        return
-    end
-
-    if self:GetDTInt( 0 ) == TS_NOTHING then return end
-
-    if key == IN_RELOAD then
-        self.NextGunChangeTime = Time + .5
-
-        if self.WeaponOut then
-            self:StandBy()
-        else
-            self:Alert()
-        end
-    elseif key == IN_ATTACK then
-        if self.WeaponOut then
-            if self.NextShotTime < Time then
-                self:FireShot()
-                self.NextShotTime = Time + 1 / self.FireRate
-            end
-        else
-            if self.NextWarnTime < Time then
-                self:HostileAlert()
-                self.NextWarnTime = Time + 1
-            end
-        end
-    elseif key == IN_ATTACK2 then
-        self.ControllingPly:SetFOV( 4, .1 )
-
-        for i = 0, 10 do
-            self:EmitSound( "snd_jack_turretservo.mp3", 70, 70 + i )
-        end
-    elseif key == IN_USE then
-        local Mode = self:GetDTInt( 3 )
-
-        if Mode == 2 then
-            Mode = -1
-        end
-
-        self:SetDTInt( 3, Mode + 1 )
-
-        if Mode + 1 == 0 then
-            self:EmitSound( "snd_jack_displaysoff.mp3", 70, 100 )
-        else
-            self:EmitSound( "snd_jack_displayson.mp3", 70, 100 )
-        end
-    end
-end
-
 function ENT:Think()
     self.Heat = self.Heat - .01
 
@@ -424,41 +355,6 @@ function ENT:Think()
             self:Whine()
             self.NextBatteryAlertTime = Time + 4.75
         end
-    end
-
-    if self.ControllingPly and IsValid( self.ControllingPly ) then
-        self:SetDTInt( 0, TS_IDLING )
-        self.BatteryCharge = self.BatteryCharge - .01
-        self:SetDTInt( 2, math.Round( self.BatteryCharge / self.MaxCharge * 100 ) )
-        local Fast = self.ControllingPly:KeyDown( IN_SPEED )
-        local Slow = self.ControllingPly:KeyDown( IN_ATTACK2 )
-
-        if self.ControllingPly:KeyDown( IN_MOVERIGHT ) then
-            self:TraverseManually( 1, 0, Fast, Slow )
-        elseif self.ControllingPly:KeyDown( IN_MOVELEFT ) then
-            self:TraverseManually( -1, 0, Fast, Slow )
-        end
-
-        if self.ControllingPly:KeyDown( IN_FORWARD ) then
-            self:TraverseManually( 0, 1, Fast, Slow )
-        elseif self.ControllingPly:KeyDown( IN_BACK ) then
-            self:TraverseManually( 0, -1, Fast, Slow )
-        end
-
-        if not WeAreClear then
-            JackaSentryControlWipe( self.ControllingPly, self.ControllingTerminal, self )
-        end
-
-        if self.NextShotTime < Time and self.WeaponOut then
-            if self.Automatic and self.ControllingPly:KeyDown( IN_ATTACK ) then
-                self:FireShot()
-                self.NextShotTime = Time + 1 / self.FireRate * math.Rand( .9, 1.1 )
-            end
-        end
-
-        self:NextThink( CurTime() + .02 )
-
-        return true
     end
 
     if not ( State == TS_WHINING ) then
@@ -590,10 +486,6 @@ function ENT:Think()
 end
 
 function ENT:OnRemove()
-    if self.ControllingPly then
-        JackaSentryControlWipe( self.ControllingPly, self.ControllingTerminal, self )
-    end
-
     SafeRemoveEntity( self.flashlight )
     self:SetDTBool( 3, false )
 end
@@ -771,8 +663,7 @@ function ENT:Alert( targ )
         timer.Simple( .4 / self.TrackRate, function()
             if IsValid( self ) and IsValid( self.CurrentTarget ) then
                 self:SetDTInt( 0, TS_TRACKING )
-                --self.NextScanTime=CurTime()+(1/self.ScanRate)*2
-            elseif IsValid( self ) and not self.ControllingPly then
+            elseif IsValid( self ) then
                 self:StandBy()
             end
         end )
@@ -882,16 +773,12 @@ function ENT:TraverseManually( horiz, vert, fast, slow )
 end
 
 function ENT:FireShot()
-    if not IsValid( self.CurrentTarget ) and not self.ControllingPly then
-        self:StandBy()
-
-        return
-    end
+    self:StandBy()
 
     local Time = CurTime()
     self.BatteryCharge = self.BatteryCharge - .1
 
-    if self.WillWarn and not self.ControllingPly then
+    if self.WillWarn then
         if not ( self.NextAlrightFuckYouTime < Time ) then
             if self.NextWarnTime < Time then
                 self:HostileAlert()
@@ -929,28 +816,18 @@ function ENT:FireShot()
         local SelfPos = self:GetShootPos()
         local TargPos
 
-        if self.ControllingPly then
-            local PosAng = self:GetAttachment( 1 )
-            TargPos = SelfPos + PosAng.Ang:Forward()
-        else
-            TargPos = GetCenterMass( self.CurrentTarget )
-        end
+        TargPos = GetCenterMass( self.CurrentTarget )
 
         local Dir = ( TargPos - SelfPos ):GetNormalized()
         local Spred = self.ShotSpread
+        local Phys = self.CurrentTarget:GetPhysicsObject()
 
-        if not self.ControllingPly then
-            local Phys = self.CurrentTarget:GetPhysicsObject()
+        if IsValid( Phys ) then
+            local RelSpeed = ( Phys:GetVelocity() - self:GetPhysicsObject():GetVelocity() ):Length()
 
-            if IsValid( Phys ) then
-                local RelSpeed = ( Phys:GetVelocity() - self:GetPhysicsObject():GetVelocity() ):Length()
-
-                if not ( self:GetClass() == "ent_jack_turret_shotty" ) then
-                    Spred = Spred + RelSpeed / 100000
-                end
+            if not ( self:GetClass() == "ent_jack_turret_shotty" ) then
+                Spred = Spred + RelSpeed / 100000
             end
-        else
-            Spred = Spred * .4
         end
 
         local Bellit = {
@@ -1082,10 +959,6 @@ function ENT:HardShutDown()
     self:GetPhysicsObject():SetDamping( 0, 0 )
     self.CurrentTarget = nil
 
-    if self.ControllingPly then
-        JackaSentryControlWipe( self.ControllingPly, self.ControllingTerminal, self )
-    end
-
     SafeRemoveEntity( self.flashlight )
     self:SetDTBool( 3, false )
 end
@@ -1184,10 +1057,6 @@ function ENT:Break()
         self.IsLocked = false
         self.LockPass = ""
         self.CurrentTarget = nil
-
-        if self.ControllingPly then
-            JackaSentryControlWipe( self.ControllingPly, self.ControllingTerminal, self )
-        end
 
         SafeRemoveEntity( self.flashlight )
         self:SetDTBool( 3, false )

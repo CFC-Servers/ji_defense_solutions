@@ -95,16 +95,11 @@ end
 
 function ENT:FireShot()
     if self.MissileLocked then return end
-
-    if not IsValid( self.CurrentTarget ) and not self.ControllingPly then
-        self:StandBy()
-
-        return
-    end
+    self:StandBy()
 
     self.BatteryCharge = self.BatteryCharge - .1
 
-    if self.WillWarn and not self.ControllingPly then
+    if self.WillWarn then
         if not ( self.NextAlrightFuckYouTime < CurTime() ) then
             if self.NextWarnTime < CurTime() then
                 self:HostileAlert()
@@ -119,39 +114,19 @@ function ENT:FireShot()
         local LockChance = .25
 
         if math.Rand( 0, 1 ) < LockChance then
-            if self.ControllingPly then
-                local Ent = util.QuickTrace( self:GetShootPos(), self:GetAttachment( 1 ).Ang:Forward() * 40000, { self } ).Entity
+            if IsValid( self.CurrentTarget ) then
+                self:EmitSound( "snd_jack_missilelock.mp3", 75, 100 )
+                self.MissileLocked = true
 
-                if IsValid( Ent ) and not Ent:IsWorld() then
-                    self.CurrentTarget = Ent
-                    self:EmitSound( "snd_jack_missilelock.mp3", 75, 100 )
-                    self.MissileLocked = true
-
-                    timer.Simple( 1, function()
-                        if IsValid( self ) then
-                            if IsValid( self.CurrentTarget ) then
-                                self:FireMissal()
-                            end
-
-                            self.MissileLocked = false
+                timer.Simple( 1, function()
+                    if IsValid( self ) then
+                        if IsValid( self.CurrentTarget ) then
+                            self:FireMissal()
                         end
-                    end )
-                end
-            else
-                if IsValid( self.CurrentTarget ) then
-                    self:EmitSound( "snd_jack_missilelock.mp3", 75, 100 )
-                    self.MissileLocked = true
 
-                    timer.Simple( 1, function()
-                        if IsValid( self ) then
-                            if IsValid( self.CurrentTarget ) then
-                                self:FireMissal()
-                            end
-
-                            self.MissileLocked = false
-                        end
-                    end )
-                end
+                        self.MissileLocked = false
+                    end
+                end )
             end
         else
             self:EmitSound( "snd_jack_missilesearch.mp3", 75, 100 )

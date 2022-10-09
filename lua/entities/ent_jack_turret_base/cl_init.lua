@@ -17,20 +17,24 @@ function ENT:Initialize()
     self.Camera:SetPos( self:GetPos() )
     self.Camera:SetParent( self )
     self.Camera:SetNoDraw( true )
+
     self.CameraPost = ClientsideModel( "models/props_c17/TrapPropeller_Lever.mdl" )
     self.CameraPost:SetPos( self:GetPos() )
     self.CameraPost:SetParent( self )
     self.CameraPost:SetNoDraw( true )
+
     self.AmmoBox = ClientsideModel( "models/Items/BoxSRounds.mdl" )
     self.AmmoBox:SetMaterial( self.AmmoBoxSkin )
     self.AmmoBox:SetPos( self:GetPos() )
     self.AmmoBox:SetParent( self )
     self.AmmoBox:SetNoDraw( true )
+
     self.Battery = ClientsideModel( "models/Items/car_battery01.mdl" )
     self.Battery:SetMaterial( "models/mat_jack_turretbattery" )
     self.Battery:SetPos( self:GetPos() )
     self.Battery:SetParent( self )
     self.Battery:SetNoDraw( true )
+
     self.AmmoPicID = surface.GetTextureID( self.AmmoPic )
     self.IFFTags = {}
 end

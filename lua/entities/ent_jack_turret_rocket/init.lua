@@ -103,15 +103,11 @@ function ENT:GetCenterMassOf( ent )
 end
 
 function ENT:FireShot()
-    if not IsValid( self.CurrentTarget ) and not self.ControllingPly then
-        self:StandBy()
-
-        return
-    end
+    self:StandBy()
 
     self.BatteryCharge = self.BatteryCharge - .1
 
-    if self.WillWarn and not self.ControllingPly then
+    if self.WillWarn then
         if not ( self.NextAlrightFuckYouTime < CurTime() ) then
             if self.NextWarnTime < CurTime() then
                 self:HostileAlert()
@@ -126,11 +122,7 @@ function ENT:FireShot()
         local SelfPos = self:GetPos() + self:GetUp() * 55
         local TargPos
 
-        if self.ControllingPly then
-            TargPos = self:GetShootPos() + self:GetAttachment( 1 ).Ang:Forward() * 2000
-        else
-            TargPos = self:GetCenterMassOf( self.CurrentTarget )
-        end
+        TargPos = self:GetCenterMassOf( self.CurrentTarget )
 
         local Dist = ( self:GetPos() - TargPos ):Length()
 
