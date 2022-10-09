@@ -729,49 +729,6 @@ function ENT:Traverse()
     end
 end
 
-function ENT:TraverseManually( horiz, vert, fast, slow )
-    local PowerDrain = .2 * self.TrackRate * self.MechanicsSizeMod ^ 1.5
-    local Mul = .5
-
-    if fast then
-        Mul = Mul * 2
-    end
-
-    if slow then
-        Mul = Mul * .125
-    end
-
-    if horiz > 0 and self.CurrentSweep > -90 then
-        self.CurrentSweep = self.CurrentSweep - self.TrackRate * Mul
-        self:EmitSound( "snd_jack_turretservo.mp3", 66, 90 + 10 * Mul )
-        self.BatteryCharge = self.BatteryCharge - PowerDrain
-    elseif horiz < 0 and self.CurrentSweep < 90 then
-        self.CurrentSweep = self.CurrentSweep + self.TrackRate * Mul
-        self:EmitSound( "snd_jack_turretservo.mp3", 66, 90 + 10 * Mul )
-        self.BatteryCharge = self.BatteryCharge - PowerDrain
-    end
-
-    if vert > 0 and self.CurrentSwing > -90 then
-        self.CurrentSwing = self.CurrentSwing - self.TrackRate * .6667 * Mul
-        self:EmitSound( "snd_jack_turretservo.mp3", 66, 100 + 10 * Mul )
-        self.BatteryCharge = self.BatteryCharge - PowerDrain
-    elseif vert < 0 and self.CurrentSwing < 90 then
-        self.CurrentSwing = self.CurrentSwing + self.TrackRate * .6667 * Mul
-        self:EmitSound( "snd_jack_turretservo.mp3", 66, 100 + 10 * Mul )
-        self.BatteryCharge = self.BatteryCharge - PowerDrain
-    end
-
-    self:SetDTInt( 1, self.CurrentSweep )
-    self:SetNetworkedFloat( "CurrentSweep", self.CurrentSweep )
-    self:SetNetworkedFloat( "CurrentSwing", self.CurrentSwing )
-    self:ManipulateBoneAngles( 1, Angle( self.CurrentSweep, 0, 0 ) )
-    self:ManipulateBoneAngles( 2, Angle( 0, 0, self.CurrentSwing ) )
-
-    if IsValid( self.flashlight ) then
-        self.flashlight:SetLocalAngles( self:WorldToLocalAngles( self:GetAttachment( 1 ).Ang ) )
-    end
-end
-
 function ENT:FireShot()
     self:StandBy()
 
