@@ -917,7 +917,7 @@ function ENT:StartUp()
 end
 
 function ENT:FindAmmo()
-    for _, potential in pairs( ents.FindInSphere( self:GetPos(), 40 ) ) do
+    for _, potential in pairs( ents.FindInSphere( self:GetPos(), 100 ) ) do
         if potential:GetClass() == BOXES[self.AmmoType] and not potential.Empty then
             return potential
         end
@@ -980,7 +980,7 @@ function ENT:DetachBattery()
 end
 
 function ENT:FindBattery()
-    for _, potential in pairs( ents.FindInSphere( self:GetPos(), 40 ) ) do
+    for _, potential in pairs( ents.FindInSphere( self:GetPos(), 100 ) ) do
         if potential:GetClass() == "ent_jack_turretbattery" and not potential.Dead then
             return potential
         end
