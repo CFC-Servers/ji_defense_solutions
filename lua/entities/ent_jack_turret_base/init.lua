@@ -39,7 +39,6 @@ local TARGET_TABLE = {
     ["npc_combinegunship"] = 900000
 }
 
-local NO_TARGET_TABLE = {}
 local TS_NOTHING = 0
 local TS_IDLING = 1
 local TS_WATCHING = 2
@@ -132,7 +131,7 @@ local function GetVolyum( ent )
         else
             return 0
         end
-    elseif not ( TARGET_TABLE[Class] == nil ) then
+    elseif TARGET_TABLE[Class] ~= nil then
         return TARGET_TABLE[Class]
     end
 
@@ -166,7 +165,7 @@ function ENT:ExternalCharge( amt )
 end
 
 function ENT:WillTargetThisSize( siz )
-    for key, grp in pairs( self.TargetingGroup ) do
+    for _, grp in pairs( self.TargetingGroup ) do
         if siz > HULL_SIZE_TABLE[grp][1] and siz <= HULL_SIZE_TABLE[grp][2] then return true end
     end
 
@@ -210,11 +209,9 @@ function ENT:GetShootPos()
     return self:GetPos() + self:GetUp() * 55 + self:GetForward() * 5
 end
 
-function ENT:PhysicsCollide( data, physobj )
-    if data.Speed > 80 and data.DeltaTime > 0.2 then
-        if IsValid( self ) then
-            self:EmitSound( "Canister.ImpactHard" )
-        end
+function ENT:PhysicsCollide( data )
+    if data.Speed > 80 and data.DeltaTime > 0.2 and IsValid( self ) then
+        self:EmitSound( "Canister.ImpactHard" )
     end
 
     if data.Speed > 750 then
@@ -225,10 +222,8 @@ function ENT:PhysicsCollide( data, physobj )
         end
     end
 
-    if data.Speed < 20 then
-        if self:GetDTInt( 0 ) == TS_IDLING then
-            self:Notice()
-        end
+    if data.Speed < 20 and self:GetDTInt( 0 ) == TS_IDLING then
+        self:Notice()
     end
 end
 
@@ -248,7 +243,7 @@ function ENT:OnTakeDamage( dmginfo )
     end
 end
 
-function ENT:Use( activator, caller )
+function ENT:Use( activator )
     if self.StructuralIntegrity <= 0 then
         local Kit = self:FindRepairKit()
 
@@ -276,6 +271,7 @@ function ENT:Use( activator, caller )
         local Tag = activator:GetNWInt( "JackyIFFTag" )
         self:EmitSound( "snd_jack_uisuccess.mp3", 65, 100 )
         self.MenuOpen = true
+
         umsg.Start( "JackaTurretOpenMenu", activator )
         umsg.Entity( self )
         umsg.Short( self.BatteryCharge )
@@ -342,7 +338,6 @@ function ENT:Think()
     if self.MenuOpen then return end
     local SelfPos = self:GetShootPos()
     local Time = CurTime()
-    local Angs = self:GetAngles()
     local WeAreClear = self:ClearHead()
     self:SetDTInt( 4, self.RoundsOnBelt )
 
@@ -357,11 +352,9 @@ function ENT:Think()
         end
     end
 
-    if not ( State == TS_WHINING ) then
-        if not WeAreClear then
-            self:SetDTInt( 0, TS_WHINING )
-            State = TS_WHINING
-        end
+    if State ~= TS_WHINING and not WeAreClear then
+        self:SetDTInt( 0, TS_WHINING )
+        state = TS_WHINING
     end
 
     if State == TS_IDLING then
@@ -578,12 +571,9 @@ function ENT:ScanForTarget()
         if BestCandidate:IsPlayer() then
             local Tag = BestCandidate:GetNWInt( "JackyIFFTag" )
 
-            if Tag and Tag ~= 0 then
-                if table.HasValue( self.IFFTags, Tag ) then
-                    self:FriendlyAlert()
-
-                    return nil
-                end
+            if Tag and Tag ~= 0 and table.HasValue( self.IFFTags, Tag ) then
+                self:FriendlyAlert()
+                return nil
             end
         end
     end
@@ -608,7 +598,7 @@ function ENT:MotionCheck( ent )
 end
 
 function ENT:FriendlyAlert()
-    if not ( self.NextFriendlyTime < CurTime() ) then return end
+    if self.NextFriendlyTime >= CurTime() then return end
     self.NextFriendlyTime = CurTime() + 1
     local Flash = EffectData()
     Flash:SetOrigin( self:GetShootPos() )
@@ -735,15 +725,13 @@ function ENT:FireShot()
     local Time = CurTime()
     self.BatteryCharge = self.BatteryCharge - .1
 
-    if self.WillWarn then
-        if not ( self.NextAlrightFuckYouTime < Time ) then
-            if self.NextWarnTime < Time then
-                self:HostileAlert()
-                self.NextWarnTime = Time + 1
-            end
-
-            return
+    if self.WillWarn and self.NextAlrightFuckYouTime >= Time then
+        if self.NextWarnTime < Time then
+            self:HostileAlert()
+            self.NextWarnTime = Time + 1
         end
+
+        return
     end
 
     if self.RoundInChamber then
@@ -782,7 +770,7 @@ function ENT:FireShot()
         if IsValid( Phys ) then
             local RelSpeed = ( Phys:GetVelocity() - self:GetPhysicsObject():GetVelocity() ):Length()
 
-            if not ( self:GetClass() == "ent_jack_turret_shotty" ) then
+            if self:GetClass() ~= "ent_jack_turret_shotty" then
                 Spred = Spred + RelSpeed / 100000
             end
         end
@@ -802,15 +790,14 @@ function ENT:FireShot()
         self.FiredAtCurrentTarget = true
         self.RoundInChamber = false
         self.Heat = self.Heat + ( self.ShotPower * self.ProjectilesPerShot ) / 150
-        local Scayul = 1
 
-        for i = 0, 1 do
+        for _ = 0, 1 do
             self:EmitSound( self.NearShotNoise, 75, self.ShotPitch )
             self:EmitSound( self.FarShotNoise, 90, self.ShotPitch - 10 )
             sound.Play( self.NearShotNoise, SelfPos, 75, self.ShotPitch )
             sound.Play( self.FarShotNoise, SelfPos + Vector( 0, 0, 1 ), 90, self.ShotPitch - 10 )
 
-            if not ( self:GetClass() == "ent_jack_turret_plinker" ) then
+            if self:GetClass() ~= "ent_jack_turret_plinker" then
                 sound.Play( self.NearShotNoise, SelfPos, 75, self.ShotPitch )
                 sound.Play( self.FarShotNoise, SelfPos + Vector( 0, 0, 1 ), 110, self.ShotPitch - 10 )
             else
@@ -820,7 +807,7 @@ function ENT:FireShot()
             if self.AmmoType == "7.62x51mm" or self.AmmoType == ".338 Lapua Magnum" then
                 sound.Play( self.NearShotNoise, SelfPos + Vector( 0, 0, 1 ), 75, self.ShotPitch + 10 )
 
-                if not ( self:GetClass() == "ent_jack_turret_mg" ) then
+                if self:GetClass() ~= "ent_jack_turret_mg" then
                     sound.Play( self.FarShotNoise, SelfPos + Vector( 0, 0, 2 ), 100, self.ShotPitch )
                 end
 
@@ -934,9 +921,9 @@ function ENT:StartUp()
 end
 
 function ENT:FindAmmo()
-    for key, potential in pairs( ents.FindInSphere( self:GetPos(), 40 ) ) do
-        if potential:GetClass() == BOXES[self.AmmoType] then
-            if not potential.Empty then return potential end
+    for _, potential in pairs( ents.FindInSphere( self:GetPos(), 40 ) ) do
+        if potential:GetClass() == BOXES[self.AmmoType] and potential.Empty then
+            return potential
         end
     end
 
@@ -997,9 +984,9 @@ function ENT:DetachBattery()
 end
 
 function ENT:FindBattery()
-    for key, potential in pairs( ents.FindInSphere( self:GetPos(), 40 ) ) do
-        if potential:GetClass() == "ent_jack_turretbattery" then
-            if not potential.Dead then return potential end
+    for _, potential in pairs( ents.FindInSphere( self:GetPos(), 40 ) ) do
+        if potential:GetClass() == "ent_jack_turretbattery" and not potential.Dead then
+            return potential
         end
     end
 
@@ -1046,7 +1033,7 @@ function ENT:Fix( kit )
 end
 
 function ENT:FindRepairKit()
-    for key, potential in pairs( ents.FindInSphere( self:GetPos(), 40 ) ) do
+    for _, potential in pairs( ents.FindInSphere( self:GetPos(), 40 ) ) do
         if potential:GetClass() == "ent_jack_turretrepairkit" then return potential end
     end
 
@@ -1057,7 +1044,7 @@ local function SentryChat( ply, txt )
     local Found = false
 
     if string.sub( txt, 1, 12 ) == "sentry lock " then
-        for key, sent in pairs( ents.FindInSphere( ply:GetPos(), 150 ) ) do
+        for _, sent in pairs( ents.FindInSphere( ply:GetPos(), 150 ) ) do
             if string.find( sent:GetClass(), "ent_jack_turret_" ) then
                 local Pass = string.Split( txt, " " )[3]
 
@@ -1070,7 +1057,7 @@ local function SentryChat( ply, txt )
             end
         end
     elseif string.sub( txt, 1, 14 ) == "sentry unlock " then
-        for key, sent in pairs( ents.FindInSphere( ply:GetPos(), 150 ) ) do
+        for _, sent in pairs( ents.FindInSphere( ply:GetPos(), 150 ) ) do
             if string.find( sent:GetClass(), "ent_jack_turret_" ) then
                 local Pass = string.Split( txt, " " )[3]
 
@@ -1093,15 +1080,13 @@ hook.Add( "PlayerSay", "JackaSentryChat", SentryChat )
 local function CloseOn( ... )
     local args = { ... }
 
-    local self = Entity( tonumber( args[3][1] ) )
-    self:EmitSound( "snd_jack_uiselect.mp3", 65, 100 )
-    self.MenuOpen = false
+    local turret = Entity( tonumber( args[3][1] ) )
+    turret:EmitSound( "snd_jack_uiselect.mp3", 65, 100 )
+    turret.MenuOpen = false
 
-    if self:GetDTInt( 0 ) == TS_NOTHING then
-        if self.StartUp then
-            self:StartUp()
-            JID.genericUseEffect( args[1] )
-        end
+    if turret:GetDTInt( 0 ) == TS_NOTHING and turret.StartUp then
+        turret:StartUp()
+        JID.genericUseEffect( args[1] )
     end
 end
 
@@ -1110,12 +1095,12 @@ concommand.Add( "JackaTurretCloseMenu_On", CloseOn )
 local function CloseOff( ... )
     local args = { ... }
 
-    local self = Entity( tonumber( args[3][1] ) )
-    self:EmitSound( "snd_jack_uiselect.mp3", 65, 100 )
-    self.MenuOpen = false
+    local turret = Entity( tonumber( args[3][1] ) )
+    turret:EmitSound( "snd_jack_uiselect.mp3", 65, 100 )
+    turret.MenuOpen = false
 
-    if not ( self:GetDTInt( 0 ) == TS_NOTHING ) then
-        self:HardShutDown()
+    if turret:GetDTInt( 0 ) ~= TS_NOTHING then
+        turret:HardShutDown()
         JID.genericUseEffect( args[1] )
     end
 end
@@ -1125,9 +1110,9 @@ concommand.Add( "JackaTurretCloseMenu_Off", CloseOff )
 local function CloseCancel( ... )
     local args = { ... }
 
-    local self = Entity( tonumber( args[3][1] ) )
-    self:EmitSound( "snd_jack_uiselect.mp3", 65, 100 )
-    self.MenuOpen = false
+    local turret = Entity( tonumber( args[3][1] ) )
+    turret:EmitSound( "snd_jack_uiselect.mp3", 65, 100 )
+    turret.MenuOpen = false
 end
 
 concommand.Add( "JackaTurretCloseMenu_Cancel", CloseCancel )
@@ -1135,42 +1120,42 @@ concommand.Add( "JackaTurretCloseMenu_Cancel", CloseCancel )
 local function Ammo( ... )
     local args = { ... }
 
-    local self = Entity( tonumber( args[3][1] ) )
+    local turret = Entity( tonumber( args[3][1] ) )
 
-    if self.AmmoType == "AAmissile" or self.AmmoType == "ATrocket" then
-        if not self.RoundInChamber then
-            if not self.HasAmmoBox then
-                local Tube = self:FindAmmo()
+    if turret.AmmoType == "AAmissile" or turret.AmmoType == "ATrocket" then
+        if not turret.RoundInChamber then
+            if not turret.HasAmmoBox then
+                local Tube = turret:FindAmmo()
 
                 if IsValid( Tube ) then
-                    self:RefillAmmo( Tube )
+                    turret:RefillAmmo( Tube )
                 else
                     args[1]:PrintMessage( HUD_PRINTCENTER, "No munition present." )
                 end
             else
-                self:DetachAmmoBox()
+                turret:DetachAmmoBox()
                 JID.genericUseEffect( args[1] )
             end
         else
             args[1]:PrintMessage( HUD_PRINTCENTER, "Current tube not empty." )
         end
     else
-        if not self.RoundsOnBelt then
-            self.RoundsOnBelt = 0
+        if not turret.RoundsOnBelt then
+            turret.RoundsOnBelt = 0
         end
 
-        if self.RoundsOnBelt <= 0 then
-            if not self.HasAmmoBox then
-                local Box = self:FindAmmo()
+        if turret.RoundsOnBelt <= 0 then
+            if not turret.HasAmmoBox then
+                local Box = turret:FindAmmo()
 
                 if IsValid( Box ) then
-                    self:RefillAmmo( Box )
+                    turret:RefillAmmo( Box )
                     JID.genericUseEffect( args[1] )
                 else
                     args[1]:PrintMessage( HUD_PRINTCENTER, "No ammunition present." )
                 end
             else
-                self:DetachAmmoBox()
+                turret:DetachAmmoBox()
                 JID.genericUseEffect( args[1] )
             end
         else
@@ -1178,7 +1163,7 @@ local function Ammo( ... )
         end
     end
 
-    self.MenuOpen = false
+    turret.MenuOpen = false
 end
 
 concommand.Add( "JackaTurretAmmo", Ammo )
@@ -1186,17 +1171,17 @@ concommand.Add( "JackaTurretAmmo", Ammo )
 local function TargetingGroup( ... )
     local args = { ... }
 
-    local self = Entity( tonumber( args[3][1] ) )
+    local turret = Entity( tonumber( args[3][1] ) )
     local Check = tobool( args[3][3] )
     local Num = tonumber( args[3][2] )
 
     if Check then
-        table.ForceInsert( self.TargetingGroup, Num )
+        table.ForceInsert( turret.TargetingGroup, Num )
     else
-        table.remove( self.TargetingGroup, table.KeyFromValue( self.TargetingGroup, Num ) )
+        table.remove( turret.TargetingGroup, table.KeyFromValue( turret.TargetingGroup, Num ) )
     end
 
-    self:EmitSound( "snd_jack_uiselect.mp3", 65, 100 )
+    turret:EmitSound( "snd_jack_uiselect.mp3", 65, 100 )
 end
 
 concommand.Add( "JackaTurretTargetingChange", TargetingGroup )
@@ -1204,11 +1189,11 @@ concommand.Add( "JackaTurretTargetingChange", TargetingGroup )
 local function TargetingGroupType( ... )
     local args = { ... }
 
-    local self = Entity( tonumber( args[3][1] ) )
+    local turret = Entity( tonumber( args[3][1] ) )
     local Check = tobool( args[3][3] )
     local Type = args[3][2]
-    self[Type] = Check
-    self:EmitSound( "snd_jack_uiselect.mp3", 65, 100 )
+    turret[Type] = Check
+    turret:EmitSound( "snd_jack_uiselect.mp3", 65, 100 )
 end
 
 concommand.Add( "JackaTurretTargetingTypeChange", TargetingGroupType )
@@ -1216,21 +1201,21 @@ concommand.Add( "JackaTurretTargetingTypeChange", TargetingGroupType )
 local function IFFTag( ... )
     local args = { ... }
 
-    local self = Entity( tonumber( args[3][1] ) )
+    local turret = Entity( tonumber( args[3][1] ) )
     local ply = args[1]
-    self:EmitSound( "snd_jack_uiselect.mp3", 65, 100 )
-    self.MenuOpen = false
+    turret:EmitSound( "snd_jack_uiselect.mp3", 65, 100 )
+    turret.MenuOpen = false
     local Tag = ply:GetNWInt( "JackyIFFTag" )
 
     if Tag and Tag ~= 0 then
-        if not table.HasValue( self.IFFTags, Tag ) then
-            if not ( Tag == 0 ) then
-                table.ForceInsert( self.IFFTags, Tag )
+        if not table.HasValue( turret.IFFTags, Tag ) then
+            if Tag ~= 0 then
+                table.ForceInsert( turret.IFFTags, Tag )
             end
 
             ply:PrintMessage( HUD_PRINTTALK, "Personal IFF tag ID recorded." )
         else
-            table.remove( self.IFFTags, table.KeyFromValue( self.IFFTags, Tag ) )
+            table.remove( turret.IFFTags, table.KeyFromValue( turret.IFFTags, Tag ) )
             ply:PrintMessage( HUD_PRINTTALK, "Personal IFF tag ID forgotten." )
         end
     else
@@ -1238,10 +1223,10 @@ local function IFFTag( ... )
     end
 
     umsg.Start( "JackyIFFList" )
-    umsg.Entity( self )
+    umsg.Entity( turret )
     local lisd = ""
 
-    for key, tag in pairs( self.IFFTags ) do
+    for _, tag in pairs( turret.IFFTags ) do
         lisd = lisd .. " " .. tostring( tag )
     end
 
@@ -1254,10 +1239,10 @@ concommand.Add( "JackaTurretIFF", IFFTag )
 local function Warn( ... )
     local args = { ... }
 
-    local self = Entity( tonumber( args[3][1] ) )
+    local turret = Entity( tonumber( args[3][1] ) )
     local Check = tobool( args[3][2] )
-    self.WillWarn = Check
-    self:EmitSound( "snd_jack_uiselect.mp3", 65, 100 )
+    turret.WillWarn = Check
+    turret:EmitSound( "snd_jack_uiselect.mp3", 65, 100 )
 end
 
 concommand.Add( "JackaTurretWarn", Warn )
@@ -1265,10 +1250,10 @@ concommand.Add( "JackaTurretWarn", Warn )
 local function Light( ... )
     local args = { ... }
 
-    local self = Entity( tonumber( args[3][1] ) )
+    local turret = Entity( tonumber( args[3][1] ) )
     local Check = tobool( args[3][2] )
-    self.WillLight = Check
-    self:EmitSound( "snd_jack_uiselect.mp3", 65, 100 )
+    turret.WillLight = Check
+    turret:EmitSound( "snd_jack_uiselect.mp3", 65, 100 )
 end
 
 concommand.Add( "JackaTurretLight", Light )
@@ -1276,31 +1261,31 @@ concommand.Add( "JackaTurretLight", Light )
 local function Battery( ... )
     local args = { ... }
 
-    local self = Entity( tonumber( args[3][1] ) )
+    local turret = Entity( tonumber( args[3][1] ) )
 
-    if not self.BatteryCharge then
-        self.BatteryCharge = 0
+    if not turret.BatteryCharge then
+        turret.BatteryCharge = 0
     end
 
-    if self.BatteryCharge <= 0 then
-        if not self.HasBattery then
-            local Box = self:FindBattery()
+    if turret.BatteryCharge <= 0 then
+        if not turret.HasBattery then
+            local Box = turret:FindBattery()
 
             if IsValid( Box ) then
-                self:RefillPower( Box )
+                turret:RefillPower( Box )
                 JID.genericUseEffect( args[1] )
             else
                 args[1]:PrintMessage( HUD_PRINTCENTER, "No battery present." )
             end
         else
-            self:DetachBattery()
+            turret:DetachBattery()
             JID.genericUseEffect( args[1] )
         end
     else
         args[1]:PrintMessage( HUD_PRINTCENTER, "Current battery not dead." )
     end
 
-    self.MenuOpen = false
+    turret.MenuOpen = false
 end
 
 concommand.Add( "JackaTurretBattery", Battery )
@@ -1309,23 +1294,23 @@ local function Upright( ... )
     local args = { ... }
 
     local ply = args[1]
-    local self = Entity( tonumber( args[3][1] ) )
+    local turret = Entity( tonumber( args[3][1] ) )
     local AimVec = ply:GetAimVector()
 
-    local Trace = util.QuickTrace( ply:GetShootPos(), AimVec * 150, { self, ply } )
+    local Trace = util.QuickTrace( ply:GetShootPos(), AimVec * 150, { turret, ply } )
 
     if Trace.Hit then
-        self:SetPos( Trace.HitPos + Trace.HitNormal * 3 )
+        turret:SetPos( Trace.HitPos + Trace.HitNormal * 3 )
         local Ang = AimVec:Angle()
         local AngDiff = AimVec:AngleEx( Trace.HitNormal )
         Ang:RotateAroundAxis( Ang:Right(), AngDiff.p )
-        self:SetAngles( Ang )
-        self:EmitSound( "weapons/iceaxe/iceaxe_swing1.wav", 70, 80 )
+        turret:SetAngles( Ang )
+        turret:EmitSound( "weapons/iceaxe/iceaxe_swing1.wav", 70, 80 )
         JID.genericUseEffect( ply )
-        self:GetPhysicsObject():ApplyForceCenter( VectorRand() )
+        turret:GetPhysicsObject():ApplyForceCenter( VectorRand() )
     end
 
-    self.MenuOpen = false
+    turret.MenuOpen = false
 end
 
 concommand.Add( "JackaTurretUpright", Upright )
