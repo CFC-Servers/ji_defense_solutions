@@ -446,11 +446,9 @@ function ENT:Think()
                     self.NextScanTime = Time + 1 / self.ScanRate * 2
                 end
 
-                if self.CurrentSweep < self.GoalSweep + 2 and self.CurrentSweep > self.GoalSweep - 2 and self.CurrentSwing < self.GoalSwing + 2 and self.CurrentSwing > self.GoalSwing - 2 then
-                    if self.NextShotTime < Time then
-                        self:FireShot()
-                        self.NextShotTime = Time + 1 / self.FireRate * math.Rand( .9, 1.1 )
-                    end
+                if self.NextShotTime < Time and self.CurrentSweep < self.GoalSweep + 2 and self.CurrentSweep > self.GoalSweep - 2 and self.CurrentSwing < self.GoalSwing + 2 and self.CurrentSwing > self.GoalSwing - 2 then
+                    self:FireShot()
+                    self.NextShotTime = Time + 1 / self.FireRate * math.Rand( .9, 1.1 )
                 end
             else
                 self:HoldFire()
