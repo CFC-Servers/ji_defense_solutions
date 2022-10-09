@@ -215,7 +215,7 @@ function ENT:PhysicsCollide( data )
     end
 
     if data.Speed > 750 then
-        self.StructuralIntegrity = self.StructuralIntegrity - data.Speed / 10
+        self.StructuralIntegrity = self.StructuralIntegrity - data.Speed / 50
 
         if self.StructuralIntegrity <= 0 then
             self:Break()
