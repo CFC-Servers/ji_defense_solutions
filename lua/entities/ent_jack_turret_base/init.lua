@@ -29,9 +29,28 @@ local HULL_SIZE_TABLE = {
     [HULL_LARGE_CENTERED] = { 1500000, 2000000 }
 }
 
-local SYNTHETIC_TABLE = { MAT_CONCRETE, MAT_GRATE, MAT_CLIP, MAT_PLASTIC, MAT_METAL, MAT_COMPUTER, MAT_TILE, MAT_WOOD, MAT_VENT, MAT_GLASS, MAT_DIRT, MAT_SAND }
+local SYNTHETIC_TABLE = {
+    MAT_CONCRETE = true,
+    MAT_GRATE = true,
+    MAT_CLIP = true,
+    MAT_PLASTIC = true,
+    MAT_METAL = true,
+    MAT_COMPUTER = true,
+    MAT_TILE = true,
+    MAT_WOOD = true,
+    MAT_VENT = true,
+    MAT_GLASS = true,
+    MAT_DIRT = true,
+    MAT_SAND = true
+}
 
-local ORGANIC_TABLE = { MAT_FLESH, MAT_ANTLION, MAT_BLOODYFLESH, MAT_FOLIAGE, MAT_SLOSH }
+local ORGANIC_TABLE = {
+    MAT_FLESH = true,
+    MAT_ANTLION = true,
+    MAT_BLOODYFLESH = true,
+    MAT_FOLIAGE = true,
+    MAT_SLOSH = true
+}
 
 local TARGET_TABLE = {
     ["npc_helicopter"] = 700000,
@@ -142,9 +161,9 @@ local function IsSynthetic( ent )
     local Tr = util.QuickTrace( ent:GetPos(), Vector( 0, 0, 500 ), nil )
 
     if Tr.Hit then
-        if table.HasValue( ORGANIC_TABLE, Tr.MatType ) then
+        if ORGANIC_TABLE[Tr.MatType] then
             return false
-        elseif table.HasValue( SYNTHETIC_TABLE, Tr.MatType ) then
+        elseif SYNTHETIC_TABLE[Tr.MatType] then
             return true
         else
             return false
@@ -500,7 +519,7 @@ function ENT:ScanForTarget()
     local Closest = self.MaxTrackRange
     local BestCandidate = nil
 
-    for key, potential in pairs( ents.FindInSphere( SelfPos, self.MaxTrackRange ) ) do
+    for _, potential in pairs( ents.FindInSphere( SelfPos, self.MaxTrackRange ) ) do
         local Size = GetVolyum( potential )
 
         if Size > 0 and self:WillTargetThisSize( Size ) then
