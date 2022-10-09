@@ -13,3 +13,8 @@ function JID.genericUseEffect( ply )
         ply:SetAnimation( PLAYER_ATTACK1 )
     end
 end
+
+function JID.ShouldTargetPlayer( ply )
+    if CFCPvp and ply:IsInBuild() then return false end
+    return true
+end

@@ -544,6 +544,7 @@ local function IsBetterCanidate( turret, ent, shootPos, turretPos, closestCanida
     end
 
     if ent:IsPlayer() then
+        if not JID.ShouldTargetPlayer( ent ) then return end
         local tag = ent:GetNWInt( "JackyIFFTag" )
 
         if tag and tag ~= 0 then
