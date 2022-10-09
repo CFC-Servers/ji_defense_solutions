@@ -590,19 +590,11 @@ function ENT:ScanForTarget()
 end
 
 function ENT:MotionCheck( ent )
-    local OtherVel
-    local Phes = ent:GetPhysicsObject()
+    local velocity = ent:GetVelocity()
+    local turretPhys = self:GetPhysicsObject()
+    local relativeSpeed = ( turretPhys:GetVelocity() - velocity ):Length()
 
-    if IsValid( Phes ) then
-        OtherVel = Phes:GetVelocity()
-    else
-        OtherVel = ent:GetVelocity()
-    end
-
-    local Phys = self:GetPhysicsObject()
-    local RelSpeed = ( Phys:GetVelocity() - OtherVel ):Length()
-
-    return RelSpeed > 20
+    return relativeSpeed > 20
 end
 
 function ENT:FriendlyAlert()
