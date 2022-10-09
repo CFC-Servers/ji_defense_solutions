@@ -425,7 +425,6 @@ function ENT:Think()
                 end
 
                 if self.NextScanTime < Time then
-                    local OldTarget = self.CurrentTarget
                     self.CurrentTarget = self:ScanForTarget()
 
                     if not IsValid( self.CurrentTarget ) then
