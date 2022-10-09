@@ -77,10 +77,21 @@ function ENT:Draw()
     Ang:RotateAroundAxis( Ang:Right(), -90 )
     local State = self:GetDTInt( 0 )
 
+    local currentSweep = self:GetNWFloat( "CurrentSweep", 0 )
+    local currentSwing = self:GetNWFloat( "CurrentSwing", 0 )
+
+    if currentSweep ~= self.LastSweep or currentSwing ~= self.LastSwing then
+        self.LastSweep = currentSweep
+        self.LastSwing = currentSwing
+
+        self:ManipulateBoneAngles( 1, Angle( currentSweep, 0, 0 ) )
+        self:ManipulateBoneAngles( 2, Angle( 0, 0, currentSwing ) )
+    end
+
     if State == 2 or State == 3 or State == 4 then
         Ang:RotateAroundAxis( Ang:Forward(), math.sin( CurTime() * 7 ) * 90 )
     else
-        Ang:RotateAroundAxis( Ang:Forward(), -self:GetDTInt( 1 ) )
+        Ang:RotateAroundAxis( Ang:Forward(), -currentSweep )
     end
 
     self.Camera:SetRenderAngles( Ang )

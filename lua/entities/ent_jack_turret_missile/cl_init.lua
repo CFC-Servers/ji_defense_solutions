@@ -54,7 +54,7 @@ function ENT:Draw()
     if State == 2 or State == 3 or State == 4 then
         Ang:RotateAroundAxis( Ang:Forward(), math.sin( CurTime() * 7 ) * 90 )
     else
-        Ang:RotateAroundAxis( Ang:Forward(), -self:GetDTInt( 1 ) )
+        Ang:RotateAroundAxis( Ang:Forward(), -self:GetNWFloat( "CurrentSweep", 0 ) )
     end
 
     self.Camera:SetRenderAngles( Ang )

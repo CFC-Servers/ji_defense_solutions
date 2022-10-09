@@ -359,23 +359,18 @@ function ENT:Think()
 
     if State == TS_IDLING then
         if self.NextWatchTime < Time then
-            for key, potential in pairs( ents.FindInSphere( SelfPos, self.MaxTrackRange ) ) do
-                if GetVolyum( potential ) > 0 then
-                    if self:MotionCheck( potential ) then
-                        if self:CanSee( potential ) then
-                            local TrueVec = ( SelfPos - potential:GetPos() ):GetNormalized()
-                            local LookVec = self:GetForward()
-                            local DotProduct = LookVec:DotProduct( TrueVec )
-                            local ApproachAngle = -math.deg( math.asin( DotProduct ) ) + 90
+            for _, potential in pairs( ents.FindInSphere( SelfPos, self.MaxTrackRange ) ) do
+                if GetVolyum( potential ) > 0 and self:MotionCheck( potential ) and self:CanSee( potential ) then
+                    local TrueVec = ( SelfPos - potential:GetPos() ):GetNormalized()
+                    local LookVec = self:GetForward()
+                    local DotProduct = LookVec:Dot( TrueVec )
+                    local ApproachAngle = -math.deg( math.asin( DotProduct ) ) + 90
 
-                            if ApproachAngle > 90 then
-                                self:Notice()
-                            end
-                        end
+                    if ApproachAngle > 90 then
+                        self:Notice()
                     end
                 end
             end
-
             self.BatteryCharge = self.BatteryCharge - .0025
             self.NextWatchTime = self.NextWatchTime + .1
         end
@@ -709,9 +704,13 @@ function ENT:Traverse()
         self.BatteryCharge = self.BatteryCharge - PowerDrain
     end
 
-    self:SetDTInt( 1, self.CurrentSweep )
-    self:ManipulateBoneAngles( 1, Angle( self.CurrentSweep, 0, 0 ) )
-    self:ManipulateBoneAngles( 2, Angle( 0, 0, self.CurrentSwing ) )
+    if self:GetNWFloat( "CurrentSweep" ) ~= self.CurrentSweep then
+        self:SetNWFloat( "CurrentSweep", self.CurrentSweep )
+    end
+
+    if self:GetNWFloat( "CurrentSwing" ) ~= self.CurrentSwing then
+        self:SetNWFloat( "CurrentSwing", self.CurrentSwing )
+    end
 
     if IsValid( self.flashlight ) then
         self.flashlight:SetLocalAngles( self:WorldToLocalAngles( self:GetAttachment( 1 ).Ang ) )
@@ -758,9 +757,7 @@ function ENT:FireShot()
         end )
 
         local SelfPos = self:GetShootPos()
-        local TargPos
-
-        TargPos = GetCenterMass( self.CurrentTarget )
+        local TargPos = GetCenterMass( self.CurrentTarget )
 
         local Dir = ( TargPos - SelfPos ):GetNormalized()
         local Spred = self.ShotSpread
@@ -1146,8 +1143,6 @@ local function Ammo( ... )
         if turret.RoundsOnBelt <= 0 then
             if not turret.HasAmmoBox then
                 local Box = turret:FindAmmo()
-
-                print( Box )
 
                 if IsValid( Box ) then
                     turret:RefillAmmo( Box )
