@@ -91,16 +91,12 @@ local function GetCenterMass( ent )
 end
 
 function ENT:FireShot()
-    if not IsValid( self.CurrentTarget ) and not self.ControllingPly then
-        self:StandBy()
-
-        return
-    end
+    self:StandBy()
 
     local Time = CurTime()
     self.BatteryCharge = self.BatteryCharge - .1
 
-    if self.WillWarn and not self.ControllingPly then
+    if self.WillWarn then
         if not ( self.NextAlrightFuckYouTime < CurTime() ) then
             if self.NextWarnTime < CurTime() then
                 self:HostileAlert()
@@ -133,11 +129,7 @@ function ENT:FireShot()
         local SelfPos = self:GetPos() + self:GetUp() * 55
         local TargPos
 
-        if self.ControllingPly then
-            TargPos = self:GetShootPos() + self:GetAttachment( 1 ).Ang:Forward() * 500
-        else
-            TargPos = GetCenterMass( self.CurrentTarget )
-        end
+        TargPos = GetCenterMass( self.CurrentTarget )
 
         local Dist = ( self:GetPos() - TargPos ):Length()
 
@@ -152,15 +144,11 @@ function ENT:FireShot()
         local Dir = Vec:GetNormalized()
         local Spred = self.ShotSpread
 
-        if self.ControllingPly then
-            Spred = Spred / 2
-        else
-            local Phys = self.CurrentTarget:GetPhysicsObject()
+        local Phys = self.CurrentTarget:GetPhysicsObject()
 
-            if IsValid( Phys ) then
-                local RelSpeed = ( Phys:GetVelocity() - self:GetPhysicsObject():GetVelocity() ):Length()
-                Spred = Spred + RelSpeed / 100000
-            end
+        if IsValid( Phys ) then
+            local RelSpeed = ( Phys:GetVelocity() - self:GetPhysicsObject():GetVelocity() ):Length()
+            Spred = Spred + RelSpeed / 100000
         end
 
         Dir = ( Dir + VectorRand() * Spred ):GetNormalized()
