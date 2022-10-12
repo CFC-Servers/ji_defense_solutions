@@ -725,130 +725,131 @@ function ENT:FireShot()
         return
     end
 
-    if self.RoundInChamber then
-        if self.Heat >= 95 then
-            if self.NextOverHeatWhineTime < Time then
-                self.NextOverHeatWhineTime = Time + .5
-                self:Whine()
-            end
-
-            return
-        end
-
-        local PosAng = self:GetAttachment( 1 )
-        local muzzleFlash = EffectData()
-        muzzleFlash:SetStart( PosAng.Pos + PosAng.Ang:Forward() * self.BarrelSizeMod.z * 4 )
-        muzzleFlash:SetAngles( PosAng.Ang )
-        muzzleFlash:SetFlags( 1 )
-        util.Effect( "MuzzleFlash", muzzleFlash, true, true )
-        self:SetNWVector( "BarrelSizeMod", Vector( self.BarrelSizeMod.x, self.BarrelSizeMod.y, self.BarrelSizeMod.z * .75 ) )
-
-        timer.Simple( .1, function()
-            if IsValid( self ) then
-                self:SetNWVector( "BarrelSizeMod", self.BarrelSizeMod )
-            end
-        end )
-
-        local SelfPos = self:GetShootPos()
-        local TargPos = GetTargetPos( self.CurrentTarget )
-
-        local Dir = ( TargPos - SelfPos ):GetNormalized()
-        local Spred = self.ShotSpread
-        local Phys = self.CurrentTarget:GetPhysicsObject()
-
-        if IsValid( Phys ) then
-            local RelSpeed = ( Phys:GetVelocity() - self:GetPhysicsObject():GetVelocity() ):Length()
-
-            if self:GetClass() ~= "ent_jack_turret_shotty" then
-                Spred = Spred + RelSpeed / 100000
-            end
-        end
-
-        local Bellit = {
-            Attacker = self,
-            Damage = self.ShotPower,
-            Force = self.ShotPower / 60,
-            Num = self.ProjectilesPerShot,
-            Tracer = 0,
-            Dir = Dir,
-            Spread = Vector( Spred, Spred, Spred ),
-            Src = SelfPos
-        }
-
-        self:FireBullets( Bellit )
-        self.FiredAtCurrentTarget = true
-        self.RoundInChamber = false
-        self.Heat = self.Heat + ( self.ShotPower * self.ProjectilesPerShot ) / 150
-
-        for _ = 0, 1 do
-            self:EmitSound( self.NearShotNoise, 75, self.ShotPitch )
-            self:EmitSound( self.FarShotNoise, 90, self.ShotPitch - 10 )
-            sound.Play( self.NearShotNoise, SelfPos, 75, self.ShotPitch )
-            sound.Play( self.FarShotNoise, SelfPos + Vector( 0, 0, 1 ), 90, self.ShotPitch - 10 )
-
-            if self:GetClass() ~= "ent_jack_turret_plinker" then
-                sound.Play( self.NearShotNoise, SelfPos, 75, self.ShotPitch )
-                sound.Play( self.FarShotNoise, SelfPos + Vector( 0, 0, 1 ), 110, self.ShotPitch - 10 )
-            else
-                Scayul = .5
-            end
-
-            if self.AmmoType == "7.62x51mm" or self.AmmoType == ".338 Lapua Magnum" then
-                sound.Play( self.NearShotNoise, SelfPos + Vector( 0, 0, 1 ), 75, self.ShotPitch + 10 )
-
-                if self:GetClass() ~= "ent_jack_turret_mg" then
-                    sound.Play( self.FarShotNoise, SelfPos + Vector( 0, 0, 2 ), 100, self.ShotPitch )
-                end
-
-                Scayul = 1.5
-            end
-
-            if self.AmmoType == ".338 Lapua Magnum" then
-                sound.Play( self.NearShotNoise, SelfPos + Vector( 0, 0, 3 ), 75, self.ShotPitch + 10 )
-                sound.Play( self.FarShotNoise, SelfPos + Vector( 0, 0, 4 ), 100, self.ShotPitch + 5 )
-                Scayul = 2.5
-            end
-        end
-
-        if self.RoundsOnBelt > 0 then
-            if self.Autoloading then
-                self.RoundsOnBelt = self.RoundsOnBelt - 1
-                self.RoundInChamber = true
-                local effectdata = EffectData()
-                effectdata:SetOrigin( SelfPos )
-                effectdata:SetAngles( Dir:Angle():Right():Angle() )
-                effectdata:SetEntity( self )
-                util.Effect( self.ShellEffect, effectdata, true, true )
-            else
-                timer.Simple( 1 / self.FireRate * .25, function()
-                    if IsValid( self ) then
-                        self:EmitSound( self.CycleSound, 68, 100 )
-                    end
-                end )
-
-                timer.Simple( 1 / self.FireRate * .35, function()
-                    if IsValid( self ) then
-                        self.RoundsOnBelt = self.RoundsOnBelt - 1
-                        self.RoundInChamber = true
-                        local effectdata = EffectData()
-                        effectdata:SetOrigin( SelfPos )
-                        effectdata:SetAngles( Dir:Angle():Right():Angle() )
-                        effectdata:SetEntity( self )
-                        util.Effect( self.ShellEffect, effectdata, true, true )
-                    end
-                end )
-            end
-        end
-
-        self:GetPhysicsObject():ApplyForceOffset( -Dir * self.ShotPower * 6 * self.ProjectilesPerShot, SelfPos + self:GetUp() * 30 )
-    else
+    if not self.RoundInChamber then
         self:EmitSound( "snd_jack_turretclick.mp3", 70, 110 )
 
         if self.NextWhineTime < CurTime() then
             self:Whine()
             self.NextWhineTime = CurTime() + 2.25
         end
+        return
     end
+
+    if self.Heat >= 95 then
+        if self.NextOverHeatWhineTime < Time then
+            self.NextOverHeatWhineTime = Time + .5
+            self:Whine()
+        end
+
+        return
+    end
+
+    local PosAng = self:GetAttachment( 1 )
+    local muzzleFlash = EffectData()
+    muzzleFlash:SetStart( PosAng.Pos + PosAng.Ang:Forward() * self.BarrelSizeMod.z * 4 )
+    muzzleFlash:SetAngles( PosAng.Ang )
+    muzzleFlash:SetFlags( 1 )
+    util.Effect( "MuzzleFlash", muzzleFlash, true, true )
+    self:SetNWVector( "BarrelSizeMod", Vector( self.BarrelSizeMod.x, self.BarrelSizeMod.y, self.BarrelSizeMod.z * .75 ) )
+
+    timer.Simple( .1, function()
+        if IsValid( self ) then
+            self:SetNWVector( "BarrelSizeMod", self.BarrelSizeMod )
+        end
+    end )
+
+    local SelfPos = self:GetShootPos()
+    local TargPos = GetTargetPos( self.CurrentTarget )
+
+    local Dir = ( TargPos - SelfPos ):GetNormalized()
+    local Spred = self.ShotSpread
+    local Phys = self.CurrentTarget:GetPhysicsObject()
+
+    if IsValid( Phys ) then
+        local RelSpeed = ( Phys:GetVelocity() - self:GetPhysicsObject():GetVelocity() ):Length()
+
+        if self:GetClass() ~= "ent_jack_turret_shotty" then
+            Spred = Spred + RelSpeed / 100000
+        end
+    end
+
+    local Bellit = {
+        Attacker = self,
+        Damage = self.ShotPower,
+        Force = self.ShotPower / 60,
+        Num = self.ProjectilesPerShot,
+        Tracer = 0,
+        Dir = Dir,
+        Spread = Vector( Spred, Spred, Spred ),
+        Src = SelfPos
+    }
+
+    self:FireBullets( Bellit )
+    self.FiredAtCurrentTarget = true
+    self.RoundInChamber = false
+    self.Heat = self.Heat + ( self.ShotPower * self.ProjectilesPerShot ) / 150
+
+    for _ = 0, 1 do
+        self:EmitSound( self.NearShotNoise, 75, self.ShotPitch )
+        self:EmitSound( self.FarShotNoise, 90, self.ShotPitch - 10 )
+        sound.Play( self.NearShotNoise, SelfPos, 75, self.ShotPitch )
+        sound.Play( self.FarShotNoise, SelfPos + Vector( 0, 0, 1 ), 90, self.ShotPitch - 10 )
+
+        if self:GetClass() ~= "ent_jack_turret_plinker" then
+            sound.Play( self.NearShotNoise, SelfPos, 75, self.ShotPitch )
+            sound.Play( self.FarShotNoise, SelfPos + Vector( 0, 0, 1 ), 110, self.ShotPitch - 10 )
+        else
+            Scayul = .5
+        end
+
+        if self.AmmoType == "7.62x51mm" or self.AmmoType == ".338 Lapua Magnum" then
+            sound.Play( self.NearShotNoise, SelfPos + Vector( 0, 0, 1 ), 75, self.ShotPitch + 10 )
+
+            if self:GetClass() ~= "ent_jack_turret_mg" then
+                sound.Play( self.FarShotNoise, SelfPos + Vector( 0, 0, 2 ), 100, self.ShotPitch )
+            end
+
+            Scayul = 1.5
+        end
+
+        if self.AmmoType == ".338 Lapua Magnum" then
+            sound.Play( self.NearShotNoise, SelfPos + Vector( 0, 0, 3 ), 75, self.ShotPitch + 10 )
+            sound.Play( self.FarShotNoise, SelfPos + Vector( 0, 0, 4 ), 100, self.ShotPitch + 5 )
+            Scayul = 2.5
+        end
+    end
+
+    if self.RoundsOnBelt > 0 then
+        if self.Autoloading then
+            self.RoundsOnBelt = self.RoundsOnBelt - 1
+            self.RoundInChamber = true
+            local effectdata = EffectData()
+            effectdata:SetOrigin( SelfPos )
+            effectdata:SetAngles( Dir:Angle():Right():Angle() )
+            effectdata:SetEntity( self )
+            util.Effect( self.ShellEffect, effectdata, true, true )
+        else
+            timer.Simple( 1 / self.FireRate * .25, function()
+                if IsValid( self ) then
+                    self:EmitSound( self.CycleSound, 68, 100 )
+                end
+            end )
+
+            timer.Simple( 1 / self.FireRate * .35, function()
+                if IsValid( self ) then
+                    self.RoundsOnBelt = self.RoundsOnBelt - 1
+                    self.RoundInChamber = true
+                    local effectdata = EffectData()
+                    effectdata:SetOrigin( SelfPos )
+                    effectdata:SetAngles( Dir:Angle():Right():Angle() )
+                    effectdata:SetEntity( self )
+                    util.Effect( self.ShellEffect, effectdata, true, true )
+                end
+            end )
+        end
+    end
+
+    self:GetPhysicsObject():ApplyForceOffset( -Dir * self.ShotPower * 6 * self.ProjectilesPerShot, SelfPos + self:GetUp() * 30 )
 end
 
 function ENT:Whine()
