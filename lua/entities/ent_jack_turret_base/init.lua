@@ -710,8 +710,10 @@ function ENT:Traverse()
 end
 
 function ENT:FireShot()
-    if not IsValid( self.CurrentTarget ) then return end
-    self:StandBy()
+    if not IsValid( self.CurrentTarget ) then
+        self:StandBy()
+        return
+    end
 
     local Time = CurTime()
     self.BatteryCharge = self.BatteryCharge - .1
