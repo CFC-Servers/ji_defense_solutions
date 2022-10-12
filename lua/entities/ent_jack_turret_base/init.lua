@@ -111,27 +111,8 @@ ENT.LockPass = ""
 ENT.MaxCharge = 3000
 ENT.PlugPosition = Vector( 0, 0, 20 )
 
-local function GetCenterMass( ent )
-    local Pos = ent:LocalToWorld( ent:OBBCenter() )
-    local Hull = 0
-
-    if ent.GetHullType then
-        Hull = ent:GetHullType()
-    end
-
-    local Add = Vector( 0, 0, 0 )
-
-    if ent:IsNPC() or ent:IsPlayer() then
-        Add = Vector( 0, 0, HULL_TARGETING[Hull] )
-    end
-
-    Pos = Pos + Add
-
-    if ent:IsPlayer() and ent:Crouching() then
-        Pos = Pos - Vector( 0, 0, 20 )
-    end
-
-    return Pos
+local function GetTargetPos( ent )
+    return ent:WorldSpaceCenter()
 end
 
 local function GetEntityVolume( ent )
@@ -421,7 +402,7 @@ function ENT:Think()
             self.NextGoSilentTime = Time + 2
         else
             if self:CanSee( self.CurrentTarget ) then
-                local TargPos = GetCenterMass( self.CurrentTarget )
+                local TargPos = GetTargetPos( self.CurrentTarget )
                 local Ang = ( TargPos - SelfPos ):GetNormalized():Angle()
                 local TargAng = self:WorldToLocalAngles( Ang )
                 local ProperSweep = TargAng.y
@@ -729,6 +710,7 @@ function ENT:Traverse()
 end
 
 function ENT:FireShot()
+    if not IsValid( self.CurrentTarget ) then return end
     self:StandBy()
 
     local Time = CurTime()
@@ -768,7 +750,7 @@ function ENT:FireShot()
         end )
 
         local SelfPos = self:GetShootPos()
-        local TargPos = GetCenterMass( self.CurrentTarget )
+        local TargPos = GetTargetPos( self.CurrentTarget )
 
         local Dir = ( TargPos - SelfPos ):GetNormalized()
         local Spred = self.ShotSpread
