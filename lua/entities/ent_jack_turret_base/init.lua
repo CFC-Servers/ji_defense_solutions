@@ -355,17 +355,9 @@ function ENT:Think()
 
     if State == TS_IDLING then
         if self.NextWatchTime < Time then
-            for _, potential in pairs( ents.FindInSphere( SelfPos, self.MaxTrackRange ) ) do
-                if GetEntityVolume( potential ) > 0 and self:MotionCheck( potential ) and self:CanSee( potential ) then
-                    local TrueVec = ( SelfPos - potential:GetPos() ):GetNormalized()
-                    local LookVec = self:GetForward()
-                    local DotProduct = LookVec:Dot( TrueVec )
-                    local ApproachAngle = -math.deg( math.asin( DotProduct ) ) + 90
-
-                    if ApproachAngle > 90 then
-                        self:Notice()
-                    end
-                end
+            local possibleTarget = self:ScanForTarget()
+            if possibleTarget then
+                self:Notice()
             end
             self.BatteryCharge = self.BatteryCharge - .0025
             self.NextWatchTime = self.NextWatchTime + .1
