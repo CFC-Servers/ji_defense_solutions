@@ -490,7 +490,7 @@ function ENT:ClearHead()
 end
 
 local function CanTarget( ent )
-    if ent:IsPlayer() and ent:IsAlive() then return true end
+    if ent:IsPlayer() and ent:Alive() then return true end
     if ent:IsNPC() then return true end
     if ent:IsVehicle() then return true end
     if ent:IsNextBot() then return true end
