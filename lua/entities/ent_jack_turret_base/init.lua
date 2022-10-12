@@ -789,34 +789,32 @@ function ENT:FireShot()
     self.RoundInChamber = false
     self.Heat = self.Heat + ( self.ShotPower * self.ProjectilesPerShot ) / 150
 
-    for _ = 0, 1 do
-        self:EmitSound( self.NearShotNoise, 75, self.ShotPitch )
-        self:EmitSound( self.FarShotNoise, 90, self.ShotPitch - 10 )
+    self:EmitSound( self.NearShotNoise, 75, self.ShotPitch )
+    self:EmitSound( self.FarShotNoise, 90, self.ShotPitch - 10 )
+    sound.Play( self.NearShotNoise, SelfPos, 75, self.ShotPitch )
+    sound.Play( self.FarShotNoise, SelfPos + Vector( 0, 0, 1 ), 90, self.ShotPitch - 10 )
+
+    if self:GetClass() ~= "ent_jack_turret_plinker" then
         sound.Play( self.NearShotNoise, SelfPos, 75, self.ShotPitch )
-        sound.Play( self.FarShotNoise, SelfPos + Vector( 0, 0, 1 ), 90, self.ShotPitch - 10 )
+        sound.Play( self.FarShotNoise, SelfPos + Vector( 0, 0, 1 ), 110, self.ShotPitch - 10 )
+    else
+        Scayul = .5
+    end
 
-        if self:GetClass() ~= "ent_jack_turret_plinker" then
-            sound.Play( self.NearShotNoise, SelfPos, 75, self.ShotPitch )
-            sound.Play( self.FarShotNoise, SelfPos + Vector( 0, 0, 1 ), 110, self.ShotPitch - 10 )
-        else
-            Scayul = .5
+    if self.AmmoType == "7.62x51mm" or self.AmmoType == ".338 Lapua Magnum" then
+        sound.Play( self.NearShotNoise, SelfPos + Vector( 0, 0, 1 ), 75, self.ShotPitch + 10 )
+
+        if self:GetClass() ~= "ent_jack_turret_mg" then
+            sound.Play( self.FarShotNoise, SelfPos + Vector( 0, 0, 2 ), 100, self.ShotPitch )
         end
 
-        if self.AmmoType == "7.62x51mm" or self.AmmoType == ".338 Lapua Magnum" then
-            sound.Play( self.NearShotNoise, SelfPos + Vector( 0, 0, 1 ), 75, self.ShotPitch + 10 )
+        Scayul = 1.5
+    end
 
-            if self:GetClass() ~= "ent_jack_turret_mg" then
-                sound.Play( self.FarShotNoise, SelfPos + Vector( 0, 0, 2 ), 100, self.ShotPitch )
-            end
-
-            Scayul = 1.5
-        end
-
-        if self.AmmoType == ".338 Lapua Magnum" then
-            sound.Play( self.NearShotNoise, SelfPos + Vector( 0, 0, 3 ), 75, self.ShotPitch + 10 )
-            sound.Play( self.FarShotNoise, SelfPos + Vector( 0, 0, 4 ), 100, self.ShotPitch + 5 )
-            Scayul = 2.5
-        end
+    if self.AmmoType == ".338 Lapua Magnum" then
+        sound.Play( self.NearShotNoise, SelfPos + Vector( 0, 0, 3 ), 75, self.ShotPitch + 10 )
+        sound.Play( self.FarShotNoise, SelfPos + Vector( 0, 0, 4 ), 100, self.ShotPitch + 5 )
+        Scayul = 2.5
     end
 
     if self.RoundsOnBelt > 0 then
@@ -844,7 +842,7 @@ function ENT:FireShot()
                     effectdata:SetAngles( Dir:Angle():Right():Angle() )
                     effectdata:SetEntity( self )
                     util.Effect( self.ShellEffect, effectdata, true, true )
-                end     
+                end
             end )
         end
     end
