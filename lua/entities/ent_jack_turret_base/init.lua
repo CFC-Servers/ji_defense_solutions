@@ -274,13 +274,11 @@ function ENT:Use( activator )
 
     if activator == self.CurrentTarget then
         self:EmitSound( "snd_jack_denied.mp3", 75, 100 )
-
         return
     end
 
     if self.IsLocked then
         self:EmitSound( "snd_jack_denied.mp3", 75, 100 )
-
         return
     end
 
@@ -510,9 +508,18 @@ function ENT:ClearHead()
     end
 end
 
+local function CanTarget( ent )
+    if ent:IsPlayer() then return true end
+    if ent:IsNPC() then return true end
+    if ent:IsVehicle() then return true end
+    if ent:IsNextBot() then return true end
+    return false
+end
+
 local function IsBetterCanidate( turret, ent, shootPos, turretPos, closestCanidate )
     if turret == ent then return end
     if ent:IsWorld() then return end
+    if not CanTarget( ent ) then return end
     if not turret:CanSee( ent ) then return end
 
     local size = GetEntityVolume( ent )
@@ -584,7 +591,6 @@ function ENT:ScanForTarget()
             self.FiredAtCurrentTarget = false
         end
     end
-
     return bestTarget
 end
 
