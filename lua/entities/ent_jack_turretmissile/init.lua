@@ -181,7 +181,7 @@ function ENT:Detonate()
         end
     end
 
-    util.BlastDamage( self, self, SelfPos, 600, 300 )
+    util.BlastDamage( self, self:GetCreator(), SelfPos, 600, 300 )
     self:EmitSound( "snd_jack_fragsplodeclose.mp3", 80, 100 )
     sound.Play( "snd_jack_fragsplodeclose.mp3", SelfPos + Vector( 0, 0, 1 ), 75, 80 )
     sound.Play( "snd_jack_fragsplodefar.mp3", SelfPos + Vector( 0, 0, 2 ), 100, 80 )

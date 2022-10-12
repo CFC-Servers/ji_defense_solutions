@@ -74,8 +74,8 @@ function ENT:Detonate()
         end
     end
 
-    util.BlastDamage( self, self, SelfPos, 80, math.Rand( 40, 50 ) )
-    util.BlastDamage( self, self, SelfPos + vector_up * 70, 50, math.Rand( 30, 40 ) )
+    util.BlastDamage( self, self:GetCreator(), SelfPos, 80, math.Rand( 40, 50 ) )
+    util.BlastDamage( self, self:GetCreator(), SelfPos + vector_up * 70, 50, math.Rand( 30, 40 ) )
     util.ScreenShake( SelfPos, 99999, 99999, 1.5, 300 )
 
     for key, object in pairs( ents.FindInSphere( SelfPos, 50 ) ) do

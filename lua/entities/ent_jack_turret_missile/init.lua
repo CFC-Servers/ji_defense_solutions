@@ -198,7 +198,7 @@ function ENT:FireMissal()
     effectd:SetNormal( PosAng.Ang:Forward() )
     effectd:SetScale( 1 )
     util.Effect( "eff_jack_turretmuzzlelight", effectd, true, true )
-    util.BlastDamage( self, self, SelfPos - Dir * 50, 20, 20 )
+    util.BlastDamage( self, self:GetCreator(), SelfPos - Dir * 50, 20, 20 )
     self:GetPhysicsObject():ApplyForceOffset( -Dir * self.ShotPower * 6 * self.ProjectilesPerShot, SelfPos + self:GetUp() * 20 )
 end
 

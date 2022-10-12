@@ -81,7 +81,7 @@ function ENT:Detonate()
         util.Effect( "eff_jack_genericboom", splad, true, true )
     end
 
-    util.BlastDamage( self, self, SelfPos, 1000, 500 )
+    util.BlastDamage( self, self:GetCreator(), SelfPos, 1000, 500 )
     util.ScreenShake( SelfPos, 99999, 99999, 1, 1000 )
     self:Remove()
 end

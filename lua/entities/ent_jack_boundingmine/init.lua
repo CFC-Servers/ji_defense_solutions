@@ -115,7 +115,7 @@ function ENT:Detonate()
     Poo:SetDamageType( DMG_BLAST )
     Poo:SetNormal( Vector( 0, 0, 0 ) )
     util.Effect( "eff_jack_shrapnelburst", Poo, true, true )
-    util.BlastDamage( self, self, SelfPos, 750, 150 )
+    util.BlastDamage( self, self:GetCreator(), SelfPos, 750, 150 )
     sound.Play( "snd_jack_fragsplodeclose.mp3", SelfPos, 75, 100 )
     util.ScreenShake( SelfPos, 99999, 99999, 1, 750 )
 

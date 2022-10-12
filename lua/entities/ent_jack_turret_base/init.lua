@@ -702,13 +702,8 @@ function ENT:Traverse()
 end
 
 function ENT:FireShot()
-    if not IsValid( self.CurrentTarget ) then
-        self.CurrentTarget = self:FindTarget()
-        if not IsValid( self.CurrentTarget ) then
-            self:StandBy()
-            return
-        end
-    end
+    self.CurrentTarget = IsValid( self.CurrentTarget ) and self.CurrentTarget or self:FindTarget()
+    if not IsValid( self.CurrentTarget ) then self:StandBy() end
 
     local Time = CurTime()
     self.BatteryCharge = self.BatteryCharge - .1
@@ -770,18 +765,18 @@ function ENT:FireShot()
         end
     end
 
-    local Bellit = {
-        Attacker = self,
+    local bulletData = {
+        Attacker = self:GetCreator(),
         Damage = self.ShotPower,
         Force = self.ShotPower / 60,
         Num = self.ProjectilesPerShot,
         Tracer = 0,
         Dir = Dir,
         Spread = Vector( Spred, Spred, Spred ),
-        Src = SelfPos
+        Src = SelfPos,
     }
 
-    self:FireBullets( Bellit )
+    self:FireBullets( bulletData )
     self.FiredAtCurrentTarget = true
     self.RoundInChamber = false
     self.Heat = self.Heat + ( self.ShotPower * self.ProjectilesPerShot ) / 150

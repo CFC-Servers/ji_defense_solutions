@@ -62,7 +62,7 @@ function ENT:Detonate()
     local Forward = self:GetForward()
     local Up = self:GetUp()
     local Origin = SelfPos - Forward * 20
-    util.BlastDamage( self, self, SelfPos, 100, 50 )
+    util.BlastDamage( self, self:GetCreator(), SelfPos, 100, 50 )
     local Sploom = EffectData()
     Sploom:SetOrigin( Origin )
     Sploom:SetNormal( -Up )
@@ -89,7 +89,7 @@ function ENT:Detonate()
 
             if ApproachAngle > 130 and self:Visible( target ) then
                 self:FireBullets( {
-                    Attacker = self,
+                    Attacker = self:GetCreator(),
                     Damage = 1,
                     Force = 1,
                     Num = 1,
