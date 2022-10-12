@@ -703,8 +703,11 @@ end
 
 function ENT:FireShot()
     if not IsValid( self.CurrentTarget ) then
-        self:StandBy()
-        return
+        self.CurrentTarget = self:FindTarget()
+        if not IsValid( self.CurrentTarget ) then
+            self:StandBy()
+            return
+        end
     end
 
     local Time = CurTime()
