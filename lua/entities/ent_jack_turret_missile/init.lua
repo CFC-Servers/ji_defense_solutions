@@ -100,7 +100,7 @@ function ENT:FireShot()
     self.BatteryCharge = self.BatteryCharge - .1
 
     if self.WillWarn then
-        if not ( self.NextAlrightFuckYouTime < CurTime() ) then
+        if not ( self.NextWarnTime < CurTime() ) then
             if self.NextWarnTime < CurTime() then
                 self:HostileAlert()
                 self.NextWarnTime = CurTime() + 1

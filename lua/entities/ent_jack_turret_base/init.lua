@@ -97,7 +97,7 @@ ENT.NextBatteryAlertTime = 0
 ENT.MenuOpen = false
 ENT.NextFriendlyTime = 0
 ENT.NextWarnTime = 0
-ENT.NextAlrightFuckYouTime = 0
+ENT.NextWarnTime = 0
 ENT.WillWarn = false
 ENT.WillLight = false
 ENT.StructuralIntegrity = 400
@@ -644,7 +644,7 @@ function ENT:Alert( targ )
             end
         end )
 
-        self.NextAlrightFuckYouTime = CurTime() + 5
+        self.NextWarnTime = CurTime() + 5
         self.BatteryCharge = self.BatteryCharge - .5 * self.MechanicsSizeMod
 
         if self.WillLight then
@@ -716,7 +716,7 @@ function ENT:FireShot()
     local Time = CurTime()
     self.BatteryCharge = self.BatteryCharge - .1
 
-    if self.WillWarn and self.NextAlrightFuckYouTime >= Time then
+    if self.WillWarn and self.NextWarnTime >= Time then
         if self.NextWarnTime < Time then
             self:HostileAlert()
             self.NextWarnTime = Time + 1
@@ -844,7 +844,7 @@ function ENT:FireShot()
                     effectdata:SetAngles( Dir:Angle():Right():Angle() )
                     effectdata:SetEntity( self )
                     util.Effect( self.ShellEffect, effectdata, true, true )
-                end
+                end     
             end )
         end
     end
