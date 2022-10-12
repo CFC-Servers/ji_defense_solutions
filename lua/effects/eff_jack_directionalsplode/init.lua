@@ -124,3 +124,6 @@ function EFFECT:Init( data )
 
     emitter:Finish()
 end
+
+function EFFECT:Render()
+end

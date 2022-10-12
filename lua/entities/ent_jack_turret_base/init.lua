@@ -299,10 +299,10 @@ function ENT:Think()
     elseif self.Heat >= 50 then
         if math.random( 1, 5 ) == 1 then
             local PosAng = self:GetAttachment( 1 )
-            local Sss = EffectData()
-            Sss:SetOrigin( PosAng.Pos + PosAng.Ang:Forward() * math.random( -7, 7 ) )
-            Sss:SetScale( self.Heat / 50 )
-            util.Effect( "eff_jack_gunoverheat", Sss, true, true )
+            local effect = EffectData()
+            effect:SetOrigin( PosAng.Pos + PosAng.Ang:Forward() * math.random( -7, 7 ) )
+            effect:SetScale( self.Heat / 50 )
+            util.Effect( "eff_jack_gunoverheat", effect, true, true )
         end
     end
 

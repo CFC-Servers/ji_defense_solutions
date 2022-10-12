@@ -59,3 +59,6 @@ function EFFECT:Init( data )
         dlight.Style = 0
     end
 end
+
+function EFFECT:Render()
+end
