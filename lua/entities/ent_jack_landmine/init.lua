@@ -78,15 +78,11 @@ function ENT:Detonate()
     util.BlastDamage( self, self:GetCreator(), SelfPos + vector_up * 100, 70, math.Rand( 55, 75 ) )
     util.ScreenShake( SelfPos, 99999, 99999, 1.5, 500 )
 
-    for key, object in pairs( ents.FindInSphere( SelfPos, 75 ) ) do
-        local Clayuss = object:GetClass()
-
-        if not ( Clayuss == "ent_jack_landmine" ) then
-            if IsValid( object:GetPhysicsObject() ) then
-                local PhysObj = object:GetPhysicsObject()
-                PhysObj:ApplyForceCenter( vector_up * 10000 )
-                PhysObj:AddAngleVelocity( VectorRand() * math.Rand( 500, 3000 ) )
-            end
+    for _, object in pairs( ents.FindInSphere( SelfPos, 75 ) ) do
+        if object ~= self and IsValid( object:GetPhysicsObject() ) then
+            local PhysObj = object:GetPhysicsObject()
+            PhysObj:ApplyForceCenter( vector_up * 10000 )
+            PhysObj:AddAngleVelocity( VectorRand() * math.Rand( 500, 3000 ) )
         end
     end
 
