@@ -188,7 +188,7 @@ end
 
 function ENT:Refuel()
     for _, found in pairs( ents.FindInSphere( self:GetPos(), 125 ) ) do
-        if fuelsEntsTable[found:GetClass()] then
+        if fuelsEntsTable[found:GetClass()] and not found.Burning then
             self:FuelWith( found )
         end
     end
