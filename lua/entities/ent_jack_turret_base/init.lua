@@ -688,7 +688,6 @@ function ENT:Traverse()
 end
 
 function ENT:FireShot()
-    if self:IsPlayerHolding() then return end
     self.CurrentTarget = IsValid( self.CurrentTarget ) and self.CurrentTarget or self:FindTarget()
     if not IsValid( self.CurrentTarget ) then self:StandBy() end
 
@@ -741,14 +740,20 @@ function ENT:FireShot()
     local TargPos = GetTargetPos( self.CurrentTarget )
 
     local Dir = ( TargPos - SelfPos ):GetNormalized()
-    local Spred = self.ShotSpread
+    local spread
+    if self:IsPlayerHolding() then
+        spread = self.ShotSpread * 10
+    else
+        spread = self.ShotSpread
+    end
+
     local Phys = self.CurrentTarget:GetPhysicsObject()
 
     if IsValid( Phys ) then
         local RelSpeed = ( Phys:GetVelocity() - self:GetPhysicsObject():GetVelocity() ):Length()
 
         if self:GetClass() ~= "ent_jack_turret_shotty" then
-            Spred = Spred + RelSpeed / 100000
+            spread = spread + RelSpeed / 100000
         end
     end
 
@@ -759,7 +764,7 @@ function ENT:FireShot()
         Num = self.ProjectilesPerShot,
         Tracer = 0,
         Dir = Dir,
-        Spread = Vector( Spred, Spred, Spred ),
+        Spread = Vector( spread, spread, spread ),
         Src = SelfPos,
     }
 
