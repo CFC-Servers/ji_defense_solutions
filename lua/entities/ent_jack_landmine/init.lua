@@ -149,7 +149,7 @@ function ENT:Use( activator )
     end
 
     self:SetAngles( traceResult.HitNormal:Angle() )
-    self:SetPos( traceResult.HitPos )
+    self:SetPos( traceResult.HitPos + traceResult.HitNormal )
 
     if traceResult.Entity == game.GetWorld() then
         local phys = self:GetPhysicsObject()
