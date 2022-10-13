@@ -2,20 +2,6 @@ AddCSLuaFile( "cl_init.lua" )
 AddCSLuaFile( "shared.lua" )
 include( "shared.lua" )
 
-local HULL_TARGETING = {
-    [0] = 0,
-    [HULL_TINY] = -5,
-    [HULL_TINY_CENTERED] = 0,
-    [HULL_SMALL_CENTERED] = -5,
-    [HULL_HUMAN] = 10,
-    [HULL_WIDE_SHORT] = 20,
-    [HULL_WIDE_HUMAN] = 15,
-    [HULL_MEDIUM] = 0,
-    [HULL_MEDIUM_TALL] = 35,
-    [HULL_LARGE] = 30,
-    [HULL_LARGE_CENTERED] = 30
-}
-
 local HULL_SIZE_TABLE = {
     [HULL_TINY] = { 0, 1000 },
     [HULL_TINY_CENTERED] = { 1000, 7000 },
@@ -702,6 +688,7 @@ function ENT:Traverse()
 end
 
 function ENT:FireShot()
+    if self:IsPlayerHolding() then return end
     self.CurrentTarget = IsValid( self.CurrentTarget ) and self.CurrentTarget or self:FindTarget()
     if not IsValid( self.CurrentTarget ) then self:StandBy() end
 
