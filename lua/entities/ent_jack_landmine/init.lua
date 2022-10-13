@@ -139,10 +139,27 @@ function ENT:OnTakeDamage( dmginfo )
 end
 
 function ENT:Use( activator )
-    if not self.Armed then
-        self:Arm()
-        JID.genericUseEffect( activator )
+    if not activator:IsPlayer() then return end
+    if self.Armed then return end
+
+    local traceResult = util.QuickTrace( activator:GetShootPos(), activator:GetAimVector() * 100, { activator, self } )
+
+    if not traceResult.Hit or not IsValid( traceResult.Entity:GetPhysicsObject() ) then
+        return activator:PickupObject( self )
     end
+
+    self:SetAngles( traceResult.HitNormal:Angle() )
+    self:SetPos( traceResult.HitPos )
+
+    if traceResult.Entity == game.GetWorld() then
+        local phys = self:GetPhysicsObject()
+        phys:EnableMotion( false )
+    else
+        self:SetParent( traceResult.Entity )
+    end
+
+    self:Arm()
+    JID.genericUseEffect( activator )
 end
 
 function ENT:Arm()

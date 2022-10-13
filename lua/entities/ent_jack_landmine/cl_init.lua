@@ -16,10 +16,16 @@ function ENT:Draw()
     Ang:RotateAroundAxis( Ang:Up(), 90 )
     Ang:RotateAroundAxis( Ang:Forward(), 180 )
     self.Pin:SetRenderAngles( Ang )
-    render.SetColorModulation( .2, .2, .2 )
 
-    if not self:GetDTBool( 0 ) then
+    local planted = self:GetDTBool( 0 )
+    if not planted then
         self.Pin:DrawModel()
+    end
+
+    if planted and not self.ColorApplied then
+        local color = render.GetSurfaceColor( self:GetPos() + Vector( 0, 10, 0 ) + self:GetForward() * 10, self:GetPos() + Vector( 0, 10, 0 ) - self:GetForward() * 100 )
+        self:SetColor( color:ToColor() )
+        self.ColorApplied = true
     end
 end
 
