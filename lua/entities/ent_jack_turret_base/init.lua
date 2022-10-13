@@ -1129,7 +1129,7 @@ local function addAmmo( ... )
                     turret:RefillAmmo( Box )
                     JID.genericUseEffect( args[1] )
                 else
-                    args[1]:PrintMessage( HUD_PRINTCENTER, "No ammunition present." )
+                    args[1]:PrintMessage( HUD_PRINTCENTER, "No ammunition present. Requires " .. turret.AmmoType .. "." )
                 end
             else
                 turret:DetachAmmoBox()
