@@ -18,3 +18,15 @@ function JID.ShouldTargetPlayer( ply )
     if CFCPvp and ply:IsInBuild() then return false end
     return true
 end
+
+local toolsToBlock = {
+    ["material"] = true,
+    ["colour"] = true
+}
+
+hook.Add( "CanTool", "JID_PreventToolgun", function( _, tr, tool )
+    if not toolsToBlock[tool] then return end
+    if not IsValid( tr.Entity ) then return end
+    local class = tr.Entity:GetClass()
+    if string.StartWith( class, "ent_jack_" ) then return false end
+end )
