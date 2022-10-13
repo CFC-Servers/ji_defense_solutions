@@ -469,7 +469,7 @@ end
 
 local function CanTarget( ent )
     if ent:IsPlayer() and ent:Alive() then return true end
-    if ent:IsNPC() then return true end
+    if ent:IsNPC() and ent:Health() > 0 then return true end
     if ent:IsVehicle() then return true end
     if ent:IsNextBot() then return true end
     return false
@@ -688,7 +688,7 @@ function ENT:Traverse()
 end
 
 function ENT:FireShot()
-    self.CurrentTarget = IsValid( self.CurrentTarget ) and self.CurrentTarget or self:FindTarget()
+    self.CurrentTarget = IsValid( self.CurrentTarget ) and self.CurrentTarget or self:ScanForTarget()
     if not IsValid( self.CurrentTarget ) then self:StandBy() end
 
     local Time = CurTime()
