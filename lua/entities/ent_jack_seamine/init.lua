@@ -18,6 +18,7 @@ end
 
 function ENT:Initialize()
     local Ang = self:GetAngles()
+
     Ang:RotateAroundAxis( Ang:Right(), 180 )
     self:SetAngles( Ang )
     self:SetModel( "models/magnet/submine/submine.mdl" )
@@ -45,15 +46,6 @@ function ENT:Detonate()
     if self.Exploded then return end
     self.Exploded = true
     local SelfPos = self:LocalToWorld( self:OBBCenter() )
-
-    --if(self.Counterweight)then self.Counterweight:Remove() end
-    for key, object in pairs( ents.FindInSphere( SelfPos, 150 ) ) do
-        if IsValid( object:GetPhysicsObject() ) then
-            if object:Visible( self ) then
-                constraint.RemoveAll( object )
-            end
-        end
-    end
 
     if self:WaterLevel() > 0 then
         sound.Play( "ambient/water/water_splash" .. math.random( 1, 3 ) .. ".wav", SelfPos, 100, 100 )
@@ -86,48 +78,40 @@ function ENT:Detonate()
     self:Remove()
 end
 
-function ENT:PhysicsCollide( data, physobj )
+function ENT:PhysicsCollide( data )
     if data.Speed > 80 and data.DeltaTime > 0.2 then
         self:EmitSound( "Canister.ImpactHard" )
     end
 
-    if data.Speed > 5 then
-        if self.Armed then
-            self:Detonate()
-        end
+    if data.Speed > 5 and self.Armed then
+        self:Detonate()
     end
 end
 
 function ENT:OnTakeDamage( dmginfo )
-    local hitter = dmginfo:GetAttacker()
-
-    if self.Armed then
-        if math.random( 1, 8 ) == 3 then
-            self:Detonate()
-        end
+    if self.Armed and math.random( 1, 8 ) == 3 then
+        self:Detonate()
     end
 
     self:TakePhysicsDamage( dmginfo )
 end
 
-function ENT:Use( activator, caller )
-    if activator:IsPlayer() then
-        if not ( self.NextUseTime < CurTime() ) then return end
-        self.NextUseTime = CurTime() + .5
+function ENT:Use( activator )
+    if not activator:IsPlayer() then return end
+    if self.NextUseTime >= CurTime() then return end
+    self.NextUseTime = CurTime() + .5
 
-        if not self.Armed then
-            if not self.Fuzed then
-                self.Fuzed = true
-                self:EmitSound( "snd_jack_pinpull.mp3", 65, 90 )
+    if self.Armed then return end
+    if self.Fuzed then return end
 
-                timer.Simple( 10, function()
-                    if IsValid( self ) then
-                        self.Armed = true
-                    end
-                end )
+    self.Fuzed = true
+    self:EmitSound( "snd_jack_pinpull.mp3", 65, 90 )
 
-                JID.genericUseEffect( activator )
-            end
+    timer.Simple( 10, function()
+        if IsValid( self ) then
+            self.Armed = true
         end
-    end
+    end )
+
+    JID.genericUseEffect( activator )
 end
