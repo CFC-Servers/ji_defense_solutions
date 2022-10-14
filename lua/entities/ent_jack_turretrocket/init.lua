@@ -34,13 +34,6 @@ function ENT:Initialize()
             self:FireMotor()
         end
     end )
-
-    local Settins = physenv.GetPerformanceSettings()
-
-    if Settins.MaxVelocity < 3000 then
-        Settins.MaxVelocity = 3000
-        physenv.SetPerformanceSettings( Settins )
-    end
 end
 
 function ENT:FireMotor()
