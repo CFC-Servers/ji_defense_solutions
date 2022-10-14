@@ -96,6 +96,13 @@ function ENT:OnTakeDamage( dmginfo )
     self:TakePhysicsDamage( dmginfo )
 end
 
+function ENT:GravGunPunt()
+    if self.Armed and math.random( 1, 100 ) == 1 then
+        self:Detonate()
+    end
+    return true
+end
+
 function ENT:Use( activator )
     if not activator:IsPlayer() then return end
     if self.NextUseTime >= CurTime() then return end
@@ -107,8 +114,9 @@ function ENT:Use( activator )
     self.Fuzed = true
     self:EmitSound( "snd_jack_pinpull.mp3", 65, 90 )
 
-    timer.Simple( 10, function()
+    timer.Simple( 3, function()
         if IsValid( self ) then
+            self:EmitSound( "npc/metropolice/vo/shit.wav", 65, 90 )
             self.Armed = true
         end
     end )
