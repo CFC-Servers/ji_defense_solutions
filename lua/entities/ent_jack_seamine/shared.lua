@@ -1,5 +1,5 @@
 ENT.Type = "anim"
-ENT.PrintName = "Naval Mine"
+ENT.PrintName = "Ball Buster 9000"
 ENT.Author = "Jackarunda"
 ENT.Category = "J.I. Defense Solutions"
 ENT.Spawnable = true
