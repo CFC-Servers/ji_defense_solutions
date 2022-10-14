@@ -1,3 +1,5 @@
+local IsValid = IsValid
+
 local function CmdDet( ... )
     local args = { ... }
     local ply = args[1]
@@ -17,6 +19,19 @@ end
 function JID.ShouldTargetPlayer( ply )
     if CFCPvp and ply:IsInBuild() then return false end
     return true
+end
+
+function JID.DetermineAttacker( ent )
+    local creator = ent:GetCreator()
+    if IsValid( creator ) then return creator end
+
+    local owner = ent:GetOwner()
+    if IsValid( owner ) then return owner end
+
+    local entOwner = ent.Owner
+    if IsValid( entOwner ) then return entOwner end
+
+    return ent
 end
 
 local toolsToBlock = {

@@ -64,18 +64,18 @@ function ENT:Launch( toucher )
     end
 
     self:GetPhysicsObject():ApplyForceCenter( self:GetUp() * 16000 )
-    local Poof = EffectData()
+    local effect = EffectData()
 
     if traceResult.Hit then
-        Poof:SetOrigin( traceResult.HitPos )
-        Poof:SetNormal( traceResult.HitNormal )
+        effect:SetOrigin( traceResult.HitPos )
+        effect:SetNormal( traceResult.HitNormal )
     else
-        Poof:SetOrigin( self:GetPos() )
-        Poof:SetNormal( Vector( 0, 0, 1 ) )
+        effect:SetOrigin( self:GetPos() )
+        effect:SetNormal( Vector( 0, 0, 1 ) )
     end
 
-    Poof:SetScale( 1 )
-    util.Effect( "eff_jack_sminepop", Poof, true, true )
+    effect:SetScale( 1 )
+    util.Effect( "eff_jack_sminepop", effect, true, true )
     util.SpriteTrail( self, 0, Color( 50, 50, 50, 255 ), false, 8, 20, .5, 1 / ( 15 + 1 ) * 0.5, "trails/smoke.vmt" )
     self:EmitSound( "snd_jack_sminepop.mp3" )
     sound.Play( "snd_jack_sminepop.mp3", self:GetPos(), 120, 80 )
@@ -109,13 +109,14 @@ function ENT:Detonate()
     self.Exploded = true
     local SelfPos = self:GetPos()
     sound.Play( "snd_jack_fragsplodeclose.mp3", SelfPos, 75, 100 )
-    local Poo = EffectData()
-    Poo:SetOrigin( SelfPos )
-    Poo:SetScale( 1 )
-    Poo:SetDamageType( DMG_BLAST )
-    Poo:SetNormal( Vector( 0, 0, 0 ) )
-    util.Effect( "eff_jack_shrapnelburst", Poo, true, true )
-    util.BlastDamage( self, self:GetCreator(), SelfPos, 750, 150 )
+    local effect = EffectData()
+    effect:SetOrigin( SelfPos )
+    effect:SetScale( 1 )
+    effect:SetDamageType( DMG_BLAST )
+    effect:SetNormal( Vector( 0, 0, 0 ) )
+
+    util.Effect( "eff_jack_shrapnelburst", effect, true, true )
+    util.BlastDamage( self, JID.DetermineAttacker( self ), SelfPos, 750, 150 )
     sound.Play( "snd_jack_fragsplodeclose.mp3", SelfPos, 75, 100 )
     util.ScreenShake( SelfPos, 99999, 99999, 1, 750 )
 
