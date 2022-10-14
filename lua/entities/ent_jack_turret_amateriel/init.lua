@@ -24,16 +24,12 @@ ENT.BarrelSizeMod = Vector( 1.5, 1.5, 3.5 )
 ENT.Autoloading = false
 ENT.CycleSound = "snd_jack_amatturretcycle.mp3"
 ENT.MechanicsSizeMod = 1.1
-ENT.TargetOrganics = true
-ENT.TargetSynthetics = true
 
 function ENT:SpawnFunction( ply, tr )
     local SpawnPos = tr.HitPos + tr.HitNormal * 16
     local ent = ents.Create( "ent_jack_turret_amateriel" )
     ent:SetPos( SpawnPos )
     ent:SetNWEntity( "Owner", ply )
-
-    ent.TargetingGroup = { 5, 9, 7, 8 }
 
     ent:Spawn()
     ent:Activate()

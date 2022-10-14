@@ -23,16 +23,12 @@ ENT.MuzzEff = "muzzleflash_suppressed"
 ENT.BarrelSizeMod = Vector( .8, .8, .8 )
 ENT.Autoloading = true
 ENT.MechanicsSizeMod = .5
-ENT.TargetOrganics = true
-ENT.TargetSynthetics = false
 
 function ENT:SpawnFunction( ply, tr )
     local SpawnPos = tr.HitPos + tr.HitNormal * 16
     local ent = ents.Create( "ent_jack_turret_plinker" )
     ent:SetPos( SpawnPos )
     ent:SetNWEntity( "Owner", ply )
-
-    ent.TargetingGroup = { 1, 3, 6 }
 
     ent:Spawn()
     ent:Activate()

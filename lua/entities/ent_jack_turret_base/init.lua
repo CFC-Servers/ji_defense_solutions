@@ -2,42 +2,6 @@ AddCSLuaFile( "cl_init.lua" )
 AddCSLuaFile( "shared.lua" )
 include( "shared.lua" )
 
-local HULL_SIZE_TABLE = {
-    [HULL_TINY] = { 0, 1000 },
-    [HULL_TINY_CENTERED] = { 1000, 7000 },
-    [HULL_SMALL_CENTERED] = { 7000, 15000 },
-    [HULL_HUMAN] = { 15000, 50000 },
-    [HULL_WIDE_SHORT] = { 50000, 70000 },
-    [HULL_WIDE_HUMAN] = { 70000, 200000 },
-    [HULL_MEDIUM] = { 200000, 700000 },
-    [HULL_MEDIUM_TALL] = { 700000, 1000000 },
-    [HULL_LARGE] = { 1000000, 1500000 },
-    [HULL_LARGE_CENTERED] = { 1500000, 2000000 }
-}
-
-local SYNTHETIC_TABLE = {
-    MAT_CONCRETE = true,
-    MAT_GRATE = true,
-    MAT_CLIP = true,
-    MAT_PLASTIC = true,
-    MAT_METAL = true,
-    MAT_COMPUTER = true,
-    MAT_TILE = true,
-    MAT_WOOD = true,
-    MAT_VENT = true,
-    MAT_GLASS = true,
-    MAT_DIRT = true,
-    MAT_SAND = true
-}
-
-local ORGANIC_TABLE = {
-    MAT_FLESH = true,
-    MAT_ANTLION = true,
-    MAT_BLOODYFLESH = true,
-    MAT_FOLIAGE = true,
-    MAT_SLOSH = true
-}
-
 local TARGET_TABLE = {
     ["npc_helicopter"] = 700000,
     ["npc_strider"] = 800000,
@@ -127,17 +91,6 @@ local function GetEntityVolume( ent )
     end
 end
 
-local function IsSynthetic( ent )
-    local mat = ent:GetMaterialType()
-
-    if ORGANIC_TABLE[mat] then
-        return false
-    elseif SYNTHETIC_TABLE[mat] then
-        return true
-    end
-    return false
-end
-
 function ENT:ExternalCharge( amt )
     self.BatteryCharge = self.BatteryCharge + amt
 
@@ -146,14 +99,6 @@ function ENT:ExternalCharge( amt )
     end
 
     self:SetDTInt( 2, math.Round( self.BatteryCharge / self.MaxCharge * 100 ) )
-end
-
-function ENT:WillTargetThisSize( siz )
-    for _, grp in pairs( self.TargetingGroup ) do
-        if siz > HULL_SIZE_TABLE[grp][1] and siz <= HULL_SIZE_TABLE[grp][2] then return true end
-    end
-
-    return false
 end
 
 function ENT:Initialize()
@@ -258,20 +203,8 @@ function ENT:Use( activator )
         umsg.Entity( self )
         umsg.Short( self.BatteryCharge )
         umsg.Short( self.RoundsOnBelt )
-        umsg.Bool( table.HasValue( self.TargetingGroup, HULL_TINY ) )
-        umsg.Bool( table.HasValue( self.TargetingGroup, HULL_TINY_CENTERED ) )
-        umsg.Bool( table.HasValue( self.TargetingGroup, HULL_SMALL_CENTERED ) )
-        umsg.Bool( table.HasValue( self.TargetingGroup, HULL_HUMAN ) )
-        umsg.Bool( table.HasValue( self.TargetingGroup, HULL_WIDE_SHORT ) )
-        umsg.Bool( table.HasValue( self.TargetingGroup, HULL_WIDE_HUMAN ) )
-        umsg.Bool( table.HasValue( self.TargetingGroup, HULL_MEDIUM ) )
-        umsg.Bool( table.HasValue( self.TargetingGroup, HULL_MEDIUM_TALL ) )
-        umsg.Bool( table.HasValue( self.TargetingGroup, HULL_LARGE ) )
-        umsg.Bool( table.HasValue( self.TargetingGroup, HULL_LARGE_CENTERED ) )
-        umsg.Bool( self.TargetSynthetics )
         umsg.Bool( table.HasValue( self.IFFTags, Tag ) )
         umsg.Bool( self.WillWarn )
-        umsg.Bool( self.TargetOrganics )
         umsg.Bool( self.WillLight )
         umsg.End()
     end
@@ -483,11 +416,6 @@ local function IsBetterCanidate( turret, ent, shootPos, turretPos, closestCanida
 
     local size = GetEntityVolume( ent )
     if size <= 0 then return end
-    if not turret:WillTargetThisSize( size ) then return end
-
-    local synthetic = IsSynthetic( ent )
-
-    if not ( synthetic and turret.TargetSynthetics or not synthethic and turret.TargetOrganics ) then return end
 
     local targetPos = ent:GetPos()
     local ang = ( targetPos - shootPos ):GetNormalized():Angle()
@@ -501,11 +429,6 @@ local function IsBetterCanidate( turret, ent, shootPos, turretPos, closestCanida
     if targetAngle.y >= 90 then return end
     if targetAngle.p <= -90 then return end
     if targetAngle.p >= 90 then return end
-
-
-    if synthetic and turret:MotionCheck( ent ) then
-        return ent, distance
-    end
 
     if ent:IsPlayer() then
         if not JID.ShouldTargetPlayer( ent ) then return end
@@ -1144,24 +1067,6 @@ local function addAmmo( ... )
 end
 
 concommand.Add( "JackaTurretAmmo", addAmmo )
-
-local function targetingGroup( ... )
-    local args = { ... }
-
-    local turret = Entity( tonumber( args[3][1] ) )
-    local Check = tobool( args[3][3] )
-    local Num = tonumber( args[3][2] )
-
-    if Check then
-        table.ForceInsert( turret.TargetingGroup, Num )
-    else
-        table.remove( turret.TargetingGroup, table.KeyFromValue( turret.TargetingGroup, Num ) )
-    end
-
-    turret:EmitSound( "snd_jack_uiselect.mp3", 65, 100 )
-end
-
-concommand.Add( "JackaTurretTargetingChange", targetingGroup )
 
 local function targetingGroupType( ... )
     local args = { ... }

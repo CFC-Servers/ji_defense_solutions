@@ -148,20 +148,8 @@ local function OpenMenu( data )
     Tab.Self = data:ReadEntity()
     Tab.Batt = data:ReadShort()
     Tab.Ammo = data:ReadShort()
-    Tab.TGBird = data:ReadBool()
-    Tab.TGCat = data:ReadBool()
-    Tab.TGDog = data:ReadBool()
-    Tab.TGHuman = data:ReadBool()
-    Tab.TGGorilla = data:ReadBool()
-    Tab.TGBear = data:ReadBool()
-    Tab.TGHorse = data:ReadBool()
-    Tab.TGMoose = data:ReadBool()
-    Tab.TGShark = data:ReadBool()
-    Tab.TGElephant = data:ReadBool()
-    Tab.TGSyn = data:ReadBool()
     Tab.IFFUser = data:ReadBool()
     Tab.Warn = data:ReadBool()
-    Tab.TGOrg = data:ReadBool()
     Tab.Light = data:ReadBool()
     Tab.Self:OpenTheMenu( Tab )
 end
@@ -171,7 +159,7 @@ usermessage.Hook( "JackaTurretOpenMenu", OpenMenu )
 function ENT:OpenTheMenu( tab )
     local DermaPanel = vgui.Create( "DFrame" )
     DermaPanel:SetPos( 50, 50 )
-    DermaPanel:SetSize( 200, 395 )
+    DermaPanel:SetSize( 200, 175 )
     DermaPanel:SetTitle( "Jackarunda Industries" )
     DermaPanel:SetVisible( true )
     DermaPanel:SetDraggable( true )
@@ -180,7 +168,7 @@ function ENT:OpenTheMenu( tab )
     DermaPanel:Center()
     local MainPanel = vgui.Create( "DPanel", DermaPanel )
     MainPanel:SetPos( 5, 25 )
-    MainPanel:SetSize( 190, 365 )
+    MainPanel:SetSize( 190, 145 )
 
     MainPanel.Paint = function()
         surface.SetDrawColor( 0, 20, 40, 255 )
@@ -196,131 +184,9 @@ function ENT:OpenTheMenu( tab )
     battlabel:SetSize( 150, 20 )
     battlabel:SetText( "Power: " .. tostring( math.Round( tab.Batt / 3000 * 100 ) ) .. "%" )
 
-    local BaseY = 30
-    local AddY = 18
-    local tg1box = vgui.Create( "DCheckBoxLabel", MainPanel )
-    tg1box:SetPos( 7, BaseY )
-    tg1box:SetSize( 200, 15 )
-    tg1box:SetText( "Target SizeClass 1 (e.g. bird)" )
-    tg1box:SetChecked( tab.TGBird )
-
-    tg1box.OnChange = function( wat, check )
-        RunConsoleCommand( "JackaTurretTargetingChange", tostring( self:GetNWInt( "JackIndex" ) ), tostring( HULL_TINY ), tostring( check ) )
-    end
-
-    local tg2box = vgui.Create( "DCheckBoxLabel", MainPanel )
-    tg2box:SetPos( 7, BaseY + AddY )
-    tg2box:SetSize( 200, 15 )
-    tg2box:SetText( "Size Class 2 (e.g. cat)" )
-    tg2box:SetChecked( tab.TGCat )
-
-    tg2box.OnChange = function( wat, check )
-        RunConsoleCommand( "JackaTurretTargetingChange", tostring( self:GetNWInt( "JackIndex" ) ), tostring( HULL_TINY_CENTERED ), tostring( check ) )
-    end
-
-    local tg3box = vgui.Create( "DCheckBoxLabel", MainPanel )
-    tg3box:SetPos( 7, BaseY + AddY * 2 )
-    tg3box:SetSize( 200, 15 )
-    tg3box:SetText( "Size Class 3 (e.g. dog)" )
-    tg3box:SetChecked( tab.TGDog )
-
-    tg3box.OnChange = function( wat, check )
-        RunConsoleCommand( "JackaTurretTargetingChange", tostring( self:GetNWInt( "JackIndex" ) ), tostring( HULL_SMALL_CENTERED ), tostring( check ) )
-    end
-
-    local tg4box = vgui.Create( "DCheckBoxLabel", MainPanel )
-    tg4box:SetPos( 7, BaseY + AddY * 3 )
-    tg4box:SetSize( 200, 15 )
-    tg4box:SetText( "Size Class 4 (e.g. human)" )
-    tg4box:SetChecked( tab.TGHuman )
-
-    tg4box.OnChange = function( wat, check )
-        RunConsoleCommand( "JackaTurretTargetingChange", tostring( self:GetNWInt( "JackIndex" ) ), tostring( HULL_HUMAN ), tostring( check ) )
-    end
-
-    local tg5box = vgui.Create( "DCheckBoxLabel", MainPanel )
-    tg5box:SetPos( 7, BaseY + AddY * 4 )
-    tg5box:SetSize( 200, 15 )
-    tg5box:SetText( "Size Class 5 (e.g. gorilla)" )
-    tg5box:SetChecked( tab.TGGorilla )
-
-    tg5box.OnChange = function( wat, check )
-        RunConsoleCommand( "JackaTurretTargetingChange", tostring( self:GetNWInt( "JackIndex" ) ), tostring( HULL_WIDE_SHORT ), tostring( check ) )
-    end
-
-    local tg6box = vgui.Create( "DCheckBoxLabel", MainPanel )
-    tg6box:SetPos( 7, BaseY + AddY * 5 )
-    tg6box:SetSize( 200, 15 )
-    tg6box:SetText( "Size Class 6 (e.g. bear)" )
-    tg6box:SetChecked( tab.TGBear )
-
-    tg6box.OnChange = function( wat, check )
-        RunConsoleCommand( "JackaTurretTargetingChange", tostring( self:GetNWInt( "JackIndex" ) ), tostring( HULL_WIDE_HUMAN ), tostring( check ) )
-    end
-
-    local tg7box = vgui.Create( "DCheckBoxLabel", MainPanel )
-    tg7box:SetPos( 7, BaseY + AddY * 6 )
-    tg7box:SetSize( 200, 15 )
-    tg7box:SetText( "Size Class 7 (e.g. horse)" )
-    tg7box:SetChecked( tab.TGHorse )
-
-    tg7box.OnChange = function( wat, check )
-        RunConsoleCommand( "JackaTurretTargetingChange", tostring( self:GetNWInt( "JackIndex" ) ), tostring( HULL_MEDIUM ), tostring( check ) )
-    end
-
-    local tg8box = vgui.Create( "DCheckBoxLabel", MainPanel )
-    tg8box:SetPos( 7, BaseY + AddY * 7 )
-    tg8box:SetSize( 200, 15 )
-    tg8box:SetText( "Size Class 8 (e.g. moose)" )
-    tg8box:SetChecked( tab.TGMoose )
-
-    tg8box.OnChange = function( wat, check )
-        RunConsoleCommand( "JackaTurretTargetingChange", tostring( self:GetNWInt( "JackIndex" ) ), tostring( HULL_MEDIUM_TALL ), tostring( check ) )
-    end
-
-    local tg9box = vgui.Create( "DCheckBoxLabel", MainPanel )
-    tg9box:SetPos( 7, BaseY + AddY * 8 )
-    tg9box:SetSize( 200, 15 )
-    tg9box:SetText( "Size Class 9 (e.g. shark)" )
-    tg9box:SetChecked( tab.TGShark )
-
-    tg9box.OnChange = function( wat, check )
-        RunConsoleCommand( "JackaTurretTargetingChange", tostring( self:GetNWInt( "JackIndex" ) ), tostring( HULL_LARGE ), tostring( check ) )
-    end
-
-    local tg10box = vgui.Create( "DCheckBoxLabel", MainPanel )
-    tg10box:SetPos( 7, BaseY + AddY * 9 )
-    tg10box:SetSize( 200, 15 )
-    tg10box:SetText( "Size Class 10 (e.g. elephant)" )
-    tg10box:SetChecked( tab.TGElephant )
-
-    tg10box.OnChange = function( wat, check )
-        RunConsoleCommand( "JackaTurretTargetingChange", tostring( self:GetNWInt( "JackIndex" ) ), tostring( HULL_LARGE_CENTERED ), tostring( check ) )
-    end
-
-    local tgsynbox = vgui.Create( "DCheckBoxLabel", MainPanel )
-    tgsynbox:SetPos( 15, BaseY + AddY * 10 + 4 )
-    tgsynbox:SetSize( 200, 15 )
-    tgsynbox:SetText( "Synthetics" )
-    tgsynbox:SetChecked( tab.TGSyn )
-
-    tgsynbox.OnChange = function( wat, check )
-        RunConsoleCommand( "JackaTurretTargetingTypeChange", tostring( self:GetNWInt( "JackIndex" ) ), "TargetSynthetics", tostring( check ) )
-    end
-
-    local tgorgbox = vgui.Create( "DCheckBoxLabel", MainPanel )
-    tgorgbox:SetPos( 98, BaseY + AddY * 10 + 4 )
-    tgorgbox:SetSize( 200, 15 )
-    tgorgbox:SetText( "Organics" )
-    tgorgbox:SetChecked( tab.TGOrg )
-
-    tgorgbox.OnChange = function( wat, check )
-        RunConsoleCommand( "JackaTurretTargetingTypeChange", tostring( self:GetNWInt( "JackIndex" ) ), "TargetOrganics", tostring( check ) )
-    end
-
     local ammobutton = vgui.Create( "Button", MainPanel )
     ammobutton:SetSize( 80, 25 )
-    ammobutton:SetPos( 10, 237 )
+    ammobutton:SetPos( 10, 25 )
     ammobutton:SetText( "Ammunition" )
     ammobutton:SetVisible( true )
 
@@ -331,7 +197,7 @@ function ENT:OpenTheMenu( tab )
 
     local battbutton = vgui.Create( "Button", MainPanel )
     battbutton:SetSize( 80, 25 )
-    battbutton:SetPos( 100, 237 )
+    battbutton:SetPos( 100, 25 )
     battbutton:SetText( "Electricity" )
     battbutton:SetVisible( true )
 
@@ -342,7 +208,7 @@ function ENT:OpenTheMenu( tab )
 
     local exitbutton = vgui.Create( "Button", MainPanel )
     exitbutton:SetSize( 80, 25 )
-    exitbutton:SetPos( 10, 270 )
+    exitbutton:SetPos( 10, 55 )
     exitbutton:SetText( "Exit" )
     exitbutton:SetVisible( true )
 
@@ -353,7 +219,7 @@ function ENT:OpenTheMenu( tab )
 
     local On = self:GetDTInt( 0 ) ~= 0
     local PowerPanel = vgui.Create( "DPanel", MainPanel )
-    PowerPanel:SetPos( 98, 268 )
+    PowerPanel:SetPos( 98, 53 )
     PowerPanel:SetSize( 84, 29 )
 
     PowerPanel.Paint = function()
@@ -368,7 +234,7 @@ function ENT:OpenTheMenu( tab )
 
     local powerbutton = vgui.Create( "Button", MainPanel )
     powerbutton:SetSize( 80, 25 )
-    powerbutton:SetPos( 100, 270 )
+    powerbutton:SetPos( 100, 55 )
 
     if On then
         powerbutton:SetText( "Deactivate" )
@@ -390,7 +256,7 @@ function ENT:OpenTheMenu( tab )
 
     local syncbutton = vgui.Create( "Button", MainPanel )
     syncbutton:SetSize( 80, 25 )
-    syncbutton:SetPos( 10, 303 )
+    syncbutton:SetPos( 10, 85 )
 
     if not tab.IFFUser then
         syncbutton:SetText( "Sync IFF" )
@@ -407,7 +273,7 @@ function ENT:OpenTheMenu( tab )
 
     local buttbutton = vgui.Create( "Button", MainPanel )
     buttbutton:SetSize( 170, 25 )
-    buttbutton:SetPos( 10, 333 )
+    buttbutton:SetPos( 10, 115 )
     buttbutton:SetText( "Set Upright" )
     buttbutton:SetVisible( true )
 
@@ -417,22 +283,22 @@ function ENT:OpenTheMenu( tab )
     end
 
     local warnbox = vgui.Create( "DCheckBoxLabel", MainPanel )
-    warnbox:SetPos( 110, 302 )
+    warnbox:SetPos( 100, 84 )
     warnbox:SetSize( 200, 15 )
     warnbox:SetText( "Warn" )
     warnbox:SetChecked( tab.Warn )
 
-    warnbox.OnChange = function( wat, check )
+    warnbox.OnChange = function( _, check )
         RunConsoleCommand( "JackaTurretWarn", tostring( self:GetNWInt( "JackIndex" ) ), tostring( check ) )
     end
 
     local litbox = vgui.Create( "DCheckBoxLabel", MainPanel )
-    litbox:SetPos( 110, 314 )
+    litbox:SetPos( 100, 99 )
     litbox:SetSize( 200, 15 )
     litbox:SetText( "Illuminate" )
     litbox:SetChecked( tab.Light )
 
-    litbox.OnChange = function( wat, check )
+    litbox.OnChange = function( _, check )
         RunConsoleCommand( "JackaTurretLight", tostring( self:GetNWInt( "JackIndex" ) ), tostring( check ) )
     end
 end

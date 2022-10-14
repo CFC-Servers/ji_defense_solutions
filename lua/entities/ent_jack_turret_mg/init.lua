@@ -24,16 +24,12 @@ ENT.Automatic = true
 ENT.BarrelSizeMod = Vector( 1, 1, 2 )
 ENT.Autoloading = true
 ENT.MechanicsSizeMod = 2
-ENT.TargetOrganics = true
-ENT.TargetSynthetics = true
 
 function ENT:SpawnFunction( ply, tr )
     local SpawnPos = tr.HitPos + tr.HitNormal * 16
     local ent = ents.Create( "ent_jack_turret_mg" )
     ent:SetPos( SpawnPos )
     ent:SetNWEntity( "Owner", ply )
-
-    ent.TargetingGroup = { 0, 4, 2, 5, 9 }
 
     ent:Spawn()
     ent:Activate()
