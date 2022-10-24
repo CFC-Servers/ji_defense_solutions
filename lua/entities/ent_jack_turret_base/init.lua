@@ -59,6 +59,9 @@ ENT.Heat = 0
 ENT.IsLocked = false
 ENT.LockPass = ""
 ENT.MaxCharge = 3000
+ENT.GroundCheckTime = 0
+ENT.GroundLastWhine = 0
+ENT.IsOnValidGround = true
 ENT.PlugPosition = Vector( 0, 0, 20 )
 
 local function GetTargetPos( ent )
@@ -256,6 +259,22 @@ function ENT:Think()
     local WeAreClear = self:ClearHead()
     self:SetDTInt( 4, self.RoundsOnBelt )
 
+    if self.GroundCheckTime < Time then
+        self.GroundCheckTime = Time + 3
+        local traceData = {
+            start = self:GetPos(),
+            endpos = -self:GetUp() * 50 + self:GetPos(),
+            filter = self
+        }
+
+        local trace = util.TraceLine( traceData )
+        if not trace.Hit then
+            self.IsOnValidGround = false
+        else
+            self.IsOnValidGround = true
+        end
+    end
+
     if self.BatteryCharge <= 0 then
         self:HardShutDown()
 
@@ -267,9 +286,8 @@ function ENT:Think()
         end
     end
 
-    if State ~= TS_WHINING and not WeAreClear then
+    if State ~= TS_WHINING and ( not WeAreClear or not self.IsOnValidGround ) then
         self:SetDTInt( 0, TS_WHINING )
-        state = TS_WHINING
     end
 
     if State == TS_IDLING then
@@ -278,7 +296,7 @@ function ENT:Think()
             if possibleTarget then
                 self:Notice()
             end
-            self.BatteryCharge = self.BatteryCharge - .0025
+            self.BatteryCharge = self.BatteryCharge - .0010
             self.NextWatchTime = self.NextWatchTime + .1
         end
     elseif State == TS_WATCHING then
@@ -345,7 +363,7 @@ function ENT:Think()
             end
         end
     elseif State == TS_WHINING then
-        if WeAreClear then
+        if WeAreClear and self.IsOnValidGround then
             self:SetDTInt( 0, TS_IDLING )
             self.GoalSweep = 0
             self.GoalSwing = 0
@@ -612,7 +630,7 @@ end
 
 function ENT:FireShot()
     self.CurrentTarget = IsValid( self.CurrentTarget ) and self.CurrentTarget or self:ScanForTarget()
-    if not IsValid( self.CurrentTarget ) then self:StandBy() end
+    if not IsValid( self.CurrentTarget ) then return self:StandBy() end
 
     local Time = CurTime()
     self.BatteryCharge = self.BatteryCharge - .1
