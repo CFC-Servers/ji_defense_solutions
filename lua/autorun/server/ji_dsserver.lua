@@ -1,5 +1,44 @@
 local IsValid = IsValid
 
+local limits = {
+    ent_jack_generator = 1,
+    ent_jack_turretammobox_22 = 2,
+    ent_jack_turretammobox_338 = 2,
+    ent_jack_turretammobox_50 = 2,
+    ent_jack_turretammobox_shot = 2,
+    ent_jack_turretammobox_40mm = 2,
+    ent_jack_turretammobox_556 = 2,
+    ent_jack_turretammobox_762 = 2,
+    ent_jack_turretammobox_9mm = 2,
+    ent_jack_turret_amateriel = 1,
+    ent_jack_turretbattery = 3,
+    ent_jack_boundingmine = 2,
+    ent_jack_aidfuel_gasoline = 2,
+    ent_jack_aidfuel_kerosene = 2,
+    ent_jack_aidfuel_propane = 2,
+    ent_jack_claymore = 1,
+    ent_jack_powernode = 4,
+    ent_jack_turret_grenade = 1,
+    ent_jack_ifftag = 2,
+    ent_jack_landmine = 2,
+    ent_jack_turret_mg = 2,
+    ent_jack_turret_dmr = 1,
+    ent_jack_paintcan = 2,
+    ent_jack_turret_pistol = 2,
+    ent_jack_turret_plinker = 2,
+    ent_jack_turret_rifle = 2,
+    ent_jack_turret_shotty = 2,
+    ent_jack_turret_sniper = 1,
+    ent_jack_turret_smg = 2,
+    ent_jack_teslasentry = 1,
+    ent_jack_turretrepairkit = 3,
+}
+
+for class, limit in pairs( limits ) do
+    CreateConVar( "sbox_max" .. class, limit, FCVAR_ARCHIVE )
+end
+
+
 local function CmdDet( ... )
     local args = { ... }
     local ply = args[1]
