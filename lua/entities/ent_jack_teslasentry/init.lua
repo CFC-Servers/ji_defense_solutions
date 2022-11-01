@@ -217,9 +217,9 @@ function ENT:GetPoz()
 end
 
 function ENT:FindBattery()
-    for key, potential in pairs( ents.FindInSphere( self:GetPos(), 40 ) ) do
-        if potential:GetClass() == "ent_jack_turretbattery" then
-            if not potential.Dead then return potential end
+    for _, potential in pairs( ents.FindInSphere( self:GetPos(), 100 ) ) do
+        if potential:GetClass() == "ent_jack_turretbattery" and not potential.Dead then
+            return potential
         end
     end
 
@@ -357,7 +357,7 @@ function ENT:Think()
                 --this staggers the capacitor firings to make the sentries work together
                 timer.Simple( math.Rand( 0, self.CapacitorMaxCharge / 100 * 0.1 ), function()
                     if IsValid( self ) then
-                        if IsValid( Target ) then
+                        if IsValid( Target ) and JID.CanTarget( Target ) then
                             if Target.Health and Target:Health() > 0 or table.HasValue( DoesNotHaveHealthTable, Class ) and not Target.JackyTeslaKilled then
                                 if self:LineOfSightBetween( self, Target ) then
                                     local DmgAmt = self.CapacitorCharge ^ 1.2 / 3

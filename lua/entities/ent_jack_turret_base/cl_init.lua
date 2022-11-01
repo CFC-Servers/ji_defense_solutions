@@ -30,7 +30,6 @@ function ENT:Initialize()
     self.AmmoBox:SetNoDraw( true )
 
     self.Battery = ClientsideModel( "models/Items/car_battery01.mdl" )
-    self.Battery:SetMaterial( "models/mat_jack_turretbattery" )
     self.Battery:SetPos( self:GetPos() )
     self.Battery:SetParent( self )
     self.Battery:SetNoDraw( true )

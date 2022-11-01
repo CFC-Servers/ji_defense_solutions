@@ -41,6 +41,7 @@ end
 function ENT:Detonate()
     if self.Exploded then return end
     self.Exploded = true
+
     local SelfPos = self:LocalToWorld( self:OBBCenter() )
     local EffectType = 1
     local Traec = util.QuickTrace( self:GetPos(), Vector( 0, 0, -5 ), self )
@@ -95,20 +96,12 @@ function ENT:Detonate()
     end
 end
 
-function ENT:PhysicsCollide( data )
-    if data.HitEntity:IsWorld() then
-        self:StartTouch( data.HitEntity )
-    end
-end
-
 function ENT:StartTouch( ent )
     if self.Armed then
+        if not JID.CanTarget( ent ) then return end
         self:Detonate( ent )
-        local Tr = util.QuickTrace( self:GetPos(), Vector( 0, 0, -5 ), self )
 
-        if Tr.Hit then
-            util.Decal( "Scorch", Tr.HitPos + Tr.HitNormal, Tr.HitPos - Tr.HitNormal )
-        end
+        util.Decal( "Scorch", self:GetPos(), Vector( 0, 0, -5 ) )
     else
         if self.NextBounceNoiseTime < CurTime() then
             self:EmitSound( "SolidMetal.ImpactSoft" )
@@ -116,15 +109,13 @@ function ENT:StartTouch( ent )
         end
     end
 end
-
+-- Both end and start touch have to be used otherwise it causes a hard crash.
 function ENT:EndTouch( ent )
     if self.Armed then
+        if not JID.CanTarget( ent ) then return end
         self:Detonate( ent )
-        local Tr = util.QuickTrace( self:GetPos(), Vector( 0, 0, -5 ), self )
 
-        if Tr.Hit then
-            util.Decal( "Scorch", Tr.HitPos + Tr.HitNormal, Tr.HitPos - Tr.HitNormal )
-        end
+        util.Decal( "Scorch", self:GetPos(), Vector( 0, 0, -5 ) )
     end
 end
 

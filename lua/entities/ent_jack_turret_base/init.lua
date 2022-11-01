@@ -297,7 +297,7 @@ function ENT:Think()
                 self:Notice()
             end
             self.BatteryCharge = self.BatteryCharge - .0010
-            self.NextWatchTime = self.NextWatchTime + .1
+            self.NextWatchTime = Time + 1 / ( self.ScanRate * 1.5 )
         end
     elseif State == TS_WATCHING then
         if self.NextScanTime < Time then
@@ -449,19 +449,14 @@ local function IsBetterCanidate( turret, ent, shootPos, turretPos, closestCanida
     if targetAngle.p >= 90 then return end
 
     if ent:IsPlayer() then
-        if not JID.ShouldTargetPlayer( ent ) then return end
+        if not JID.CanTarget( ent ) then return end
         local tag = ent:GetNWInt( "JackyIFFTag" )
 
-        if tag and tag ~= 0 then
-            if table.HasValue( turret.IFFTags, tag ) then
-                if math.random( 1, 3 ) == 2 then
-                    turret:FriendlyAlert()
-                end
-            else
-                return ent, distance
+        if tag and tag ~= 0 and table.HasValue( turret.IFFTags, tag ) then
+            if math.random( 1, 5 ) == 2 then
+                turret:FriendlyAlert()
             end
-        else
-            return ent, distance
+            return
         end
     end
 
@@ -482,6 +477,7 @@ function ENT:ScanForTarget()
         end
     end
 
+    print( self.BatteryCharge, self.MaxTrackRange / 2000 )
     self.BatteryCharge = self.BatteryCharge - self.MaxTrackRange / 2000
 
     if bestTarget then
