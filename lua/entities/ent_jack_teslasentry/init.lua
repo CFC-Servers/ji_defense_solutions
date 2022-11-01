@@ -217,9 +217,9 @@ function ENT:GetPoz()
 end
 
 function ENT:FindBattery()
-    for key, potential in pairs( ents.FindInSphere( self:GetPos(), 40 ) ) do
-        if potential:GetClass() == "ent_jack_turretbattery" then
-            if not potential.Dead then return potential end
+    for _, potential in pairs( ents.FindInSphere( self:GetPos(), 100 ) ) do
+        if potential:GetClass() == "ent_jack_turretbattery" and not potential.Dead then
+            return potential
         end
     end
 
