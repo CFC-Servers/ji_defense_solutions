@@ -1,6 +1,6 @@
 "UnlitGeneric" 
 { 
-	"$basetexture"		"vgui/entities/ent_jack_landmine_med"
+	"$basetexture"		"vgui/entities/ent_jack_landmine"
 	"$ignorez"		1
 	"$vertexcolor" 		1
 	"$vertexalpha" 		1
