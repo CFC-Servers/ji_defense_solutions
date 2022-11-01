@@ -297,7 +297,7 @@ function ENT:Think()
                 self:Notice()
             end
             self.BatteryCharge = self.BatteryCharge - .0010
-            self.NextWatchTime = self.NextWatchTime + .1
+            self.NextWatchTime = Time + 1 / ( self.ScanRate * 1.5 )
         end
     elseif State == TS_WATCHING then
         if self.NextScanTime < Time then
@@ -464,6 +464,7 @@ local function IsBetterCanidate( turret, ent, shootPos, turretPos, closestCanida
 end
 
 function ENT:ScanForTarget()
+    debug.Trace()
     local shootPos = self:GetShootPos()
     local closestCanidate = self.MaxTrackRange
     local turretPos = self:GetPos()
@@ -477,6 +478,7 @@ function ENT:ScanForTarget()
         end
     end
 
+    print( self.BatteryCharge, self.MaxTrackRange / 2000 )
     self.BatteryCharge = self.BatteryCharge - self.MaxTrackRange / 2000
 
     if bestTarget then
