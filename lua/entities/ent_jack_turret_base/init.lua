@@ -464,7 +464,6 @@ local function IsBetterCanidate( turret, ent, shootPos, turretPos, closestCanida
 end
 
 function ENT:ScanForTarget()
-    debug.Trace()
     local shootPos = self:GetShootPos()
     local closestCanidate = self.MaxTrackRange
     local turretPos = self:GetPos()
