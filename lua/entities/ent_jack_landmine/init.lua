@@ -95,20 +95,12 @@ function ENT:Detonate()
     end
 end
 
-function ENT:PhysicsCollide( data )
-    if data.HitEntity:IsWorld() then
-        self:StartTouch( data.HitEntity )
-    end
-end
-
 function ENT:StartTouch( ent )
     if self.Armed then
+        if not JID.CanTarget( ent ) then return end
         self:Detonate( ent )
-        local Tr = util.QuickTrace( self:GetPos(), Vector( 0, 0, -5 ), self )
 
-        if Tr.Hit then
-            util.Decal( "Scorch", Tr.HitPos + Tr.HitNormal, Tr.HitPos - Tr.HitNormal )
-        end
+        util.Decal( "Scorch", self:GetPos(), Vector( 0, 0, -5 ) )
     else
         if self.NextBounceNoiseTime < CurTime() then
             self:EmitSound( "SolidMetal.ImpactSoft" )
