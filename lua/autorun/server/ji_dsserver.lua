@@ -1,4 +1,5 @@
 local IsValid = IsValid
+local RENDERMODE_TRANSALPHA = RENDERMODE_TRANSALPHA
 
 local limits = {
     ent_jack_generator = 1,
@@ -55,8 +56,10 @@ function JID.genericUseEffect( ply )
     end
 end
 
-function JID.ShouldTargetPlayer( ply )
-    if CFCPvp and ply:IsInBuild() then return false end
+function JID.CanTarget( ent )
+    if not IsValid( ent ) then return false end
+    if ent:GetRenderMode() == RENDERMODE_TRANSALPHA then return false end
+    if ent:IsPlayer() and CFCPvp and ply:IsInBuild() then return false end
     return true
 end
 
