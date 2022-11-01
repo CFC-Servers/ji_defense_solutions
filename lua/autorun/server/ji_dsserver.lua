@@ -59,7 +59,13 @@ end
 function JID.CanTarget( ent )
     if not IsValid( ent ) then return false end
     if ent:GetRenderMode() == RENDERMODE_TRANSALPHA then return false end
-    if ent:IsPlayer() and CFCPvp and ply:IsInBuild() then return false end
+
+    if CFCPvp then
+        if ent:IsPlayer() and ply:IsInBuild() then return false end
+
+        local owner = ent:CPPIGetOwner() or ent:GetOwner()
+        if IsValid( owner ) and owner:IsPlayer() and owner:IsInBuild() then return false end
+    end
 
     local canTarget = hook.Run( "JIDCanTarget", ent )
     if canTarget == false then return false end
