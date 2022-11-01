@@ -135,23 +135,20 @@ function ENT:PhysicsCollide( data )
     if data.Speed > 80 and data.DeltaTime > 0.2 and not data.HitEntity:IsPlayer() then
         self:EmitSound( "SolidMetal.ImpactHard" )
     end
-
-    if data.HitEntity:IsWorld() then
-        self:StartTouch( data.HitEntity )
-    end
 end
 
 function ENT:StartTouch( ent )
-    if self.State == "Armed" then
-        self.State = "Preparing"
-        self:EmitSound( "snd_jack_metallicclick.mp3", 60, 100 )
+    if self.State ~= "Armed" then return end
+    if JID.CanTarget( ent ) then return end
 
-        timer.Simple( math.Rand( .75, 1.25 ), function()
-            if IsValid( self ) then
-                self:Launch( ent )
-            end
-        end )
-    end
+    self.State = "Preparing"
+    self:EmitSound( "snd_jack_metallicclick.mp3", 60, 100 )
+
+    timer.Simple( math.Rand( .75, 1.25 ), function()
+        if IsValid( self ) then
+            self:Launch( ent )
+        end
+    end )
 end
 
 function ENT:EndTouch( ent )
