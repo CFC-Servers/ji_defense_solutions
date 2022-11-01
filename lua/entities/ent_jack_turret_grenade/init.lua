@@ -118,6 +118,8 @@ function ENT:FireShot()
         local SelfPos = self:GetPos() + self:GetUp() * 55
         local TargPos
 
+        if not IsValid( self.CurrentTarget ) then return end
+
         TargPos = GetCenterMass( self.CurrentTarget )
 
         local Dist = ( self:GetPos() - TargPos ):Length()
