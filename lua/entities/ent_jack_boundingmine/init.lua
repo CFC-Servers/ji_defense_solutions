@@ -139,7 +139,7 @@ end
 
 function ENT:StartTouch( ent )
     if self.State ~= "Armed" then return end
-    if JID.CanTarget( ent ) then return end
+    if not JID.CanTarget( ent ) then return end
 
     self.State = "Preparing"
     self:EmitSound( "snd_jack_metallicclick.mp3", 60, 100 )
@@ -152,16 +152,16 @@ function ENT:StartTouch( ent )
 end
 
 function ENT:EndTouch( ent )
-    if self.State == "Armed" then
-        timer.Simple( math.Rand( 1, 2 ), function()
-            if IsValid( self ) then
-                self:Launch( ent )
-            end
-        end )
+    if self.State ~= "Armed" then return end
+    if not JID.CanTarget( ent ) then return end
+    timer.Simple( math.Rand( 1, 2 ), function()
+        if IsValid( self ) then
+            self:Launch( ent )
+        end
+    end )
 
-        self.State = "Preparing"
-        self:EmitSound( "snd_jack_metallicclick.mp3", 60, 100 )
-    end
+    self.State = "Preparing"
+    self:EmitSound( "snd_jack_metallicclick.mp3", 60, 100 )
 end
 
 function ENT:OnTakeDamage( dmginfo )
