@@ -449,19 +449,14 @@ local function IsBetterCanidate( turret, ent, shootPos, turretPos, closestCanida
     if targetAngle.p >= 90 then return end
 
     if ent:IsPlayer() then
-        if not JID.ShouldTargetPlayer( ent ) then return end
+        if not JID.CanTarget( ent ) then return end
         local tag = ent:GetNWInt( "JackyIFFTag" )
 
-        if tag and tag ~= 0 then
-            if table.HasValue( turret.IFFTags, tag ) then
-                if math.random( 1, 3 ) == 2 then
-                    turret:FriendlyAlert()
-                end
-            else
-                return ent, distance
+        if tag and tag ~= 0 and table.HasValue( turret.IFFTags, tag ) then
+            if math.random( 1, 5 ) == 2 then
+                turret:FriendlyAlert()
             end
-        else
-            return ent, distance
+            return
         end
     end
 
