@@ -61,7 +61,7 @@ function JID.CanTarget( ent )
     if ent:GetRenderMode() == RENDERMODE_TRANSALPHA then return false end
 
     if CFCPvp then
-        if ent:IsPlayer() and ply:IsInBuild() then return false end
+        if ent:IsPlayer() and ent:IsInBuild() then return false end
 
         local owner = ent:CPPIGetOwner() or ent:GetOwner()
         if IsValid( owner ) and owner:IsPlayer() and owner:IsInBuild() then return false end
