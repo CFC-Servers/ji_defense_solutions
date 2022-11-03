@@ -419,9 +419,11 @@ function ENT:ClearHead()
 end
 
 local function CanTarget( ent )
+    if not JID.CanTarget( ent ) then return false end
     if ent:IsPlayer() and ent:Alive() and not ent:HasGodMode() then return true end
     if ent:IsNPC() and ent:Health() > 0 then return true end
-    if ent:IsVehicle() then return true end
+    if ent:IsNextBot() then return true end
+    if ent:IsVehicle() and JID.CanTarget( ent:GetDriver() ) then return true end
     if ent:IsNextBot() then return true end
     return false
 end
@@ -449,7 +451,6 @@ local function IsBetterCanidate( turret, ent, shootPos, turretPos, closestCanida
     if targetAngle.p >= 90 then return end
 
     if ent:IsPlayer() then
-        if not JID.CanTarget( ent ) then return end
         local tag = ent:GetNWInt( "JackyIFFTag" )
 
         if tag and tag ~= 0 and table.HasValue( turret.IFFTags, tag ) then
@@ -477,6 +478,7 @@ function ENT:ScanForTarget()
         end
     end
 
+    print( self.BatteryCharge, self.MaxTrackRange / 2000 )
     self.BatteryCharge = self.BatteryCharge - self.MaxTrackRange / 2000
 
     if bestTarget then
