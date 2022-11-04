@@ -62,6 +62,7 @@ function JID.CanTarget( ent )
 
     if CFCPvp then
         if ent:IsPlayer() and ent:IsInBuild() then return false end
+        if ent:GetCreator() and ent:GetCreator():IsPlayer() and ent:GetCreator():IsInBuild() then return false end
 
         local owner = ent:GetCreator()
         if IsValid( owner ) and owner:IsPlayer() and owner:IsInBuild() then return false end
