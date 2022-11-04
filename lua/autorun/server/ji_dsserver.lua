@@ -63,7 +63,7 @@ function JID.CanTarget( ent )
     if CFCPvp then
         if ent:IsPlayer() and ent:IsInBuild() then return false end
 
-        local owner = ent:CPPIGetOwner() or ent:GetOwner()
+        local owner = ent:GetCreator()
         if IsValid( owner ) and owner:IsPlayer() and owner:IsInBuild() then return false end
     end
 
@@ -78,7 +78,7 @@ function JID.CanBeUsed( ply, ent )
     if not IsValid( ply ) then return false end
 
     if CFCPvp then
-        local owner = ent:CPPIGetOwner() or ent:GetOwner()
+        local owner = ent:GetCreator()
         if IsValid( owner ) and owner:IsPlayer() then
             if owner:IsInBuild() and owner ~= ply then return false end
             if owner:IsInPVP() and ply:IsInBuild() then return false end
