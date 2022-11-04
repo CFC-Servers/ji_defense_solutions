@@ -424,7 +424,6 @@ local function CanTarget( ent )
     if ent:IsNPC() and ent:Health() > 0 then return true end
     if ent:IsNextBot() then return true end
     if ent:IsVehicle() and JID.CanTarget( ent:GetDriver() ) then return true end
-    if ent:IsNextBot() then return true end
     return false
 end
 
