@@ -92,7 +92,6 @@ end
 
 function ENT:OnTakeDamage( dmginfo )
     self:TakePhysicsDamage( dmginfo )
-    local DType = dmginfo:GetDamageType()
 
     if dmginfo:IsDamageType( DMG_BUCKSHOT ) or dmginfo:IsDamageType( DMG_BULLET ) or dmginfo:IsDamageType( DMG_BLAST ) or dmginfo:IsDamageType( DMG_CLUB ) then
         self.StructuralIntegrity = self.StructuralIntegrity - dmginfo:GetDamage()
@@ -103,7 +102,8 @@ function ENT:OnTakeDamage( dmginfo )
     end
 end
 
-function ENT:Use( activator, caller )
+function ENT:Use( activator )
+    if not JID.CanBeUsed( activator, self ) then return end
     if self.StructuralIntegrity <= 0 then
         local Kit = self:FindRepairKit()
 

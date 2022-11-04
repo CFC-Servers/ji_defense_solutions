@@ -73,6 +73,24 @@ function JID.CanTarget( ent )
     return true
 end
 
+function JID.CanBeUsed( ply, ent )
+    if not IsValid( ent ) then return false end
+    if not IsValid( ply ) then return false end
+
+    if CFCPvp then
+        local owner = ent:CPPIGetOwner() or ent:GetOwner()
+        if IsValid( owner ) and owner:IsPlayer() then
+            if owner:IsInBuild() and owner ~= ply then return false end
+            if owner:IsInPVP() and ply:IsInBuild() then return false end
+        end
+    end
+
+    local canBeUsed = hook.Run( "JIDCanBeUsed", ent )
+    if canBeUsed == false then return false end
+
+    return true
+end
+
 function JID.DetermineAttacker( ent )
     local creator = ent:GetCreator()
     if IsValid( creator ) then return creator end
