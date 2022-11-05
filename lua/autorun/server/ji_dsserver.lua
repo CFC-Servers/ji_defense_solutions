@@ -78,15 +78,16 @@ function JID.CanBeUsed( ply, ent )
     if not IsValid( ent ) then return false end
     if not IsValid( ply ) then return false end
 
-    if not CFCPvp then return true end
-        local owner = ent:GetCreator()
-        if IsValid( owner ) and owner:IsPlayer() then
-            if owner:IsInBuild() and owner ~= ply then return false end
-            if owner:IsInPVP() and ply:IsInBuild() then return false end
-        end
-
     local canBeUsed = hook.Run( "JIDCanBeUsed", ent )
     if canBeUsed == false then return false end
+
+    if not CFCPvp then return true end
+
+    local owner = ent:GetCreator()
+    if IsValid( owner ) and owner:IsPlayer() then
+        if owner:IsInBuild() and owner ~= ply then return false end
+        if owner:IsInPVP() and ply:IsInBuild() then return false end
+    end
 
     return true
 end
