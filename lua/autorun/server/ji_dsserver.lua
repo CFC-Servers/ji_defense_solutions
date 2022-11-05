@@ -60,15 +60,34 @@ function JID.CanTarget( ent )
     if not IsValid( ent ) then return false end
     if ent:GetRenderMode() == RENDERMODE_TRANSALPHA then return false end
 
-    if CFCPvp then
-        if ent:IsPlayer() and ent:IsInBuild() then return false end
-
-        local owner = ent:CPPIGetOwner() or ent:GetOwner()
-        if IsValid( owner ) and owner:IsPlayer() and owner:IsInBuild() then return false end
-    end
-
     local canTarget = hook.Run( "JIDCanTarget", ent )
     if canTarget == false then return false end
+
+    if not CFCPvp then return true end
+
+    local owner = ent:GetCreator()
+    if ent:IsPlayer() and ent:IsInBuild() then return false end
+    if owner and owner:IsPlayer() and owner:IsInBuild() then return false end
+
+    if IsValid( owner ) and owner:IsPlayer() and owner:IsInBuild() then return false end
+
+    return true
+end
+
+function JID.CanBeUsed( ply, ent )
+    if not IsValid( ent ) then return false end
+    if not IsValid( ply ) then return false end
+
+    local canBeUsed = hook.Run( "JIDCanBeUsed", ent )
+    if canBeUsed == false then return false end
+
+    if not CFCPvp then return true end
+
+    local owner = ent:GetCreator()
+    if IsValid( owner ) and owner:IsPlayer() then
+        if owner:IsInBuild() and owner ~= ply then return false end
+        if owner:IsInPVP() and ply:IsInBuild() then return false end
+    end
 
     return true
 end

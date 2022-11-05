@@ -97,6 +97,7 @@ function ENT:OnTakeDamage( dmginfo )
 end
 
 function ENT:Use( activator )
+    if not JID.CanBeUsed( activator, self ) then return end
     if activator:IsPlayer() then
         if self.NextUseTime > CurTime() then return end
 
