@@ -86,7 +86,7 @@ function JID.CanBeUsed( ply, ent )
     local owner = ent:GetCreator()
     if IsValid( owner ) and owner:IsPlayer() then
         if owner:IsInBuild() and owner ~= ply then return false end
-        if owner:IsInPVP() and ply:IsInBuild() then return false end
+        if owner:IsInPvp() and ply:IsInBuild() then return false end
     end
 
     return true
