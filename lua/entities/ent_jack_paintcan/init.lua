@@ -53,39 +53,42 @@ function ENT:Use( activator, caller )
     end
 end
 
+local function canPaint( ent, ply )
+    if not IsValid( ent ) then return false end
+    if ent:IsPlayer() then return false end
+    if ent:CPPIGetOwner() ~= ply then return false end
+    if ent:IsWorld() then return false end
+    if ent:GetClass() == "ent_jack_paintcan" then return false end
+    return true
+end
+
 function ENT:PaintObject( ply, col )
-    local SelfPos = self:GetPos()
-    local Closest = 100
-    local Obj = nil
+    local toPaint
+    local distance = 100000
 
-    for key, found in pairs( ents.FindInSphere( SelfPos, 100 ) ) do
-        local Dist = ( found:GetPos() - SelfPos ):Length()
-        local Phys = found:GetPhysicsObject()
-
-        if not found == self and not found == ply and Dist < Closest and IsValid( Phys ) and not found:IsWorld() and not ( found:GetClass() == "ent_jack_paintcan" ) then
-            if Phys:GetVolume() < 650000 then
-                local Kol = found:GetColor()
-
-                if not ( Kol.r == col.r and Kol.g == col.g and Kol.b == col.b ) then
-                    Closest = Dist
-                    Obj = found
-                end
+    for _, found in pairs( ents.FindInSphere( self:GetPos(), 100 ) ) do
+        if found ~= self and canPaint( found, ply ) and found:GetColor() ~= col then
+            local pos = found:GetPos()
+            if pos:Distance( self:GetPos() ) < distance then
+                distance = pos:Distance( self:GetPos() )
+                toPaint = found
             end
         end
     end
 
-    if IsValid( Obj ) then
+    if not toPaint then return end
+
+    if IsValid( toPaint ) then
         self:EmitSound( "snd_jack_spraypaint.mp3" )
 
         timer.Simple( .2, function()
-            if IsValid( Obj ) then
-                Obj:SetColor( col )
-            end
+            if not IsValid( toPaint ) then return end
+            toPaint:SetColor( col )
         end )
 
-        Obj:EmitSound( "snd_jack_spraypaint.mp3" )
+        toPaint:EmitSound( "snd_jack_spraypaint.mp3" )
         local Poof = EffectData()
-        Poof:SetOrigin( Obj:LocalToWorld( Obj:OBBCenter() ) )
+        Poof:SetOrigin( toPaint:LocalToWorld( toPaint:OBBCenter() ) )
         Poof:SetScale( 5 )
         Poof:SetStart( Vector( col.r, col.g, col.b ) )
         util.Effect( "eff_jack_spraypaint", Poof, true, true )
