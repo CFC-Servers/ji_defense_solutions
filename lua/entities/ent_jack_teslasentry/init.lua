@@ -128,7 +128,7 @@ function ENT:Use( activator )
 end
 
 function ENT:FindRepairKit()
-    for key, potential in pairs( ents.FindInSphere( self:GetPos(), 40 ) ) do
+    for _, potential in pairs( ents.FindInSphere( self:GetPos(), 40 ) ) do
         if potential:GetClass() == "ent_jack_turretrepairkit" then return potential end
     end
 
@@ -420,7 +420,7 @@ function ENT:ZapTheShitOutOf( Target, DmgAmt, Powa )
 
     Dayumege:SetDamage( DmgAmt )
     Dayumege:SetInflictor( self )
-    Dayumege:SetAttacker( self )
+    Dayumege:SetAttacker( self:GetCreator() )
 
     if Powa >= 20 then
         if math.Rand( 0, 1 ) > .25 then
