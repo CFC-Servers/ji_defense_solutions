@@ -101,7 +101,7 @@ function ENT:Detonate()
 
                 local DistFrac = 1 - ( TargPos - SelfPos ):Length() / MaxRange
                 local Sploo = DamageInfo()
-                Sploo:SetAttacker( self )
+                Sploo:SetAttacker( self:GetCreator() )
                 Sploo:SetInflictor( self )
                 Sploo:SetDamage( 300 * DistFrac * math.Rand( .9, 1.1 ) )
                 Sploo:SetDamageForce( -TrueVec * 25000 * DistFrac )

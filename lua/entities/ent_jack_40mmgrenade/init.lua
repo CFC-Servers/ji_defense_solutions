@@ -35,14 +35,11 @@ function ENT:Detonate()
     local pos = self:GetPos()
 
     util.ScreenShake( pos, 99999, 99999, 1, 750 )
-
-    local explode = ents.Create( "env_explosion" )
-    explode:SetPos( self:GetPos() )
-    explode:SetOwner( self:GetNWEntity( "Owner" ) )
-    explode:Spawn()
-    explode:Activate()
-    explode:SetKeyValue( "iMagnitude", "190" )
-    explode:Fire( "Explode", 0, 0 )
+    local attacker = self:GetNWEntity( "Owner" )
+    if IsValid( attacker ) then
+        attacker = attacker:GetCreator()
+    end
+    util.BlastDamage( self, attacker, pos, 190, 190 )
 
     for _ = 0, 30 do
         local effectTrace = util.QuickTrace( pos, VectorRand() * 200, { self } )
