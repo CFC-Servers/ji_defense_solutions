@@ -71,7 +71,7 @@ function ENT:PhysicsCollide( data, physobj )
             if self.Generator and IsValid( self.Generator ) and self.Generator ~= data.HitEntity.Generator and not table.HasValue( self.Dependents, data.HitEntity ) then
                 table.ForceInsert( self.Dependents, data.HitEntity )
                 data.HitEntity.Generator = self.Generator
-                
+
                 timer.Simple( .01, function()
                     if IsValid( self ) and IsValid( data.HitEntity ) then
                         if data.HitEntity.PlugPosition then
