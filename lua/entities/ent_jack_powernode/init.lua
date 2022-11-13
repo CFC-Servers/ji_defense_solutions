@@ -68,7 +68,7 @@ function ENT:PhysicsCollide( data, physobj )
         if data.HitEntity:GetClass() == "ent_jack_generator" then
         elseif data.HitEntity:GetClass() == "ent_jack_powernode" then
             -- let the genny do the connecting
-            if self.Generator and IsValid( self.Generator ) and not self.Generator == data.HitEntity.Generator and not table.HasValue( self.Dependents, data.HitEntity ) then
+            if self.Generator and IsValid( self.Generator ) and self.Generator ~= data.HitEntity.Generator and not table.HasValue( self.Dependents, data.HitEntity ) then
                 table.ForceInsert( self.Dependents, data.HitEntity )
                 data.HitEntity.Generator = self.Generator
 
