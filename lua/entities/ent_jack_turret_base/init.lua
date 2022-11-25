@@ -64,10 +64,6 @@ ENT.GroundLastWhine = 0
 ENT.IsOnValidGround = true
 ENT.PlugPosition = Vector( 0, 0, 20 )
 
-local function GetTargetPos( ent )
-    return ent:WorldSpaceCenter()
-end
-
 local function GetEntityVolume( ent )
     local phys = ent:GetPhysicsObject()
     local class = ent:GetClass()
@@ -138,7 +134,11 @@ function ENT:Initialize()
 end
 
 function ENT:GetShootPos()
-    return self:GetPos() + self:GetUp() * 55 + self:GetForward() * 5
+    return self:GetBonePosition( 4 )
+end
+
+function ENT:GetTargetPos( ent )
+    return ent:WorldSpaceCenter()
 end
 
 function ENT:PhysicsCollide( data )
@@ -332,7 +332,7 @@ function ENT:Think()
             self.NextGoSilentTime = Time + 2
         else
             if self:CanSee( self.CurrentTarget ) then
-                local TargPos = GetTargetPos( self.CurrentTarget )
+                local TargPos = self:GetTargetPos( self.CurrentTarget )
                 local Ang = ( TargPos - SelfPos ):GetNormalized():Angle()
                 local TargAng = self:WorldToLocalAngles( Ang )
                 local ProperSweep = TargAng.y
@@ -481,21 +481,16 @@ function ENT:ScanForTarget()
     self.BatteryCharge = self.BatteryCharge - self.MaxTrackRange / 2000
 
     if bestTarget then
-        if bestTarget == self.CurrentTarget and self.FiredAtCurrentTarget and not self:MotionCheck( bestTarget ) then
+        if bestTarget == self.CurrentTarget then
+            return bestTarget
+        end
+        if bestTarget == self.CurrentTarget and self.FiredAtCurrentTarget then
             return nil
         elseif bestTarget ~= self.CurrentTarget then
             self.FiredAtCurrentTarget = false
         end
     end
     return bestTarget
-end
-
-function ENT:MotionCheck( ent )
-    local velocity = ent:GetVelocity()
-    local turretPhys = self:GetPhysicsObject()
-    local relativeSpeed = ( turretPhys:GetVelocity() - velocity ):Length()
-
-    return relativeSpeed > 20
 end
 
 function ENT:FriendlyAlert()
@@ -674,7 +669,7 @@ function ENT:FireShot()
     end )
 
     local SelfPos = self:GetShootPos()
-    local TargPos = GetTargetPos( self.CurrentTarget )
+    local TargPos = self:GetTargetPos( self.CurrentTarget )
 
     local Dir = ( TargPos - SelfPos ):GetNormalized()
     local spread
