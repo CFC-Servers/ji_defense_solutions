@@ -1,14 +1,4 @@
 include( "shared.lua" )
-local HULL_TINY = 3
-local HULL_TINY_CENTERED = 6
-local HULL_SMALL_CENTERED = 1
-local HULL_HUMAN = 0
-local HULL_WIDE_SHORT = 4
-local HULL_WIDE_HUMAN = 2
-local HULL_MEDIUM = 5
-local HULL_MEDIUM_TALL = 9
-local HULL_LARGE = 7
-local HULL_LARGE_CENTERED = 8
 local matLight = Material( "sprites/mat_jack_basicglow" )
 
 function ENT:Initialize()
