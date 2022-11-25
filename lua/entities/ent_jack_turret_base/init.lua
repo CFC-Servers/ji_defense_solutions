@@ -699,10 +699,10 @@ function ENT:FireShot()
         Damage = self.ShotPower,
         Force = self.ShotPower / 60,
         Num = self.ProjectilesPerShot,
-        Tracer = 0,
+        Tracer = 1,
         Dir = Dir,
         Spread = Vector( spread, spread, spread ),
-        Src = SelfPos,
+        Src = SelfPos
     }
 
     self:FireBullets( bulletData )
