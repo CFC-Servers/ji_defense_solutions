@@ -51,7 +51,6 @@ function ENT:Detonate()
         attacker = IsValid( creator ) and creator or attacker
     end
 
-    print( attacker, pos )
     util.BlastDamage( self, attacker, pos, 190, 190 )
 
     local plooie = EffectData()

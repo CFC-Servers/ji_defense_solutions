@@ -479,8 +479,6 @@ function ENT:ScanForTarget()
         end
     end
 
-    print( closestCanidate )
-
     self.BatteryCharge = self.BatteryCharge - self.MaxRange / 2000
 
     if bestTarget then
