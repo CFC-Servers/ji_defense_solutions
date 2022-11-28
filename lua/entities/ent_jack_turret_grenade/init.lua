@@ -32,7 +32,7 @@ ENT.ShootSoundPitch = 100
 ENT.NearShotNoise = "snd_jack_turretshootgl_close.mp3"
 ENT.FarShotNoise = "snd_jack_turretshootgl_far.mp3"
 ENT.AmmoType = "40x53mm Grenade"
-ENT.MuzzEff = "muzzleflash_m79"
+ENT.MuzzEff = "muzzleflash_smg"
 ENT.BarrelSizeMod = Vector( 2.1, 2.1, 1 )
 ENT.Autoloading = false
 ENT.CycleSound = "snd_jack_glcycle.mp3"
@@ -166,16 +166,13 @@ function ENT:FireShot()
         local PosAng = self:GetAttachment( 1 )
         local ThePos = PosAng.Pos + PosAng.Ang:Forward() * self.BarrelSizeMod.z * 5
 
-        if math.random( 1, 2 ) == 1 then
-            ParticleEffect( "muzzleflash_suppressed", ThePos, PosAng.Ang, self )
-        else
-            ParticleEffect( self.MuzzEff, ThePos, PosAng.Ang, self )
-            local effectd = EffectData()
-            effectd:SetStart( ThePos )
-            effectd:SetNormal( PosAng.Ang:Forward() )
-            effectd:SetScale( 1 )
-            util.Effect( "eff_jack_turretmuzzlelight", effectd, true, true )
-        end
+
+        ParticleEffect( self.MuzzEff, ThePos, PosAng.Ang, self )
+        local effectd = EffectData()
+        effectd:SetStart( ThePos )
+        effectd:SetNormal( PosAng.Ang:Forward() )
+        effectd:SetScale( 1 )
+        util.Effect( "eff_jack_turretmuzzlelight", effectd, true, true )
 
         if self.RoundsOnBelt > 0 then
             timer.Simple( 1 / self.FireRate * .25, function()
