@@ -4,14 +4,13 @@ include( "shared.lua" )
 ENT.Base = "ent_jack_turret_base"
 
 ENT.TrackRate = .2
-ENT.MaxRange = 12000
+ENT.MaxRange = 5000
 ENT.FireRate = .25
 ENT.BulletDamage = 120
-ENT.ScanRate = .75
+ENT.ScanRate = 1
 ENT.ShotSpread = .002
-ENT.RoundsOnBelt = 0
 ENT.RoundInChamber = false
-ENT.MaxBatteryCharge = 3000
+ENT.MaxBatteryCharge = 2500
 ENT.ShellEffect = "RifleShellEject"
 ENT.BulletsPerShot = 1
 ENT.TurretSkin = "models/mat_jack_sniperturret"

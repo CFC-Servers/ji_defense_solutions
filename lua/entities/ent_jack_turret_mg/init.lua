@@ -3,13 +3,12 @@ AddCSLuaFile( "shared.lua" )
 include( "shared.lua" )
 ENT.Base = "ent_jack_turret_base"
 
-ENT.TrackRate = .45
-ENT.MaxRange = 3500
+ENT.TrackRate = .5
+ENT.MaxRange = 2500
 ENT.FireRate = 7
-ENT.BulletDamage = 120
-ENT.ScanRate = .9
-ENT.ShotSpread = .028
-ENT.RoundsOnBelt = 0
+ENT.BulletDamage = 10
+ENT.ScanRate = 1
+ENT.ShotSpread = .025
 ENT.RoundInChamber = false
 ENT.MaxBatteryCharge = 3000
 ENT.ShellEffect = "RifleShellEject"
@@ -18,7 +17,7 @@ ENT.TurretSkin = "models/mat_jack_sniperturret"
 ENT.ShootSoundPitch = 83
 ENT.NearShotNoise = "snd_jack_turretshoot_close.mp3"
 ENT.FarShotNoise = "snd_jack_turretshoot_far.mp3"
-ENT.AmmoType = "7.62x51mm"
+ENT.AmmoType = "5.56x45mm"
 ENT.MuzzEff = "muzzleflash_sr25"
 ENT.Automatic = true
 ENT.BarrelSizeMod = Vector( 1, 1, 2 )

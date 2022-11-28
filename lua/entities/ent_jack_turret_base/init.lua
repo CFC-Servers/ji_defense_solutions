@@ -47,6 +47,7 @@ ENT.NextBatteryAlertTime = 0
 ENT.MenuOpen = false
 ENT.NextFriendlyTime = 0
 ENT.NextWarnTime = 0
+ENT.RoundsOnBelt = 0
 ENT.NextWarnTime = 0
 ENT.WillWarn = false
 ENT.WillLight = false
@@ -477,6 +478,8 @@ function ENT:ScanForTarget()
             closestCanidate = canidateDistance
         end
     end
+
+    print( closestCanidate )
 
     self.BatteryCharge = self.BatteryCharge - self.MaxRange / 2000
 

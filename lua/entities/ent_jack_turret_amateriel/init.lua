@@ -4,14 +4,13 @@ include( "shared.lua" )
 ENT.Base = "ent_jack_turret_base"
 
 ENT.TrackRate = .1
-ENT.MaxRange = 30000
-ENT.FireRate = .15
+ENT.MaxRange = 6000
+ENT.FireRate = .2
 ENT.BulletDamage = 300
-ENT.ScanRate = .75
+ENT.ScanRate = 1.5
 ENT.ShotSpread = .0008
-ENT.RoundsOnBelt = 0
 ENT.RoundInChamber = false
-ENT.MaxBatteryCharge = 3000
+ENT.MaxBatteryCharge = 1500
 ENT.ShellEffect = "RifleShellEject"
 ENT.BulletsPerShot = 1
 ENT.TurretSkin = "models/mat_jack_amaterielturret"
@@ -23,7 +22,7 @@ ENT.MuzzEff = "muzzleflash_pistol_rbull"
 ENT.BarrelSizeMod = Vector( 1.5, 1.5, 3.5 )
 ENT.Autoloading = false
 ENT.CycleSound = "snd_jack_amatturretcycle.mp3"
-ENT.MechanicsSizeMod = 1.1
+ENT.MechanicsSizeMod = 1.2
 
 function ENT:SpawnFunction( ply, tr )
     local SpawnPos = tr.HitPos + tr.HitNormal * 16

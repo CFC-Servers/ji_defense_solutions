@@ -23,7 +23,6 @@ ENT.FireRate = .2
 ENT.BulletDamage = 200
 ENT.ScanRate = .75
 ENT.ShotSpread = .017
-ENT.RoundsOnBelt = 0
 ENT.RoundInChamber = false
 ENT.MaxBatteryCharge = 3000
 ENT.ShellEffect = "RifleShellEject"
@@ -159,7 +158,7 @@ function ENT:FireShot()
         self.FiredAtCurrentTarget = true
         self.RoundInChamber = false
         self.Heat = self.Heat + 5
-        local Scayul = 1
+
         sound.Play( self.NearShotNoise, SelfPos, 70, self.ShootSoundPitch )
         sound.Play( self.FarShotNoise, SelfPos + Vector( 0, 0, 1 ), 90, self.ShootSoundPitch - 10 )
         sound.Play( self.NearShotNoise, SelfPos, 75, self.ShootSoundPitch )

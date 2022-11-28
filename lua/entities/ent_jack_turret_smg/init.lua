@@ -5,11 +5,10 @@ ENT.Base = "ent_jack_turret_base"
 
 ENT.TrackRate = 1.25
 ENT.MaxRange = 1500
-ENT.FireRate = 14
-ENT.BulletDamage = 40
+ENT.FireRate = 10
+ENT.BulletDamage = 7
 ENT.ScanRate = 2
 ENT.ShotSpread = .034
-ENT.RoundsOnBelt = 0
 ENT.RoundInChamber = false
 ENT.MaxBatteryCharge = 3000
 ENT.ShellEffect = "ShellEject"

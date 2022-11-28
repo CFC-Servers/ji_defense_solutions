@@ -9,7 +9,6 @@ ENT.FireRate = 3.75
 ENT.BulletDamage = 10
 ENT.ScanRate = 2.25
 ENT.ShotSpread = .035
-ENT.RoundsOnBelt = 0
 ENT.RoundInChamber = false
 ENT.MaxBatteryCharge = 3000
 ENT.ShellEffect = "ShellEject"

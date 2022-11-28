@@ -3,15 +3,14 @@ AddCSLuaFile( "shared.lua" )
 include( "shared.lua" )
 ENT.Base = "ent_jack_turret_base"
 
-ENT.TrackRate = .375
-ENT.MaxRange = 7000
+ENT.TrackRate = .275
+ENT.MaxRange = 4500
 ENT.FireRate = 1
-ENT.BulletDamage = 90
-ENT.ScanRate = 1
+ENT.BulletDamage = 85
+ENT.ScanRate = 0.75
 ENT.ShotSpread = .0055
-ENT.RoundsOnBelt = 0
 ENT.RoundInChamber = false
-ENT.MaxBatteryCharge = 3000
+ENT.MaxBatteryCharge = 2750
 ENT.ShellEffect = "RifleShellEject"
 ENT.BulletsPerShot = 1
 ENT.TurretSkin = "models/mat_jack_rifleturret"
