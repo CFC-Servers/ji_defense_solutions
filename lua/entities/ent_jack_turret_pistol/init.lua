@@ -2,20 +2,20 @@ AddCSLuaFile( "cl_init.lua" )
 AddCSLuaFile( "shared.lua" )
 include( "shared.lua" )
 ENT.Base = "ent_jack_turret_base"
-ENT.TargetDrones = true
+
 ENT.TrackRate = 2.25
-ENT.MaxTrackRange = 1125
+ENT.MaxRange = 1125
 ENT.FireRate = 2
-ENT.ShotPower = 40
+ENT.BulletDamage = 40
 ENT.ScanRate = 3
 ENT.ShotSpread = .035
 ENT.RoundsOnBelt = 0
 ENT.RoundInChamber = false
-ENT.MaxCharge = 3000
+ENT.MaxBatteryCharge = 3000
 ENT.ShellEffect = "ShellEject"
-ENT.ProjectilesPerShot = 1
+ENT.BulletsPerShot = 1
 ENT.TurretSkin = "models/mat_jack_pistolturret"
-ENT.ShotPitch = 110
+ENT.ShootSoundPitch = 110
 ENT.NearShotNoise = "snd_jack_turretshootshort_close.mp3"
 ENT.FarShotNoise = "snd_jack_turretshootshort_far.mp3"
 ENT.AmmoType = "9x19mm"

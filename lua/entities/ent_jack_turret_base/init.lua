@@ -58,7 +58,7 @@ ENT.NextOverHeatWhineTime = 0
 ENT.Heat = 0
 ENT.IsLocked = false
 ENT.LockPass = ""
-ENT.MaxCharge = 3000
+ENT.MaxBatteryCharge = 3000
 ENT.GroundCheckTime = 0
 ENT.GroundLastWhine = 0
 ENT.IsOnValidGround = true
@@ -93,11 +93,11 @@ end
 function ENT:ExternalCharge( amt )
     self.BatteryCharge = self.BatteryCharge + amt
 
-    if self.BatteryCharge > self.MaxCharge then
-        self.BatteryCharge = self.MaxCharge
+    if self.BatteryCharge > self.MaxBatteryCharge then
+        self.BatteryCharge = self.MaxBatteryCharge
     end
 
-    self:SetDTInt( 2, math.Round( self.BatteryCharge / self.MaxCharge * 100 ) )
+    self:SetDTInt( 2, math.Round( self.BatteryCharge / self.MaxBatteryCharge * 100 ) )
 end
 
 function ENT:Initialize()
@@ -280,7 +280,7 @@ function ENT:Think()
         self:HardShutDown()
 
         return
-    elseif self.BatteryCharge < self.MaxCharge * .2 then
+    elseif self.BatteryCharge < self.MaxBatteryCharge * .2 then
         if self.NextBatteryAlertTime < Time then
             self:Whine()
             self.NextBatteryAlertTime = Time + 4.75
@@ -389,7 +389,7 @@ function ENT:Think()
         end
     end
 
-    self:SetDTInt( 2, math.Round( self.BatteryCharge / self.MaxCharge * 100 ) )
+    self:SetDTInt( 2, math.Round( self.BatteryCharge / self.MaxBatteryCharge * 100 ) )
     self:Traverse()
     self:NextThink( CurTime() + .02 )
 
@@ -466,11 +466,11 @@ end
 
 function ENT:ScanForTarget()
     local shootPos = self:GetShootPos()
-    local closestCanidate = self.MaxTrackRange
+    local closestCanidate = self.MaxRange
     local turretPos = self:GetPos()
     local bestTarget = nil
 
-    for _, potential in pairs( ents.FindInSphere( turretPos, self.MaxTrackRange ) ) do
+    for _, potential in pairs( ents.FindInSphere( turretPos, self.MaxRange ) ) do
         local betterCanidate, canidateDistance = IsBetterCanidate( self, potential, shootPos, turretPos, closestCanidate )
         if betterCanidate then
             bestTarget = betterCanidate
@@ -478,7 +478,7 @@ function ENT:ScanForTarget()
         end
     end
 
-    self.BatteryCharge = self.BatteryCharge - self.MaxTrackRange / 2000
+    self.BatteryCharge = self.BatteryCharge - self.MaxRange / 2000
 
     if bestTarget then
         if bestTarget == self.CurrentTarget then
@@ -691,9 +691,9 @@ function ENT:FireShot()
 
     local bulletData = {
         Attacker = self:GetCreator(),
-        Damage = self.ShotPower,
-        Force = self.ShotPower / 60,
-        Num = self.ProjectilesPerShot,
+        Damage = self.BulletDamage,
+        Force = self.BulletDamage / 60,
+        Num = self.BulletsPerShot,
         Tracer = 1,
         Dir = Dir,
         Spread = Vector( spread, spread, spread ),
@@ -703,33 +703,33 @@ function ENT:FireShot()
     self:FireBullets( bulletData )
     self.FiredAtCurrentTarget = true
     self.RoundInChamber = false
-    self.Heat = self.Heat + ( self.ShotPower * self.ProjectilesPerShot ) / 150
+    self.Heat = self.Heat + ( self.BulletDamage * self.BulletsPerShot ) / 150
 
-    self:EmitSound( self.NearShotNoise, 75, self.ShotPitch )
-    self:EmitSound( self.FarShotNoise, 90, self.ShotPitch - 10 )
-    sound.Play( self.NearShotNoise, SelfPos, 75, self.ShotPitch )
-    sound.Play( self.FarShotNoise, SelfPos + Vector( 0, 0, 1 ), 90, self.ShotPitch - 10 )
+    self:EmitSound( self.NearShotNoise, 75, self.ShootSoundPitch )
+    self:EmitSound( self.FarShotNoise, 90, self.ShootSoundPitch - 10 )
+    sound.Play( self.NearShotNoise, SelfPos, 75, self.ShootSoundPitch )
+    sound.Play( self.FarShotNoise, SelfPos + Vector( 0, 0, 1 ), 90, self.ShootSoundPitch - 10 )
 
     if self:GetClass() ~= "ent_jack_turret_plinker" then
-        sound.Play( self.NearShotNoise, SelfPos, 75, self.ShotPitch )
-        sound.Play( self.FarShotNoise, SelfPos + Vector( 0, 0, 1 ), 110, self.ShotPitch - 10 )
+        sound.Play( self.NearShotNoise, SelfPos, 75, self.ShootSoundPitch )
+        sound.Play( self.FarShotNoise, SelfPos + Vector( 0, 0, 1 ), 110, self.ShootSoundPitch - 10 )
     else
         Scayul = .5
     end
 
     if self.AmmoType == "7.62x51mm" or self.AmmoType == ".338 Lapua Magnum" then
-        sound.Play( self.NearShotNoise, SelfPos + Vector( 0, 0, 1 ), 75, self.ShotPitch + 10 )
+        sound.Play( self.NearShotNoise, SelfPos + Vector( 0, 0, 1 ), 75, self.ShootSoundPitch + 10 )
 
         if self:GetClass() ~= "ent_jack_turret_mg" then
-            sound.Play( self.FarShotNoise, SelfPos + Vector( 0, 0, 2 ), 100, self.ShotPitch )
+            sound.Play( self.FarShotNoise, SelfPos + Vector( 0, 0, 2 ), 100, self.ShootSoundPitch )
         end
 
         Scayul = 1.5
     end
 
     if self.AmmoType == ".338 Lapua Magnum" then
-        sound.Play( self.NearShotNoise, SelfPos + Vector( 0, 0, 3 ), 75, self.ShotPitch + 10 )
-        sound.Play( self.FarShotNoise, SelfPos + Vector( 0, 0, 4 ), 100, self.ShotPitch + 5 )
+        sound.Play( self.NearShotNoise, SelfPos + Vector( 0, 0, 3 ), 75, self.ShootSoundPitch + 10 )
+        sound.Play( self.FarShotNoise, SelfPos + Vector( 0, 0, 4 ), 100, self.ShootSoundPitch + 5 )
         Scayul = 2.5
     end
 
@@ -763,7 +763,7 @@ function ENT:FireShot()
         end
     end
 
-    self:GetPhysicsObject():ApplyForceOffset( -Dir * self.ShotPower * 6 * self.ProjectilesPerShot, SelfPos + self:GetUp() * 30 )
+    self:GetPhysicsObject():ApplyForceOffset( -Dir * self.BulletDamage * 6 * self.BulletsPerShot, SelfPos + self:GetUp() * 30 )
 end
 
 function ENT:Whine()
@@ -868,8 +868,8 @@ end
 function ENT:RefillPower( box )
     self.HasBattery = true
     self:SetDTBool( 1, self.HasBattery )
-    self.BatteryCharge = self.MaxCharge
-    self:SetDTInt( 2, math.Round( self.BatteryCharge / self.MaxCharge * 100 ) )
+    self.BatteryCharge = self.MaxBatteryCharge
+    self:SetDTInt( 2, math.Round( self.BatteryCharge / self.MaxBatteryCharge * 100 ) )
 
     SafeRemoveEntity( box )
 
