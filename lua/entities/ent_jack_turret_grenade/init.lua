@@ -16,24 +16,23 @@ local HULL_TARGETING = {
     [HULL_LARGE_CENTERED] = 30
 }
 
-ENT.TargetDrones = true
+
 ENT.TrackRate = .2
-ENT.MaxTrackRange = 6000
+ENT.MaxRange = 6000
 ENT.FireRate = .2
-ENT.ShotPower = 200
+ENT.BulletDamage = 200
 ENT.ScanRate = .75
 ENT.ShotSpread = .017
-ENT.RoundsOnBelt = 0
 ENT.RoundInChamber = false
-ENT.MaxCharge = 3000
+ENT.MaxBatteryCharge = 3000
 ENT.ShellEffect = "RifleShellEject"
-ENT.ProjectilesPerShot = 1
+ENT.BulletsPerShot = 1
 ENT.TurretSkin = "models/mat_jack_grenadeturret"
-ENT.ShotPitch = 100
+ENT.ShootSoundPitch = 100
 ENT.NearShotNoise = "snd_jack_turretshootgl_close.mp3"
 ENT.FarShotNoise = "snd_jack_turretshootgl_far.mp3"
 ENT.AmmoType = "40x53mm Grenade"
-ENT.MuzzEff = "muzzleflash_m79"
+ENT.MuzzEff = "muzzleflash_smg"
 ENT.BarrelSizeMod = Vector( 2.1, 2.1, 1 )
 ENT.Autoloading = false
 ENT.CycleSound = "snd_jack_glcycle.mp3"
@@ -159,24 +158,21 @@ function ENT:FireShot()
         self.FiredAtCurrentTarget = true
         self.RoundInChamber = false
         self.Heat = self.Heat + 5
-        local Scayul = 1
-        sound.Play( self.NearShotNoise, SelfPos, 70, self.ShotPitch )
-        sound.Play( self.FarShotNoise, SelfPos + Vector( 0, 0, 1 ), 90, self.ShotPitch - 10 )
-        sound.Play( self.NearShotNoise, SelfPos, 75, self.ShotPitch )
-        sound.Play( self.FarShotNoise, SelfPos + Vector( 0, 0, 2 ), 110, self.ShotPitch - 10 )
+
+        sound.Play( self.NearShotNoise, SelfPos, 70, self.ShootSoundPitch )
+        sound.Play( self.FarShotNoise, SelfPos + Vector( 0, 0, 1 ), 90, self.ShootSoundPitch - 10 )
+        sound.Play( self.NearShotNoise, SelfPos, 75, self.ShootSoundPitch )
+        sound.Play( self.FarShotNoise, SelfPos + Vector( 0, 0, 2 ), 110, self.ShootSoundPitch - 10 )
         local PosAng = self:GetAttachment( 1 )
         local ThePos = PosAng.Pos + PosAng.Ang:Forward() * self.BarrelSizeMod.z * 5
 
-        if math.random( 1, 2 ) == 1 then
-            ParticleEffect( "muzzleflash_suppressed", ThePos, PosAng.Ang, self )
-        else
-            ParticleEffect( self.MuzzEff, ThePos, PosAng.Ang, self )
-            local effectd = EffectData()
-            effectd:SetStart( ThePos )
-            effectd:SetNormal( PosAng.Ang:Forward() )
-            effectd:SetScale( 1 )
-            util.Effect( "eff_jack_turretmuzzlelight", effectd, true, true )
-        end
+
+        ParticleEffect( self.MuzzEff, ThePos, PosAng.Ang, self )
+        local effectd = EffectData()
+        effectd:SetStart( ThePos )
+        effectd:SetNormal( PosAng.Ang:Forward() )
+        effectd:SetScale( 1 )
+        util.Effect( "eff_jack_turretmuzzlelight", effectd, true, true )
 
         if self.RoundsOnBelt > 0 then
             timer.Simple( 1 / self.FireRate * .25, function()
@@ -219,7 +215,7 @@ function ENT:FireShot()
             end )
         end
 
-        self:GetPhysicsObject():ApplyForceOffset( -Dir * self.ShotPower * 6 * self.ProjectilesPerShot, SelfPos + self:GetUp() * 30 )
+        self:GetPhysicsObject():ApplyForceOffset( -Dir * self.BulletDamage * 6 * self.BulletsPerShot, SelfPos + self:GetUp() * 30 )
     else
         self:EmitSound( "snd_jack_turretclick.mp3", 70, 110 )
 

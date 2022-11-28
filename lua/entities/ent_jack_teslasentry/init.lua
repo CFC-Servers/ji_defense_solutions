@@ -500,7 +500,6 @@ function ENT:ElectricalArcEffect( Attacker, Victim, Powa )
             C_P_I_L = C_P_I_L + 1
 
             if C_P_I_L >= 200 then
-                print( "CRASH PREVENTION" )
                 break
             end
         end
@@ -565,7 +564,6 @@ function ENT:ArcToGround( Victim, Powa )
                     C_P_I_L = C_P_I_L + 1
 
                     if C_P_I_L >= 200 then
-                        print( "CRASH PREVENTION; There's probably a world-clipping entity nearby." )
                         break
                     end
                 end

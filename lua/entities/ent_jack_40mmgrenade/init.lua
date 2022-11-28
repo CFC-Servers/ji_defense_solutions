@@ -29,6 +29,16 @@ function ENT:OnTakeDamage( dmginfo )
     self:TakePhysicsDamage( dmginfo )
 end
 
+function ENT:Think()
+    local effect = EffectData()
+    effect:SetOrigin( self:GetPos() )
+    effect:SetNormal( self:GetForward() )
+    effect:SetScale( 0.8 )
+    util.Effect( "eff_jack_rocketthrust", effect, true, true )
+    self:NextThink( CurTime() + 0.01 )
+    return true
+end
+
 function ENT:Detonate()
     if self.Exploding then return end
     self.Exploding = true
@@ -37,17 +47,18 @@ function ENT:Detonate()
     util.ScreenShake( pos, 99999, 99999, 1, 750 )
     local attacker = self:GetNWEntity( "Owner" )
     if IsValid( attacker ) then
-        attacker = attacker:GetCreator()
+        local creator = attacker:GetCreator()
+        attacker = IsValid( creator ) and creator or attacker
     end
+
     util.BlastDamage( self, attacker, pos, 190, 190 )
 
-    for _ = 0, 30 do
-        local effectTrace = util.QuickTrace( pos, VectorRand() * 200, { self } )
-
-        if effectTrace.Hit then
-            util.Decal( "FadingScorch", effectTrace.HitPos + effectTrace.HitNormal, effectTrace.HitPos - effectTrace.HitNormal )
-        end
-    end
+    local plooie = EffectData()
+    plooie:SetOrigin( self:GetPos() )
+    plooie:SetScale( .75 )
+    plooie:SetRadius( 2 )
+    plooie:SetNormal( self:GetForward() )
+    util.Effect( "eff_jack_minesplode", plooie, true, true )
 
     self:Remove()
 end

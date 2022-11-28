@@ -1,4 +1,5 @@
 include( "shared.lua" )
+
 local matLight = Material( "sprites/mat_jack_basicglow" )
 
 function ENT:Initialize()
