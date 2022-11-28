@@ -16,20 +16,20 @@ local HULL_TARGETING = {
     [HULL_LARGE_CENTERED] = 30
 }
 
-ENT.TargetDrones = true
+
 ENT.TrackRate = .2
-ENT.MaxTrackRange = 20000
+ENT.MaxRange = 20000
 ENT.FireRate = .1
-ENT.ShotPower = 150
+ENT.BulletDamage = 150
 ENT.ScanRate = .75
 ENT.ShotSpread = .005
 ENT.RoundsOnBelt = 0
 ENT.RoundInChamber = false
-ENT.MaxCharge = 3000
+ENT.MaxBatteryCharge = 3000
 ENT.ShellEffect = "RifleShellEject"
-ENT.ProjectilesPerShot = 1
+ENT.BulletsPerShot = 1
 ENT.TurretSkin = "models/mat_jack_rocketturret"
-ENT.ShotPitch = 100
+ENT.ShootSoundPitch = 100
 ENT.NearShotNoise = "snd_jack_turretmissilelaunch_close.mp3"
 ENT.FarShotNoise = "snd_jack_turretmissilelaunch_far.mp3"
 ENT.AmmoType = "ATrocket"
@@ -164,7 +164,7 @@ function ENT:FireShot()
         self:SetDTBool( 2, self.RoundInChamber )
         self.RoundsOnBelt = 0
         util.BlastDamage( self, self:GetCreator(), SelfPos - Dir * 75, 50, 50 )
-        self:GetPhysicsObject():ApplyForceOffset( -Dir * self.ShotPower * 6 * self.ProjectilesPerShot, SelfPos + self:GetUp() * 20 )
+        self:GetPhysicsObject():ApplyForceOffset( -Dir * self.BulletDamage * 6 * self.BulletsPerShot, SelfPos + self:GetUp() * 20 )
     else
         if self.NextWhineTime < CurTime() then
             self:Whine()
