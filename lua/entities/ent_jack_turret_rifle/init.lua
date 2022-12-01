@@ -4,10 +4,10 @@ include( "shared.lua" )
 ENT.Base = "ent_jack_turret_base"
 
 ENT.TrackRate = .5
-ENT.MaxRange = 3500
-ENT.FireRate = 4
-ENT.BulletDamage = 18
-ENT.ScanRate = 1
+ENT.MaxRange = 4000
+ENT.FireRate = 3
+ENT.BulletDamage = 15
+ENT.ScanRate = 0.75
 ENT.ShotSpread = .0175
 ENT.RoundInChamber = false
 ENT.MaxBatteryCharge = 3000
