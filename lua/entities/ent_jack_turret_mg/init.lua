@@ -25,7 +25,7 @@ ENT.Autoloading = true
 ENT.MechanicsSizeMod = 2
 
 function ENT:SpawnFunction( ply, tr )
-    local SpawnPos = tr.HitPos + tr.HitNormal * 16
+    local SpawnPos = tr.HitPos + tr.HitNormal * 5
     local ent = ents.Create( "ent_jack_turret_mg" )
     ent:SetPos( SpawnPos )
     ent:SetNWEntity( "Owner", ply )

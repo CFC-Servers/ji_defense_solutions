@@ -102,7 +102,15 @@ function ENT:ExternalCharge( amt )
 end
 
 function ENT:Initialize()
-    self:SetAngles( Angle( 0, 0, 0 ) )
+
+    local spawnAng = Angle( 0, 0, 0 )
+    local owner = self:GetNWEntity( "Owner", nil )
+    if owner then
+        spawnAng.y = owner:EyeAngles().y
+
+    end
+
+    self:SetAngles( spawnAng )
     self:SetModel( "models/combine_turrets/floor_turret.mdl" )
     self:SetMaterial( "models/mat_jack_turret" )
     self:SetColor( Color( 50, 50, 50 ) )

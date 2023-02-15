@@ -42,7 +42,7 @@ ENT.MechanicsSizeMod = 2.2
 ENT.MissileLocked = false
 
 function ENT:SpawnFunction( ply, tr )
-    local SpawnPos = tr.HitPos + tr.HitNormal * 16
+    local SpawnPos = tr.HitPos + tr.HitNormal * 5
     local ent = ents.Create( "ent_jack_turret_missile" )
     ent:SetPos( SpawnPos )
     ent:SetNWEntity( "Owner", ply )

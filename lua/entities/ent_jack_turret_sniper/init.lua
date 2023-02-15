@@ -25,7 +25,7 @@ ENT.CycleSound = "snd_jack_sniperturretcycle.mp3"
 ENT.MechanicsSizeMod = 1
 
 function ENT:SpawnFunction( ply, tr )
-    local SpawnPos = tr.HitPos + tr.HitNormal * 16
+    local SpawnPos = tr.HitPos + tr.HitNormal * 5
     local ent = ents.Create( "ent_jack_turret_sniper" )
     ent:SetPos( SpawnPos )
     ent:SetNWEntity( "Owner", ply )
