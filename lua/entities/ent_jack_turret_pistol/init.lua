@@ -3,12 +3,12 @@ AddCSLuaFile( "shared.lua" )
 include( "shared.lua" )
 ENT.Base = "ent_jack_turret_base"
 
-ENT.TrackRate = 0.85
-ENT.MaxRange = 1000
-ENT.FireRate = 2
-ENT.BulletDamage = 20
-ENT.ScanRate = 3
-ENT.ShotSpread = .03
+ENT.TrackRate = 1.5
+ENT.MaxRange = 1750
+ENT.FireRate = 2.5
+ENT.BulletDamage = 17
+ENT.ScanRate = 1.5
+ENT.ShotSpread = .020
 ENT.RoundInChamber = false
 ENT.MaxBatteryCharge = 3000
 ENT.ShellEffect = "ShellEject"
@@ -19,9 +19,10 @@ ENT.NearShotNoise = "snd_jack_turretshootshort_close.mp3"
 ENT.FarShotNoise = "snd_jack_turretshootshort_far.mp3"
 ENT.AmmoType = "9x19mm"
 ENT.MuzzEff = "muzzleflash_pistol"
-ENT.BarrelSizeMod = Vector( .9, .9, .9 )
+ENT.Automatic = nil
+ENT.BarrelSizeMod = Vector( 0.9, 0.9, 0.9 )
 ENT.Autoloading = true
-ENT.MechanicsSizeMod = 1
+ENT.MechanicsSizeMod = 0.9
 
 function ENT:SpawnFunction( ply, tr )
     local SpawnPos = tr.HitPos + tr.HitNormal * 5

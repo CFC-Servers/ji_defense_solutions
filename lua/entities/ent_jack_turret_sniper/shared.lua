@@ -1,5 +1,5 @@
 ENT.Type = "anim"
-ENT.PrintName = "Sniper ST"
+ENT.PrintName = "Autosniper ST"
 ENT.Author = "Jackarunda"
 ENT.Category = "J.I. Defense Solutions"
 ENT.Spawnable = true

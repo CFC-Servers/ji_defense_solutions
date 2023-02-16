@@ -3,14 +3,14 @@ AddCSLuaFile( "shared.lua" )
 include( "shared.lua" )
 ENT.Base = "ent_jack_turret_base"
 
-ENT.TrackRate = 1.75
-ENT.MaxRange = 1000
-ENT.FireRate = 3.75
-ENT.BulletDamage = 10
-ENT.ScanRate = 2.25
-ENT.ShotSpread = .035
+ENT.TrackRate = 1.5
+ENT.MaxRange = 1750
+ENT.FireRate = 3
+ENT.BulletDamage = 8
+ENT.ScanRate = 2.00
+ENT.ShotSpread = .020
 ENT.RoundInChamber = false
-ENT.MaxBatteryCharge = 3000
+ENT.MaxBatteryCharge = 4000
 ENT.ShellEffect = "ShellEject"
 ENT.BulletsPerShot = 1
 ENT.TurretSkin = "models/mat_jack_plinkerturret"
