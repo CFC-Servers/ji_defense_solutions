@@ -430,6 +430,7 @@ end
 
 local function CanTarget( ent )
     if not JID.CanTarget( ent ) then return false end
+    if ent:GetClass() == "cfc_shaped_charge" then return true end
     if ent:IsPlayer() and ent:Alive() and not ent:HasGodMode() then return true end
     if ent:IsNPC() and ent:Health() > 0 then return true end
     if ent:IsNextBot() then return true end
@@ -698,6 +699,11 @@ function ENT:FireShot()
         end
     end
 
+    local spreadVec = Vector() -- manually build spread to avoid weird bug where all shots land in the top right for no apparent reason
+
+    spreadVec.x = spread * math.Rand( -1, 1 )
+    spreadVec.y = spread * math.Rand( -1, 1 )
+
     local bulletData = {
         Attacker = self:GetCreator(),
         Damage = self.BulletDamage,
@@ -705,7 +711,7 @@ function ENT:FireShot()
         Num = self.BulletsPerShot,
         Tracer = 1,
         Dir = Dir,
-        Spread = Vector( spread, spread, spread ),
+        Spread = spreadVec,
         Src = SelfPos
     }
 
