@@ -725,6 +725,8 @@ function ENT:FireShot()
     sound.Play( self.NearShotNoise, SelfPos, 75, self.ShootSoundPitch )
     sound.Play( self.FarShotNoise, SelfPos + Vector( 0, 0, 1 ), 90, self.ShootSoundPitch - 10 )
 
+    local Scayul = 1
+
     if self:GetClass() ~= "ent_jack_turret_plinker" then
         sound.Play( self.NearShotNoise, SelfPos, 75, self.ShootSoundPitch )
         sound.Play( self.FarShotNoise, SelfPos + Vector( 0, 0, 1 ), 110, self.ShootSoundPitch - 10 )

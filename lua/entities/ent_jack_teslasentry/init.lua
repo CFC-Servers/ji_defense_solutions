@@ -11,7 +11,7 @@ ENT.PlugPosition = Vector( 0, 0, 0 )
 
 local DoesNotHaveHealthTable = { "npc_rollermine", "npc_turret_floor", "npc_turret_ceiling", "npc_turret_ground", "npc_grenade_frag", "rpg_missile", "crossbow_bolt", "hunter_flechette", "ent_jack_rocket", "prop_combine_ball", "grenade_ar2", "combine_mine", "npc_combinedropship", "hunter_flechette" }
 
-local SpecialTargetTable = { "rpg_missile", "crossbow_bolt", "cfc_shaped_charge", "ent_ins2rpgrocket" }
+local SpecialTargetTable = { "sent_spawnpoint", "rpg_missile", "crossbow_bolt", "cfc_shaped_charge", "ent_ins2rpgrocket" }
 
 function ENT:SpawnFunction( ply, tr )
     local SpawnPos = tr.HitPos + tr.HitNormal * 50
@@ -59,7 +59,7 @@ function ENT:Initialize()
     self.BatteryCharge = 0
     self.CapacitorCharge = 0
     self.CapacitorMaxCharge = 100 --maximum is 150, minimum is 10
-    self.CapacitorChargeRate = 40 --maximum is 90, minimum is 10
+    self.CapacitorChargeRate = 20 --maximum is 90, minimum is 10
     self.MaxEngagementRange = 600 -- range to engage
     self.NextAlertTime = 0
     self:SetDTBool( 1, self.HasBatteryOne )
@@ -215,7 +215,7 @@ function ENT:GetPoz()
     return self:GetPos() + self:GetUp() * ( 30 + self.UpAmount * 1.6 )
 end
 
-function ValidArcPossible( HitTrace, Destination )
+local function ValidArcPossible( HitTrace, Destination )
     if not HitTrace.Hit then return nil end
     local MatType = HitTrace.MatType
     local HitEnt = HitTrace.Entity
@@ -225,7 +225,7 @@ function ValidArcPossible( HitTrace, Destination )
     return false
 end
 
-function SparkEffect( SparkPos )
+local function SparkEffect( SparkPos )
     local Sparks = EffectData()
     Sparks:SetOrigin( SparkPos )
     Sparks:SetMagnitude( 2 )
@@ -247,19 +247,17 @@ end
 function ENT:FindTarget()
     self.BatteryCharge = self.BatteryCharge - .0125
     local NewTarg = nil
-    local Closest = self.MaxEngagementRange
+    local Closest = self.MaxEngagementRange^2
 
-    for key, found in pairs( ents.FindInSphere( self:GetPoz(), self.MaxEngagementRange ) ) do
+    for _, found in pairs( ents.FindInSphere( self:GetPoz(), self.MaxEngagementRange ) ) do
         if found:IsPlayer() and found:HasGodMode() then continue end
+        if ( found.TeslaTurretNoZapTime or 0 ) > CurTime() then continue end
         local Class = found:GetClass()
         local Phys = found:GetPhysicsObject()
-        local Class = found:GetClass()
 
         if table.HasValue( SpecialTargetTable, Class ) then
-            local Vel = found:GetVelocity() - self:GetPhysicsObject():GetVelocity()
-            local Spd = Vel:Length()
 
-            local Dist = ( found:LocalToWorld( found:OBBCenter() ) - self:GetPoz() ):Length()
+            local Dist = ( found:LocalToWorld( found:OBBCenter() ) - self:GetPoz() ):LengthSqr()
 
             if Dist < Closest then
                 NewTarg = found
@@ -270,7 +268,7 @@ function ENT:FindTarget()
             local Spd = Vel:Length()
 
             if Spd > 20 then
-                local Dist = ( found:LocalToWorld( found:OBBCenter() ) - self:GetPoz() ):Length()
+                local Dist = ( found:LocalToWorld( found:OBBCenter() ) - self:GetPoz() ):LengthSqr()
 
                 if Dist < Closest then
                     NewTarg = found
@@ -376,7 +374,10 @@ function ENT:Think()
                     if not IsValid( self ) then return end
                     if not IsValid( Target ) or not JID.CanTarget( Target ) then return end
                     if ( not Target.Health and not Target:Health() <= 0 and not table.HasValue( DoesNotHaveHealthTable, Class ) ) or Target.JackyTeslaKilled then return end
-                    if not self:LineOfCurrentBetween( self, Target ) then return end
+                    if not self:LineOfCurrentBetween( self, Target ) then
+                        Target.TeslaTurretNoZapTime = CurTime() + 1.5
+                        return
+                    end
                     local DmgAmt = self.CapacitorCharge ^ 1.2 / 3
                     local Powa = self.CapacitorCharge
                     self.CapacitorCharge = 0
@@ -559,11 +560,11 @@ function ENT:ArcToGround( Victim, Powa )
 
     if Trayuss.Hit then
         local NewStart = Victim:GetPos() + Vector( 0, 0, 5 )
-        ToVector = Trayuss.HitPos - NewStart
+        local ToVector = Trayuss.HitPos - NewStart
         local Dist = ToVector:Length()
 
         if Dist > 25 then
-            WanderDirection = Vector( 0, 0, -1 )
+            local WanderDirection = Vector( 0, 0, -1 )
             local NumPoints = math.Clamp( math.ceil( 30 * Dist / 1000 ) + 1, 1, 50 )
             local PointTable = {}
             local C_P_I_L = 0
