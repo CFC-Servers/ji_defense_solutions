@@ -89,20 +89,17 @@ end
 local function ElectriTwitchClient( data )
     local Pos = data:ReadVector()
 
-    for key, rag in pairs( ents.FindInSphere( Pos, 40 ) ) do
-        if rag:GetClass() == "class C_ClientRagdoll" then
-            for i = 1, 60 do
-                timer.Simple( i / 20, function()
-                    if IsValid( rag ) then
-                        local Bones = rag:GetPhysicsObjectCount() - 1
-                        local Obj = rag:GetPhysicsObjectNum( math.random( 2, Bones ) )
+    for _, rag in pairs( ents.FindInSphere( Pos, 40 ) ) do
+        if rag:GetClass() ~= "class C_ClientRagdoll" then continue end
+        for i = 1, 60 do
+            timer.Simple( i / 20, function()
+                if not IsValid( rag ) then return end
+                local Bones = rag:GetPhysicsObjectCount() - 1
+                local Obj = rag:GetPhysicsObjectNum( math.random( 2, Bones ) )
 
-                        if Obj then
-                            Obj:ApplyForceCenter( VectorRand() * ( 60 - i ) * Obj:GetMass() * 10 )
-                        end
-                    end
-                end )
-            end
+                if not Obj then return end
+                Obj:ApplyForceCenter( VectorRand() * ( 60 - i ) * Obj:GetMass() * 10 )
+            end )
         end
     end
 end
@@ -160,7 +157,7 @@ function ENT:OpenTheMenu( tab )
     capselect:SetDecimals( 0 )
     capselect:SetValue( tab.CapCharge )
 
-    capselect.ValueChanged = function( shitballs, value )
+    capselect.ValueChanged = function( _, value )
         RunConsoleCommand( "JackaTeslaTurretSetCap", tostring( self:GetNWInt( "JackIndex" ) ), tostring( value ) )
     end
 

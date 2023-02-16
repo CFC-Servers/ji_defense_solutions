@@ -8,11 +8,10 @@ ENT.HasBatteryOne = false
 ENT.HasBatteryOne = false
 ENT.HasBattery = false
 ENT.PlugPosition = Vector( 0, 0, 0 )
-local DoNotTargetTable = {}
 
 local DoesNotHaveHealthTable = { "npc_rollermine", "npc_turret_floor", "npc_turret_ceiling", "npc_turret_ground", "npc_grenade_frag", "rpg_missile", "crossbow_bolt", "hunter_flechette", "ent_jack_rocket", "prop_combine_ball", "grenade_ar2", "combine_mine", "npc_combinedropship", "hunter_flechette" }
 
-local SpecialTargetTable = { "rpg_missile", "crossbow_bolt" }
+local SpecialTargetTable = { "rpg_missile", "crossbow_bolt", "cfc_shaped_charge", "ent_ins2rpgrocket" }
 
 function ENT:SpawnFunction( ply, tr )
     local SpawnPos = tr.HitPos + tr.HitNormal * 50
@@ -61,7 +60,7 @@ function ENT:Initialize()
     self.CapacitorCharge = 0
     self.CapacitorMaxCharge = 100 --maximum is 150, minimum is 10
     self.CapacitorChargeRate = 40 --maximum is 90, minimum is 10
-    self.MaxEngagementRange = 500 --maximum is 1500, minimum is 100
+    self.MaxEngagementRange = 600 -- range to engage
     self.NextAlertTime = 0
     self:SetDTBool( 1, self.HasBatteryOne )
     self:SetDTBool( 2, self.HasBatteryTwo )
@@ -128,7 +127,7 @@ function ENT:Use( activator )
 end
 
 function ENT:FindRepairKit()
-    for _, potential in pairs( ents.FindInSphere( self:GetPos(), 40 ) ) do
+    for _, potential in pairs( ents.FindInSphere( self:GetPos(), 100 ) ) do
         if potential:GetClass() == "ent_jack_turretrepairkit" then return potential end
     end
 
@@ -216,6 +215,25 @@ function ENT:GetPoz()
     return self:GetPos() + self:GetUp() * ( 30 + self.UpAmount * 1.6 )
 end
 
+function ValidArcPossible( HitTrace, Destination )
+    if not HitTrace.Hit then return nil end
+    local MatType = HitTrace.MatType
+    local HitEnt = HitTrace.Entity
+    if not HitTrace.HitWorld and IsValid( HitEnt ) and MatType == MAT_METAL or MatType == MAT_GRATE then
+        return true, HitEnt:NearestPoint( Destination ), HitEnt
+    end
+    return false
+end
+
+function SparkEffect( SparkPos )
+    local Sparks = EffectData()
+    Sparks:SetOrigin( SparkPos )
+    Sparks:SetMagnitude( 2 )
+    Sparks:SetScale( 1 )
+    Sparks:SetRadius( 6 )
+    util.Effect( "Sparks", Sparks )
+end
+
 function ENT:FindBattery()
     for _, potential in pairs( ents.FindInSphere( self:GetPos(), 100 ) ) do
         if potential:GetClass() == "ent_jack_turretbattery" and not potential.Dead then
@@ -232,24 +250,23 @@ function ENT:FindTarget()
     local Closest = self.MaxEngagementRange
 
     for key, found in pairs( ents.FindInSphere( self:GetPoz(), self.MaxEngagementRange ) ) do
+        if found:IsPlayer() and found:HasGodMode() then continue end
         local Class = found:GetClass()
         local Phys = found:GetPhysicsObject()
         local Class = found:GetClass()
 
-        if IsValid( Phys ) then
-            local Vel = Phys:GetVelocity() - self:GetPhysicsObject():GetVelocity()
+        if table.HasValue( SpecialTargetTable, Class ) then
+            local Vel = found:GetVelocity() - self:GetPhysicsObject():GetVelocity()
             local Spd = Vel:Length()
 
-            if Spd > 20 then
-                local Dist = ( found:LocalToWorld( found:OBBCenter() ) - self:GetPoz() ):Length()
+            local Dist = ( found:LocalToWorld( found:OBBCenter() ) - self:GetPoz() ):Length()
 
-                if Dist < Closest then
-                    NewTarg = found
-                    Closest = Dist
-                end
+            if Dist < Closest then
+                NewTarg = found
+                Closest = Dist
             end
-        elseif table.HasValue( SpecialTargetTable, Class ) then
-            local Vel = found:GetVelocity() - self:GetPhysicsObject():GetVelocity()
+        elseif IsValid( Phys ) then
+            local Vel = Phys:GetVelocity() - self:GetPhysicsObject():GetVelocity()
             local Spd = Vel:Length()
 
             if Spd > 20 then
@@ -270,7 +287,7 @@ function ENT:Think()
     if self.MenuOpen then return end
 
     if self.State == "Engaging" then
-        self.UpAmount = self.UpAmount + .15
+        self.UpAmount = self.UpAmount + .30
 
         if self.UpAmount >= 39 then
             self.UpAmount = 39
@@ -291,7 +308,7 @@ function ENT:Think()
     end
 
     if self.State == "Disengaging" then
-        self.UpAmount = self.UpAmount - .5
+        self.UpAmount = self.UpAmount - .30
 
         if self.UpAmount <= 0 then
             self.UpAmount = 0
@@ -355,21 +372,17 @@ function ENT:Think()
                 self.JaFired = true
 
                 --this staggers the capacitor firings to make the sentries work together
-                timer.Simple( math.Rand( 0, self.CapacitorMaxCharge / 100 * 0.1 ), function()
-                    if IsValid( self ) then
-                        if IsValid( Target ) and JID.CanTarget( Target ) then
-                            if Target.Health and Target:Health() > 0 or table.HasValue( DoesNotHaveHealthTable, Class ) and not Target.JackyTeslaKilled then
-                                if self:LineOfSightBetween( self, Target ) then
-                                    local DmgAmt = self.CapacitorCharge ^ 1.2 / 3
-                                    local Powa = self.CapacitorCharge
-                                    self.CapacitorCharge = 0
-                                    self:ZapTheShitOutOf( Target, DmgAmt, Powa )
-                                    self:ElectricalArcEffect( self, Target, Powa )
-                                    self:ArcToGround( Target, Powa )
-                                end
-                            end
-                        end
-                    end
+                timer.Simple( math.Rand( 0, self.CapacitorMaxCharge / 1000 ), function()
+                    if not IsValid( self ) then return end
+                    if not IsValid( Target ) or not JID.CanTarget( Target ) then return end
+                    if ( not Target.Health and not Target:Health() <= 0 and not table.HasValue( DoesNotHaveHealthTable, Class ) ) or Target.JackyTeslaKilled then return end
+                    if not self:LineOfCurrentBetween( self, Target ) then return end
+                    local DmgAmt = self.CapacitorCharge ^ 1.2 / 3
+                    local Powa = self.CapacitorCharge
+                    self.CapacitorCharge = 0
+                    self:ZapTheShitOutOf( Target, DmgAmt, Powa )
+                    self:ElectricalArcEffect( self, Target, Powa )
+                    self:ArcToGround( Target, Powa )
                 end )
             end
         else
@@ -385,7 +398,7 @@ function ENT:Think()
         self:EmitSound( "snd_jack_chargecapacitor.mp3", 70 - self.CapacitorCharge / self.CapacitorMaxCharge * 20, 70 + self.CapacitorCharge / self.CapacitorMaxCharge * 90 )
     end
 
-    self:NextThink( CurTime() + .025 )
+    self:NextThink( CurTime() + .015 )
 
     return true
 end
@@ -394,7 +407,7 @@ function ENT:ClearHead()
     local Hits = 0
 
     for i = 0, 10 do
-        local Tr = util.QuickTrace( self:GetPoz(), VectorRand() * 75, { self } )
+        local Tr = util.QuickTrace( self:GetPoz(), VectorRand() * 15, { self } )
 
         if Tr.Hit then
             Hits = Hits + 1
@@ -422,24 +435,25 @@ function ENT:ZapTheShitOutOf( Target, DmgAmt, Powa )
     Dayumege:SetInflictor( self )
     Dayumege:SetAttacker( self:GetCreator() )
 
-    if Powa >= 20 then
-        if math.Rand( 0, 1 ) > .25 then
-            if Target:IsNPC() then
-                Target:Fire( "sethealth", "2", 0 )
-                Target:Fire( "respondtoexplodechirp", "", 0.5 )
-                Target:Fire( "selfdestruct", "", 1 )
-                Target:Fire( "disarm", " ", 0 )
-                Target:Fire( "explode", "", 0 )
-                Target:Fire( "gunoff", "", 0 )
-                Target:Fire( "settimer", "0", 0 )
-            end
-
-            Target.JackyTeslaKilled = true
-
-            if table.HasValue( SpecialTargetTable, Target:GetClass() ) then
-                Target:SetVelocity( VectorRand() * 100000 )
-            end
+    if Powa >= 20 and math.Rand( 0, 1 ) > .25 then
+        if Target:IsNPC() then
+            Target:Fire( "sethealth", "2", 0 )
+            Target:Fire( "respondtoexplodechirp", "", 0.5 )
+            Target:Fire( "selfdestruct", "", 1 )
+            Target:Fire( "disarm", " ", 0 )
+            Target:Fire( "explode", "", 0 )
+            Target:Fire( "gunoff", "", 0 )
+            Target:Fire( "settimer", "0", 0 )
         end
+
+        if table.HasValue( DoesNotHaveHealthTable, Target:GetClass() ) then
+            Target.JackyTeslaKilled = true
+        end
+    end
+    if table.HasValue( SpecialTargetTable, Target:GetClass() ) then
+        Target:SetVelocity( VectorRand() * 100000 )
+        Dayumege:SetDamageType( DMG_MISSILEDEFENSE )
+
     end
 
     Target.IsSpasmingFromElectrocution = true
@@ -470,10 +484,10 @@ function ENT:ElectricalArcEffect( Attacker, Victim, Powa )
     local SelfPos = Attacker:GetPoz()
     local ToVector = VictimPos - SelfPos
     local Dist = ToVector:Length()
-    local Dir = ToVector:GetNormalized()
     local WanderDirection = self:GetUp()
     local NumPoints = math.Clamp( math.ceil( 60 * Dist / 1000 ) + 1, 1, 60 )
     local PointTable = {}
+    local NextFilterEnt
     PointTable[1] = SelfPos
 
     for i = 2, NumPoints do
@@ -487,13 +501,25 @@ function ENT:ElectricalArcEffect( Attacker, Victim, Powa )
             CheckTr.start = PointTable[i - 1]
             CheckTr.endpos = NewPoint
 
-            CheckTr.filter = { Attacker, Victim }
+            CheckTr.filter = { Attacker, Victim, NextFilterEnt }
 
             local CheckTra = util.TraceLine( CheckTr )
 
-            if CheckTra.Hit then
+            local ArcCompleted, ArcPos, ArcEnt = ValidArcPossible( CheckTra, VictimPos )
+
+            if ArcCompleted == false then
                 WanderDirection = ( WanderDirection + CheckTra.HitNormal * 0.5 ):GetNormalized()
-            else
+            elseif ArcCompleted == true then
+                WeCantGoThere = false
+                NewPoint = ArcPos
+                NextFilterEnt = ArcEnt
+
+                ArcEnt:EmitSound( "ambient/energy/zap8.wav", 80, math.random( 80, 100 ) + C_P_I_L / 4 )
+
+                SparkEffect( CheckTra.HitPos )
+                SparkEffect( ArcPos )
+
+            elseif not ArcCompleted then
                 WeCantGoThere = false
             end
 
@@ -536,10 +562,11 @@ function ENT:ArcToGround( Victim, Powa )
         ToVector = Trayuss.HitPos - NewStart
         local Dist = ToVector:Length()
 
-        if Dist > 150 then
+        if Dist > 25 then
             WanderDirection = Vector( 0, 0, -1 )
             local NumPoints = math.Clamp( math.ceil( 30 * Dist / 1000 ) + 1, 1, 50 )
-            PointTable = {}
+            local PointTable = {}
+            local C_P_I_L = 0
             PointTable[1] = NewStart
 
             for i = 2, NumPoints do
@@ -563,7 +590,7 @@ function ENT:ArcToGround( Victim, Powa )
 
                     C_P_I_L = C_P_I_L + 1
 
-                    if C_P_I_L >= 200 then
+                    if C_P_I_L >= 50 then
                         break
                     end
                 end
@@ -575,14 +602,12 @@ function ENT:ArcToGround( Victim, Powa )
             PointTable[NumPoints + 1] = Trayuss.HitPos
 
             for key, point in pairs( PointTable ) do
-                if not ( key == NumPoints + 1 ) then
-                    if SERVER then
-                        local Harg = EffectData()
-                        Harg:SetStart( point )
-                        Harg:SetOrigin( PointTable[key + 1] )
-                        Harg:SetScale( Powa / 50 )
-                        util.Effect( "eff_jack_plasmaarc", Harg, true, true )
-                    end
+                if not ( key == NumPoints + 1 ) and SERVER then
+                    local Harg = EffectData()
+                    Harg:SetStart( point )
+                    Harg:SetOrigin( PointTable[key + 1] )
+                    Harg:SetScale( Powa / 50 )
+                    util.Effect( "eff_jack_plasmaarc", Harg, true, true )
                 end
             end
         else
@@ -617,19 +642,31 @@ function ENT:HostileAlert()
     self.BatteryCharge = self.BatteryCharge - .5
 end
 
-function ENT:LineOfSightBetween( Searcher, Searchee )
+function ENT:LineOfCurrentBetween( Searcher, Searchee )
+    local TracesDone = 0
+    local TracesMax = 30
     local TraceData = {}
+    local End = Searchee:LocalToWorld( Searchee:OBBCenter() ) + Vector( 0, 0, 5 )
     TraceData.start = Searcher:GetPoz()
-    TraceData.endpos = Searchee:LocalToWorld( Searchee:OBBCenter() ) + Vector( 0, 0, 5 )
+    TraceData.endpos = End
 
     TraceData.filter = { Searcher, Searchee }
 
-    local Trace = util.TraceLine( TraceData )
+    while TracesDone < TracesMax do
+        TracesDone = TracesDone + 1
 
-    if Trace.Hit then
-        return false
-    else
-        return true
+        local Trace = util.TraceLine( TraceData )
+
+        local ArcCompleted, ArcPos, ArcEnt = ValidArcPossible( Trace, End )
+
+        if ArcCompleted == true then
+            TraceData.start = ArcPos
+            table.insert( TraceData.filter, ArcEnt )
+        elseif ArcCompleted == false then
+            return false
+        else
+            return true
+        end
     end
 end
 
@@ -648,7 +685,7 @@ local function MakeSpasms( ent, ragdoll )
 
         timer.Create( "SpasmingOnEntity" .. ragdoll:EntIndex(), 0.01, 500, function()
             if not IsValid( ragdoll ) then
-                timer.Destroy( "SpasmingOnEntity" .. ragdoll:EntIndex() )
+                timer.Remove( "SpasmingOnEntity" .. ragdoll:EntIndex() )
 
                 return
             end
@@ -667,23 +704,23 @@ hook.Add( "CreateEntityRagdoll", "JackSpasmLectricSentreh", MakeSpasms )
 local function Battery( ... )
     local args = { ... }
 
-    local self = Entity( tonumber( args[3][1] ) )
+    local me = Entity( tonumber( args[3][1] ) )
 
-    if not ( self.HasBatteryOne and self.HasBatteryTwo ) then
-        local Box = self:FindBattery()
+    if not ( me.HasBatteryOne and me.HasBatteryTwo ) then
+        local Box = me:FindBattery()
 
         if IsValid( Box ) then
-            self:RefillPower( Box )
+            me:RefillPower( Box )
         else
             args[1]:PrintMessage( HUD_PRINTCENTER, "No battery present." )
         end
-    elseif self.BatteryCharge <= 1 then
-        self:DetachBattery()
+    elseif me.BatteryCharge <= 1 then
+        me:DetachBattery()
     else
         args[1]:PrintMessage( HUD_PRINTCENTER, "Current batteries not dead." )
     end
 
-    self.MenuOpen = false
+    me.MenuOpen = false
 end
 
 concommand.Add( "JackaTeslaTurretBattery", Battery )
@@ -691,9 +728,9 @@ concommand.Add( "JackaTeslaTurretBattery", Battery )
 local function CloseCancel( ... )
     local args = { ... }
 
-    local self = Entity( tonumber( args[3][1] ) )
-    self:EmitSound( "snd_jack_uiselect.mp3", 65, 100 )
-    self.MenuOpen = false
+    local me = Entity( tonumber( args[3][1] ) )
+    me:EmitSound( "snd_jack_uiselect.mp3", 65, 100 )
+    me.MenuOpen = false
 end
 
 concommand.Add( "JackaTeslaTurretCloseMenu_Cancel", CloseCancel )
@@ -701,23 +738,23 @@ concommand.Add( "JackaTeslaTurretCloseMenu_Cancel", CloseCancel )
 local function CloseOn( ... )
     local args = { ... }
 
-    local self = Entity( tonumber( args[3][1] ) )
-    self:EmitSound( "snd_jack_uiselect.mp3", 65, 100 )
-    self.MenuOpen = false
+    local me = Entity( tonumber( args[3][1] ) )
+    me:EmitSound( "snd_jack_uiselect.mp3", 65, 100 )
+    me.MenuOpen = false
 
-    if self.State == "Off" then
-        self:Engage()
+    if me.State == "Off" then
+        me:Engage()
     end
 end
 
 concommand.Add( "JackaTeslaTurretCloseMenu_On", CloseOn )
 
-local function CloseOn( ... )
+local function SetCap( ... )
     local args = { ... }
 
-    local self = Entity( tonumber( args[3][1] ) )
+    local me = Entity( tonumber( args[3][1] ) )
     local Cap = tonumber( args[3][2] )
-    self.CapacitorMaxCharge = Cap
+    me.CapacitorMaxCharge = Cap
 end
 
-concommand.Add( "JackaTeslaTurretSetCap", CloseOn )
+concommand.Add( "JackaTeslaTurretSetCap", SetCap )
