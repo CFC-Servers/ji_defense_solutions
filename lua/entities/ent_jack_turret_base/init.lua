@@ -51,6 +51,7 @@ ENT.RoundsOnBelt = 0
 ENT.NextWarnTime = 0
 ENT.WillWarn = false
 ENT.WillLight = false
+ENT.WillLightOverride = nil
 ENT.StructuralIntegrity = 400
 ENT.Broken = false
 ENT.FiredAtCurrentTarget = false
@@ -65,6 +66,8 @@ ENT.GroundCheckTime = 0
 ENT.GroundLastWhine = 0
 ENT.IsOnValidGround = true
 ENT.PlugPosition = Vector( 0, 0, 20 )
+
+ENT.TracerEffect = "Tracer"
 
 local function GetEntityVolume( ent )
     local phys = ent:GetPhysicsObject()
@@ -543,7 +546,7 @@ function ENT:Notice()
     self:SetDTInt( 0, TS_WATCHING )
     self.NextGoSilentTime = CurTime() + 5
     self.NextScanTime = CurTime() + 1 / self.ScanRate
-    self:EmitSound( "snd_jack_turretdetect.mp3", 90, 100 )
+    self:EmitSound( "snd_jack_turretdetect.mp3", 105, 100 )
     self.BatteryCharge = self.BatteryCharge - .25
 end
 
@@ -575,7 +578,7 @@ function ENT:Alert( targ )
             self.flashlight:SetLocalPos( Vector( 0, 0, 50 ) )
             self.flashlight:SetLocalAngles( Angle( 0, 0, 0 ) )
             -- Looks like only one flashlight can have shadows enabled!
-            self.flashlight:SetKeyValue( "enableshadows", 1 )
+            self.flashlight:SetKeyValue( "enableshadows", 0 )
             self.flashlight:SetKeyValue( "farz", 1500 )
             self.flashlight:SetKeyValue( "nearz", 30 )
             self.flashlight:SetKeyValue( "lightfov", 30 )
@@ -626,7 +629,7 @@ function ENT:Traverse()
     end
 
     if IsValid( self.flashlight ) then
-        self.flashlight:SetLocalAngles( self:WorldToLocalAngles( self:GetAttachment( 1 ).Ang ) )
+        self.flashlight:SetLocalAngles( Angle( self.CurrentSwing, self.CurrentSweep, 0 ) )
     end
 end
 
@@ -638,9 +641,9 @@ function ENT:FireShot()
     self.BatteryCharge = self.BatteryCharge - .1
 
     if self.WillWarn and self.NextWarnTime >= Time then
-        if self.NextWarnTime < Time then
+        if ( self.NextWarnBark or 0 ) < Time then
             self:HostileAlert()
-            self.NextWarnTime = Time + 1
+            self.NextWarnBark = Time + 1
         end
 
         return
@@ -700,20 +703,28 @@ function ENT:FireShot()
         end
     end
 
-    local spreadVec = Vector() -- manually build spread to avoid weird bug where all shots land in the top right for no apparent reason
+    local SpreadVec = Vector() -- manually build spread to avoid weird bug where all shots land in the top right for no apparent reason
 
-    spreadVec.x = spread * math.Rand( -1, 1 )
-    spreadVec.y = spread * math.Rand( -1, 1 )
+    SpreadVec.x = spread * math.Rand( -1, 1 )
+    SpreadVec.y = spread * math.Rand( -1, 1 )
 
     local bulletData = {
         Attacker = self:GetCreator(),
         Damage = self.BulletDamage,
         Force = self.BulletDamage / 60,
         Num = self.BulletsPerShot,
-        Tracer = 1,
+        Tracer = 0,
         Dir = Dir,
-        Spread = spreadVec,
-        Src = SelfPos
+        Spread = SpreadVec,
+        Src = SelfPos,
+        Callback = function( _, trace )
+            local TracerEffect = EffectData()
+            TracerEffect:SetStart( SelfPos )
+            TracerEffect:SetOrigin( trace.HitPos )
+            TracerEffect:SetFlags( 1 )
+            TracerEffect:SetScale( 30000 ) -- usain bolt speed
+            util.Effect( self.TracerEffect, TracerEffect ) -- BIG effect
+        end
     }
 
     self:FireBullets( bulletData )
@@ -1150,7 +1161,7 @@ local function light( ... )
 
     local turret = Entity( tonumber( args[3][1] ) )
     local Check = tobool( args[3][2] )
-    turret.WillLight = Check
+    turret.WillLight = turret.WillLightOverride or Check
     turret:EmitSound( "snd_jack_uiselect.mp3", 65, 100 )
 end
 

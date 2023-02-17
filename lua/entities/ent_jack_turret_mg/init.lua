@@ -24,6 +24,7 @@ ENT.Automatic = true
 ENT.BarrelSizeMod = Vector( 1, 1, 2 )
 ENT.Autoloading = true
 ENT.MechanicsSizeMod = 2.2
+ENT.TracerEffect = "StriderTracer"
 
 function ENT:SpawnFunction( ply, tr )
     local SpawnPos = tr.HitPos + tr.HitNormal * 5

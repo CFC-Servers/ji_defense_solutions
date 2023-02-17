@@ -3,12 +3,12 @@ AddCSLuaFile( "shared.lua" )
 include( "shared.lua" )
 ENT.Base = "ent_jack_turret_base"
 
-ENT.TrackRate = 1.5
+ENT.TrackRate = 1.4
 ENT.MaxRange = 1750
 ENT.FireRate = 12
-ENT.BulletDamage = 17
+ENT.BulletDamage = 10
 ENT.ScanRate = 2.25
-ENT.ShotSpread = .036
+ENT.ShotSpread = .038
 ENT.RoundInChamber = false
 ENT.MaxBatteryCharge = 3000
 ENT.IdleDrainMul = 2

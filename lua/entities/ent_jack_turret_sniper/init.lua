@@ -5,7 +5,7 @@ ENT.Base = "ent_jack_turret_base"
 
 ENT.TrackRate = .06
 ENT.MaxRange = 5000
-ENT.FireRate = .35
+ENT.FireRate = .45
 ENT.BulletDamage = 32
 ENT.ScanRate = 0.25
 ENT.ShotSpread = .003
@@ -24,6 +24,9 @@ ENT.BarrelSizeMod = Vector( 1.5, 1.25, 4 )
 ENT.Autoloading = true
 ENT.CycleSound = "snd_jack_sniperturretcycle.mp3"
 ENT.MechanicsSizeMod = 2.5
+ENT.WillLight = true
+ENT.WillLightOverride = true
+ENT.TracerEffect = "AirboatGunTracer"
 
 function ENT:SpawnFunction( ply, tr )
     local SpawnPos = tr.HitPos + tr.HitNormal * 5
