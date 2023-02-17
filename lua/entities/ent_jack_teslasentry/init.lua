@@ -12,7 +12,7 @@ ENT.PlugPosition = Vector( 0, 0, 0 )
 
 local DoesNotHaveHealthTable = { "npc_rollermine", "npc_turret_floor", "npc_turret_ceiling", "npc_turret_ground", "npc_grenade_frag", "rpg_missile", "crossbow_bolt", "hunter_flechette", "ent_jack_rocket", "prop_combine_ball", "grenade_ar2", "combine_mine", "npc_combinedropship", "hunter_flechette" }
 
-local SpecialTargetTable = { "sent_spawnpoint", "rpg_missile", "crossbow_bolt", "cfc_shaped_charge", "ent_ins2rpgrocket", "grenade_ar2", "npc_grenade_bugbait" }
+local SpecialTargetTable = { "ent_jack_teslasentry", "sent_spawnpoint", "rpg_missile", "crossbow_bolt", "cfc_shaped_charge", "ent_ins2rpgrocket", "grenade_ar2", "npc_grenade_bugbait" }
 
 function ENT:SpawnFunction( ply, tr )
     local SpawnPos = tr.HitPos + tr.HitNormal * 50
@@ -95,8 +95,14 @@ end
 function ENT:OnTakeDamage( dmginfo )
     self:TakePhysicsDamage( dmginfo )
 
-    if dmginfo:IsDamageType( DMG_BUCKSHOT ) or dmginfo:IsDamageType( DMG_BULLET ) or dmginfo:IsDamageType( DMG_BLAST ) or dmginfo:IsDamageType( DMG_CLUB ) then
+    if dmginfo:IsDamageType( DMG_BUCKSHOT ) or dmginfo:IsDamageType( DMG_BULLET ) or dmginfo:IsDamageType( DMG_BLAST ) or dmginfo:IsDamageType( DMG_CLUB ) or dmginfo:IsDamageType( DMG_BURN ) then
         self.StructuralIntegrity = self.StructuralIntegrity - dmginfo:GetDamage()
+
+        if self.StructuralIntegrity <= 0 then
+            self:Break()
+        end
+    elseif dmginfo:IsDamageType( DMG_SHOCK ) then
+        self.StructuralIntegrity = self.StructuralIntegrity - dmginfo:GetDamage() / 2
 
         if self.StructuralIntegrity <= 0 then
             self:Break()
@@ -279,6 +285,7 @@ function ENT:FindTarget()
     local Closest = self.MaxEngagementRange^2
 
     for _, found in pairs( ents.FindInSphere( self:GetPoz(), self.MaxEngagementRange ) ) do
+        if found == self then continue end
         if found:IsPlayer() and found:HasGodMode() then continue end
         if ( found.TeslaTurretNoZapTime or 0 ) > CurTime() then continue end
         local Class = found:GetClass()
@@ -551,14 +558,19 @@ function ENT:ZapTheShitOutOf( Target, DmgAmt, Powa )
         if table.HasValue( DoesNotHaveHealthTable, Class ) then
             Target.JackyTeslaKilled = true
         end
-
     end
 
     if Class == "prop_combine_ball" and self:AbsorbCombineBall( Target, Powa ) then return end
 
     if table.HasValue( SpecialTargetTable, Target:GetClass() ) then
         Target:SetVelocity( VectorRand() * 100000 )
-        Dayumege:SetDamageType( DMG_MISSILEDEFENSE )
+        local RpgDamage = DamageInfo()
+        RpgDamage:SetDamageType( DMG_MISSILEDEFENSE )
+        RpgDamage:SetAttacker( self )
+        RpgDamage:SetInflictor( self )
+        RpgDamage:SetDamage( 100 )
+
+        Target:TakeDamageInfo( RpgDamage )
 
     end
 
