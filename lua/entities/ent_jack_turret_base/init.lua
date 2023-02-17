@@ -60,6 +60,7 @@ ENT.Heat = 0
 ENT.IsLocked = false
 ENT.LockPass = ""
 ENT.MaxBatteryCharge = 3000
+ENT.IdleDrainMul = 1
 ENT.GroundCheckTime = 0
 ENT.GroundLastWhine = 0
 ENT.IsOnValidGround = true
@@ -306,7 +307,7 @@ function ENT:Think()
             if possibleTarget then
                 self:Notice()
             end
-            self.BatteryCharge = self.BatteryCharge - .0010
+            self.BatteryCharge = self.BatteryCharge - ( .0010 * self.IdleDrainMul )
             self.NextWatchTime = Time + 1 / ( self.ScanRate * 1.5 )
         end
     elseif State == TS_WATCHING then
@@ -321,7 +322,7 @@ function ENT:Think()
             self:StandDown()
         end
 
-        self.BatteryCharge = self.BatteryCharge - .05
+        self.BatteryCharge = self.BatteryCharge - ( .05  * self.IdleDrainMul )
     elseif State == TS_CONCENTRATING then
         if self.NextScanTime < Time then
             self.CurrentTarget = self:ScanForTarget()
@@ -334,7 +335,7 @@ function ENT:Think()
             self:StandDown()
         end
 
-        self.BatteryCharge = self.BatteryCharge - .025
+        self.BatteryCharge = self.BatteryCharge - ( .025 * self.IdleDrainMul )
     elseif State == TS_TRACKING then
         if not IsValid( self.CurrentTarget ) then
             self:SetDTInt( 0, TS_CONCENTRATING )
