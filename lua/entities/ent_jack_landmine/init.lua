@@ -3,7 +3,7 @@ AddCSLuaFile( "shared.lua" )
 include( "shared.lua" )
 
 function ENT:SpawnFunction( _, tr )
-    local SpawnPos = tr.HitPos + tr.HitNormal * 20
+    local SpawnPos = tr.HitPos + tr.HitNormal * 5
     local ent = ents.Create( "ent_jack_landmine" )
     ent:SetAngles( Angle( 0, 0, 0 ) )
     ent:SetPos( SpawnPos )

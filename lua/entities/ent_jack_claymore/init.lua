@@ -9,7 +9,7 @@ util.AddNetworkString( "JID_ClaymoreNotify" )
 local PlantableMats = { MAT_WOOD, MAT_DIRT, MAT_SAND, MAT_SLOSH, MAT_FOLIAGE }
 
 function ENT:SpawnFunction( ply, tr )
-    local SpawnPos = tr.HitPos + tr.HitNormal * 16
+    local SpawnPos = tr.HitPos + tr.HitNormal * 10
     local ent = ents.Create( "ent_jack_claymore" )
     ent:SetPos( SpawnPos )
     ent:SetNWEntity( "Owner", ply )
@@ -149,16 +149,16 @@ function ENT:Use( activator )
                 local TheAngle = activator:GetAimVector():Angle()
                 TheAngle:RotateAroundAxis( TheAngle:Forward(), 180 )
                 TheAngle:RotateAroundAxis( TheAngle:Right(), 40 )
+                activator:EmitSound( "Dirt.BulletImpact" )
                 self:SetPos( Tr.HitPos + Tr.HitNormal * 6 )
                 self:SetAngles( TheAngle )
-                activator:EmitSound( "Dirt.BulletImpact" )
-                constraint.Weld( self, Tr.Entity, 0, 0, 2000, true )
+                constraint.Weld( self, Tr.Entity, 0, 0, 3000, true )
                 self:NotifySetup( activator )
             else
                 local TheAngle = activator:GetAimVector():Angle()
                 TheAngle:RotateAroundAxis( TheAngle:Forward(), 180 )
                 TheAngle:RotateAroundAxis( TheAngle:Right(), 40 )
-                self:SetPos( Tr.HitPos + Tr.HitNormal * 6 )
+                self:SetPos( Tr.HitPos + Tr.HitNormal * 7 )
                 self:SetAngles( TheAngle )
                 self:NotifySetup( activator )
             end
