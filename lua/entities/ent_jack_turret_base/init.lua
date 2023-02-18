@@ -633,6 +633,9 @@ function ENT:Traverse()
     end
 end
 
+function ENT:AdditionalShootFX()
+end
+
 function ENT:FireShot()
     self.CurrentTarget = IsValid( self.CurrentTarget ) and self.CurrentTarget or self:ScanForTarget()
     if not IsValid( self.CurrentTarget ) then return self:StandBy() end
@@ -675,6 +678,8 @@ function ENT:FireShot()
     muzzleFlash:SetFlags( 1 )
     util.Effect( "MuzzleFlash", muzzleFlash, true, true )
     self:SetNWVector( "BarrelSizeMod", Vector( self.BarrelSizeMod.x, self.BarrelSizeMod.y, self.BarrelSizeMod.z * .75 ) )
+
+    self:AdditionalShootFX()
 
     timer.Simple( .1, function()
         if IsValid( self ) then

@@ -21,7 +21,7 @@ ENT.FarShotNoise = "snd_jack_turretshoot_far.mp3"
 ENT.AmmoType = "5.56x45mm"
 ENT.MuzzEff = "muzzleflash_sr25"
 ENT.Automatic = true
-ENT.BarrelSizeMod = Vector( 1, 1, 2 )
+ENT.BarrelSizeMod = Vector( 1.5, 1.5, 3.5 )
 ENT.Autoloading = true
 ENT.MechanicsSizeMod = 2.2
 ENT.TracerEffect = "StriderTracer"
@@ -39,4 +39,8 @@ function ENT:SpawnFunction( ply, tr )
     util.Effect( "propspawn", effectdata )
 
     return ent
+end
+
+function ENT:AdditionalShootFX()
+    util.ScreenShake( self:GetPos(), 2, 20, 0.25, 700 )
 end

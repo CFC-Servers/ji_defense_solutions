@@ -20,7 +20,7 @@ ENT.NearShotNoise = "snd_jack_turretshoot_close.mp3"
 ENT.FarShotNoise = "snd_jack_turretshoot_far.mp3"
 ENT.AmmoType = "7.62x51mm"
 ENT.MuzzEff = "muzzleflash_sr25"
-ENT.BarrelSizeMod = Vector( 1.5, 1.25, 4 )
+ENT.BarrelSizeMod = Vector( 1.5, 1.25, 4.5 )
 ENT.Autoloading = true
 ENT.CycleSound = "snd_jack_sniperturretcycle.mp3"
 ENT.MechanicsSizeMod = 2.5
@@ -41,4 +41,8 @@ function ENT:SpawnFunction( ply, tr )
     util.Effect( "propspawn", effectdata )
 
     return ent
+end
+
+function ENT:AdditionalShootFX()
+    util.ScreenShake( self:GetPos(), 4, 20, 0.25, 700 )
 end

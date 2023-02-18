@@ -39,3 +39,6 @@ function ENT:SpawnFunction( ply, tr )
 
     return ent
 end
+function ENT:AdditionalShootFX()
+    util.ScreenShake( self:GetPos(), 4, 20, 0.25, 700 )
+end
