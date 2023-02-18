@@ -25,6 +25,9 @@ ENT.BarrelSizeMod = Vector( 1, 1, 1 )
 ENT.Autoloading = true
 ENT.MechanicsSizeMod = 1
 
+ENT.PropThicknessToEngageSqr = 50^2
+ENT.PropThicknessToDisengageSqr = 100^2
+
 function ENT:SpawnFunction( ply, tr )
     local SpawnPos = tr.HitPos + tr.HitNormal * 5
     local ent = ents.Create( "ent_jack_turret_smg" )

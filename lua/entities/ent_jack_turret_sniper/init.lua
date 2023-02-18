@@ -28,6 +28,8 @@ ENT.WillLight = true
 ENT.WillLightOverride = true
 ENT.TracerEffect = "AirboatGunTracer"
 
+ENT.PropThicknessToDisengageSqr = 200^2
+
 function ENT:SpawnFunction( ply, tr )
     local SpawnPos = tr.HitPos + tr.HitNormal * 5
     local ent = ents.Create( "ent_jack_turret_sniper" )

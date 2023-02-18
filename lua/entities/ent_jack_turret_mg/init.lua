@@ -21,10 +21,13 @@ ENT.FarShotNoise = "snd_jack_turretshoot_far.mp3"
 ENT.AmmoType = "5.56x45mm"
 ENT.MuzzEff = "muzzleflash_sr25"
 ENT.Automatic = true
-ENT.BarrelSizeMod = Vector( 1.5, 1.5, 3.5 )
+ENT.BarrelSizeMod = Vector( 1.5, 1.5, 2.5 )
 ENT.Autoloading = true
 ENT.MechanicsSizeMod = 2.2
 ENT.TracerEffect = "StriderTracer"
+
+ENT.PropThicknessToEngageSqr = 20^2
+ENT.PropThicknessToDisengageSqr = 200^2
 
 function ENT:SpawnFunction( ply, tr )
     local SpawnPos = tr.HitPos + tr.HitNormal * 5

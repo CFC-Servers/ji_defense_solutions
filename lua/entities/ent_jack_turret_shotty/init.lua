@@ -25,6 +25,8 @@ ENT.Autoloading = false
 ENT.CycleSound = "snd_jack_shottyturretcycle.mp3"
 ENT.MechanicsSizeMod = 1.8
 
+ENT.PropThicknessToDisengageSqr = 100^2
+
 function ENT:SpawnFunction( ply, tr )
     local SpawnPos = tr.HitPos + tr.HitNormal * 5
     local ent = ents.Create( "ent_jack_turret_shotty" )
@@ -39,6 +41,7 @@ function ENT:SpawnFunction( ply, tr )
 
     return ent
 end
+
 function ENT:AdditionalShootFX()
     util.ScreenShake( self:GetPos(), 4, 20, 0.25, 700 )
 end

@@ -66,8 +66,14 @@ ENT.GroundCheckTime = 0
 ENT.GroundLastWhine = 0
 ENT.IsOnValidGround = true
 ENT.PlugPosition = Vector( 0, 0, 20 )
-
 ENT.TracerEffect = "Tracer"
+
+-- if already acquired target is greater than this far behind something, lose em.
+ENT.PropThicknessToDisengageSqr = nil
+
+-- distance to find targets behind props, different var so turret can opress prop shields, without having wallhacks for new targets
+-- also good for vehicles
+ENT.PropThicknessToEngageSqr = nil
 
 local function GetEntityVolume( ent )
     local phys = ent:GetPhysicsObject()
@@ -344,7 +350,7 @@ function ENT:Think()
             self:SetDTInt( 0, TS_CONCENTRATING )
             self.NextGoSilentTime = Time + 2
         else
-            if self:CanSee( self.CurrentTarget ) then
+            if self:CanSee( self.CurrentTarget, self.PropThicknessToDisengageSqr ) then
                 local TargPos = self:GetTargetPos( self.CurrentTarget )
                 local Ang = ( TargPos - SelfPos ):GetNormalized():Angle()
                 local TargAng = self:WorldToLocalAngles( Ang )
@@ -442,11 +448,11 @@ local function CanTarget( ent )
     return false
 end
 
-local function IsBetterCanidate( turret, ent, shootPos, turretPos, closestCanidate )
+local function IsBetterCanidate( turret, ent, shootPos, turretPos, closestCanidate, allowableThinnessSqr )
     if turret == ent then return end
     if ent:IsWorld() then return end
     if not CanTarget( ent ) then return end
-    if not turret:CanSee( ent ) then return end
+    if not turret:CanSee( ent, allowableThinnessSqr ) then return end
 
     local size = GetEntityVolume( ent )
     if size <= 0 then return end
@@ -479,13 +485,23 @@ local function IsBetterCanidate( turret, ent, shootPos, turretPos, closestCanida
 end
 
 function ENT:ScanForTarget()
+    local oldTarget = self.CurrentTarget
     local shootPos = self:GetShootPos()
     local closestCanidate = self.MaxRange
     local turretPos = self:GetPos()
     local bestTarget = nil
+    local thicknessToEngageSqr = self.PropThicknessToEngageSqr
+    local thicknessToDisegnageSqr = self.PropThicknessToDisengageSqr
 
     for _, potential in pairs( ents.FindInSphere( turretPos, self.MaxRange ) ) do
-        local betterCanidate, canidateDistance = IsBetterCanidate( self, potential, shootPos, turretPos, closestCanidate )
+
+        local thinnessSqr = thicknessToEngageSqr
+
+        if potential == oldTarget then
+            thinnessSqr = thicknessToDisegnageSqr
+        end
+
+        local betterCanidate, canidateDistance = IsBetterCanidate( self, potential, shootPos, turretPos, closestCanidate, thinnessSqr )
         if betterCanidate then
             bestTarget = betterCanidate
             closestCanidate = canidateDistance
@@ -737,8 +753,8 @@ function ENT:FireShot()
     self.RoundInChamber = false
     self.Heat = self.Heat + ( self.BulletDamage * self.BulletsPerShot ) / 150
 
-    self:EmitSound( self.NearShotNoise, 75, self.ShootSoundPitch )
-    self:EmitSound( self.FarShotNoise, 90, self.ShootSoundPitch - 10 )
+    self:EmitSound( self.NearShotNoise, 75, self.ShootSoundPitch, 1, CHAN_WEAPON )
+    self:EmitSound( self.FarShotNoise, 90, self.ShootSoundPitch - 10, CHAN_WEAPON )
     sound.Play( self.NearShotNoise, SelfPos, 75, self.ShootSoundPitch )
     sound.Play( self.FarShotNoise, SelfPos + Vector( 0, 0, 1 ), 90, self.ShootSoundPitch - 10 )
 
@@ -821,17 +837,31 @@ function ENT:StandBy()
     self:SetDTBool( 3, false )
 end
 
-function ENT:CanSee( ent )
+function ENT:CanSee( ent, allowableThinnessSqr )
+    local worldSpaceCenter = ent:WorldSpaceCenter()
+
     local traceTable = {
         start = self:GetShootPos(),
-        endpos = ent:WorldSpaceCenter(),
+        endpos = worldSpaceCenter,
         filter = { self, ent },
         mask = MASK_SHOT
     }
 
     local traceResult = util.TraceLine( traceTable )
 
-    return not traceResult.Hit
+    -- return true if target is directly visibile, or behind a thin thing
+    -- common strategy to defeat turrets is to use prop shields, this should make it interesting
+    if not traceResult.Hit then
+        return true
+    elseif allowableThinnessSqr and not traceResult.HitWorld and traceResult.Hit then
+        if traceResult.HitPos:DistToSqr( worldSpaceCenter ) < allowableThinnessSqr then
+            return true
+        else
+            return false
+        end
+    else
+        return false
+    end
 end
 
 function ENT:HardShutDown()

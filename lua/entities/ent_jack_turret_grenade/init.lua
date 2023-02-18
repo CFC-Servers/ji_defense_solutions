@@ -39,6 +39,9 @@ ENT.Autoloading = false
 ENT.CycleSound = "snd_jack_glcycle.mp3"
 ENT.MechanicsSizeMod = 2.2
 
+ENT.PropThicknessToEngageSqr = 100^2
+ENT.PropThicknessToDisengageSqr = 300^2
+
 function ENT:SpawnFunction( ply, tr )
     local SpawnPos = tr.HitPos + tr.HitNormal * 5
     local ent = ents.Create( "ent_jack_turret_grenade" )
