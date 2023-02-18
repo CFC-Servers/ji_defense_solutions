@@ -753,8 +753,8 @@ function ENT:FireShot()
     self.RoundInChamber = false
     self.Heat = self.Heat + ( self.BulletDamage * self.BulletsPerShot ) / 150
 
-    self:EmitSound( self.NearShotNoise, 75, self.ShootSoundPitch, 1, CHAN_WEAPON )
-    self:EmitSound( self.FarShotNoise, 90, self.ShootSoundPitch - 10, CHAN_WEAPON )
+    self:EmitSound( self.NearShotNoise, 75, self.ShootSoundPitch )
+    self:EmitSound( self.FarShotNoise, 90, self.ShootSoundPitch - 10 )
     sound.Play( self.NearShotNoise, SelfPos, 75, self.ShootSoundPitch )
     sound.Play( self.FarShotNoise, SelfPos + Vector( 0, 0, 1 ), 90, self.ShootSoundPitch - 10 )
 
