@@ -115,10 +115,11 @@ function ENT:Initialize()
 
     local spawnAng = Angle( 0, 0, 0 )
     local owner = self:GetNWEntity( "Owner", nil )
-    if owner then
+    if IsValid( owner ) then
         spawnAng.y = owner:EyeAngles().y
 
     end
+
 
     self:SetAngles( spawnAng )
     self:SetModel( "models/combine_turrets/floor_turret.mdl" )
