@@ -85,27 +85,6 @@ end
 function ENT:OnRemove()
 end
 
---wtf
-local function ElectriTwitchClient( data )
-    local Pos = data:ReadVector()
-
-    for _, rag in pairs( ents.FindInSphere( Pos, 40 ) ) do
-        if rag:GetClass() ~= "class C_ClientRagdoll" then continue end
-        for i = 1, 60 do
-            timer.Simple( i / 20, function()
-                if not IsValid( rag ) then return end
-                local Bones = rag:GetPhysicsObjectCount() - 1
-                local Obj = rag:GetPhysicsObjectNum( math.random( 2, Bones ) )
-
-                if not Obj then return end
-                Obj:ApplyForceCenter( VectorRand() * ( 60 - i ) * Obj:GetMass() * 10 )
-            end )
-        end
-    end
-end
-
-usermessage.Hook( "JackysElectriTwitchClientSentry", ElectriTwitchClient )
-
 local function OpenMenu( data )
     local Tab = {}
     Tab.Self = data:ReadEntity()

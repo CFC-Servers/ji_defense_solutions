@@ -590,12 +590,6 @@ function ENT:ZapTheShitOutOf( Target, DmgAmt, Powa )
     local Pos = Target:GetPos()
     Target:TakeDamageInfo( Dayumege )
 
-    timer.Simple( .05, function()
-        umsg.Start( "JackysElectriTwitchClientSentry" )
-        umsg.Vector( Pos )
-        umsg.End()
-    end )
-
     self:ElectricalArcEffect( self, Target, Powa )
     self:ArcToGround( Target, Powa )
 

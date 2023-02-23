@@ -39,6 +39,8 @@ function ENT:Think()
     return true
 end
 
+local vecUp = Vector( 0,0,1 )
+
 function ENT:Detonate()
     if self.Exploding then return end
     self.Exploding = true
@@ -59,7 +61,7 @@ function ENT:Detonate()
     plooie:SetOrigin( self:GetPos() )
     plooie:SetScale( .75 )
     plooie:SetRadius( 2 )
-    plooie:SetNormal( Vector( 0,0,1 ) )
+    plooie:SetNormal( vecUp )
     util.Effect( "eff_jack_minesplode", plooie, true, true )
 
     self:Remove()

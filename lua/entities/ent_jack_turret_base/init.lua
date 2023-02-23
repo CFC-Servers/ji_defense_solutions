@@ -111,15 +111,15 @@ function ENT:ExternalCharge( amt )
     self:SetDTInt( 2, math.Round( self.BatteryCharge / self.MaxBatteryCharge * 100 ) )
 end
 
+local spawnAng = Angle( 0, 0, 0 )
+
 function ENT:Initialize()
 
-    local spawnAng = Angle( 0, 0, 0 )
     local owner = self:GetNWEntity( "Owner", nil )
     if IsValid( owner ) then
         spawnAng.y = owner:EyeAngles().y
 
     end
-
 
     self:SetAngles( spawnAng )
     self:SetModel( "models/combine_turrets/floor_turret.mdl" )
@@ -650,6 +650,7 @@ function ENT:Traverse()
     end
 end
 
+-- use this to add extra flash when turrets fire, no need to overwrite fireshot
 function ENT:AdditionalShootFX()
 end
 
@@ -725,10 +726,13 @@ function ENT:FireShot()
         end
     end
 
-    local SpreadVec = Vector() -- manually build spread to avoid weird bug where all shots land in the top right for no apparent reason
+    -- manually build spread to avoid weird bug where all shots land in the top right for no apparent reason
+    local Rand = VectorRand( -1, 1 )
+     -- z is behind/in front, just makes the turrets biast towards shooting in the center
+    Rand.z = 0
+    Rand:Normalize()
 
-    SpreadVec.x = spread * math.Rand( -1, 1 )
-    SpreadVec.y = spread * math.Rand( -1, 1 )
+    local SpreadVec = Rand * spread
 
     local bulletData = {
         Attacker = self:GetCreator(),
@@ -744,8 +748,8 @@ function ENT:FireShot()
             TracerEffect:SetStart( SelfPos )
             TracerEffect:SetOrigin( trace.HitPos )
             TracerEffect:SetFlags( 1 )
-            TracerEffect:SetScale( 30000 ) -- usain bolt speed
-            util.Effect( self.TracerEffect, TracerEffect ) -- BIG effect
+            TracerEffect:SetScale( 30000 )
+            util.Effect( self.TracerEffect, TracerEffect )
         end
     }
 
@@ -852,17 +856,11 @@ function ENT:CanSee( ent, allowableThinnessSqr )
 
     -- return true if target is directly visibile, or behind a thin thing
     -- common strategy to defeat turrets is to use prop shields, this should make it interesting
-    if not traceResult.Hit then
-        return true
-    elseif allowableThinnessSqr and not traceResult.HitWorld and traceResult.Hit then
-        if traceResult.HitPos:DistToSqr( worldSpaceCenter ) < allowableThinnessSqr then
-            return true
-        else
-            return false
-        end
-    else
-        return false
-    end
+    if not traceResult.Hit then return true end
+
+    if not allowableThinnessSqr then return false end
+    if traceResult.HitWorld then return false end
+    return traceResult.HitPos:DistToSqr( worldSpaceCenter ) < allowableThinnessSqr
 end
 
 function ENT:HardShutDown()
