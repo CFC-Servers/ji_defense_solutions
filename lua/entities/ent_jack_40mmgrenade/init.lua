@@ -20,7 +20,7 @@ function ENT:Initialize()
 end
 
 function ENT:PhysicsCollide( data )
-    if data.Speed > 80 and data.DeltaTime > 0.2 then
+    if data.Speed > 80 and data.DeltaTime > 0.1 then
         self:Detonate()
     end
 end
@@ -39,25 +39,29 @@ function ENT:Think()
     return true
 end
 
+local vecUp = Vector( 0,0,1 )
+
 function ENT:Detonate()
     if self.Exploding then return end
     self.Exploding = true
     local pos = self:GetPos()
 
-    util.ScreenShake( pos, 99999, 99999, 1, 750 )
-    local attacker = self:GetNWEntity( "Owner" )
+    util.ScreenShake( pos, 200, 20, 1, 750 )
+    util.ScreenShake( pos, 1, 20, 2, 2000 )
+    local owner = self:GetNWEntity( "Owner" )
+    local attacker = owner
     if IsValid( attacker ) then
         local creator = attacker:GetCreator()
         attacker = IsValid( creator ) and creator or attacker
     end
 
-    util.BlastDamage( self, attacker, pos, 190, 190 )
+    util.BlastDamage( self, attacker, pos, owner.BulletDamage, owner.BulletDamage )
 
     local plooie = EffectData()
     plooie:SetOrigin( self:GetPos() )
     plooie:SetScale( .75 )
     plooie:SetRadius( 2 )
-    plooie:SetNormal( self:GetForward() )
+    plooie:SetNormal( vecUp )
     util.Effect( "eff_jack_minesplode", plooie, true, true )
 
     self:Remove()

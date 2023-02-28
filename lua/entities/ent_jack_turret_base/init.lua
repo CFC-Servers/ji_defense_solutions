@@ -51,6 +51,7 @@ ENT.RoundsOnBelt = 0
 ENT.NextWarnTime = 0
 ENT.WillWarn = false
 ENT.WillLight = false
+ENT.WillLightOverride = nil
 ENT.StructuralIntegrity = 400
 ENT.Broken = false
 ENT.FiredAtCurrentTarget = false
@@ -60,10 +61,19 @@ ENT.Heat = 0
 ENT.IsLocked = false
 ENT.LockPass = ""
 ENT.MaxBatteryCharge = 3000
+ENT.IdleDrainMul = 1
 ENT.GroundCheckTime = 0
 ENT.GroundLastWhine = 0
 ENT.IsOnValidGround = true
 ENT.PlugPosition = Vector( 0, 0, 20 )
+ENT.TracerEffect = "Tracer"
+
+-- if already acquired target is greater than this far behind something, lose em.
+ENT.PropThicknessToDisengageSqr = nil
+
+-- distance to find targets behind props, different var so turret can opress prop shields, without having wallhacks for new targets
+-- also good for vehicles
+ENT.PropThicknessToEngageSqr = nil
 
 local function GetEntityVolume( ent )
     local phys = ent:GetPhysicsObject()
@@ -101,8 +111,17 @@ function ENT:ExternalCharge( amt )
     self:SetDTInt( 2, math.Round( self.BatteryCharge / self.MaxBatteryCharge * 100 ) )
 end
 
+local spawnAng = Angle( 0, 0, 0 )
+
 function ENT:Initialize()
-    self:SetAngles( Angle( 0, 0, 0 ) )
+
+    local owner = self:GetNWEntity( "Owner", nil )
+    if IsValid( owner ) then
+        spawnAng.y = owner:EyeAngles().y
+
+    end
+
+    self:SetAngles( spawnAng )
     self:SetModel( "models/combine_turrets/floor_turret.mdl" )
     self:SetMaterial( "models/mat_jack_turret" )
     self:SetColor( Color( 50, 50, 50 ) )
@@ -298,7 +317,7 @@ function ENT:Think()
             if possibleTarget then
                 self:Notice()
             end
-            self.BatteryCharge = self.BatteryCharge - .0010
+            self.BatteryCharge = self.BatteryCharge - ( .0010 * self.IdleDrainMul )
             self.NextWatchTime = Time + 1 / ( self.ScanRate * 1.5 )
         end
     elseif State == TS_WATCHING then
@@ -313,7 +332,7 @@ function ENT:Think()
             self:StandDown()
         end
 
-        self.BatteryCharge = self.BatteryCharge - .05
+        self.BatteryCharge = self.BatteryCharge - ( .05  * self.IdleDrainMul )
     elseif State == TS_CONCENTRATING then
         if self.NextScanTime < Time then
             self.CurrentTarget = self:ScanForTarget()
@@ -326,13 +345,13 @@ function ENT:Think()
             self:StandDown()
         end
 
-        self.BatteryCharge = self.BatteryCharge - .025
+        self.BatteryCharge = self.BatteryCharge - ( .025 * self.IdleDrainMul )
     elseif State == TS_TRACKING then
         if not IsValid( self.CurrentTarget ) then
             self:SetDTInt( 0, TS_CONCENTRATING )
             self.NextGoSilentTime = Time + 2
         else
-            if self:CanSee( self.CurrentTarget ) then
+            if self:CanSee( self.CurrentTarget, self.PropThicknessToDisengageSqr ) then
                 local TargPos = self:GetTargetPos( self.CurrentTarget )
                 local Ang = ( TargPos - SelfPos ):GetNormalized():Angle()
                 local TargAng = self:WorldToLocalAngles( Ang )
@@ -422,6 +441,7 @@ end
 
 local function CanTarget( ent )
     if not JID.CanTarget( ent ) then return false end
+    if ent:GetClass() == "cfc_shaped_charge" then return true end
     if ent:IsPlayer() and ent:Alive() and not ent:HasGodMode() then return true end
     if ent:IsNPC() and ent:Health() > 0 then return true end
     if ent:IsNextBot() then return true end
@@ -429,11 +449,11 @@ local function CanTarget( ent )
     return false
 end
 
-local function IsBetterCanidate( turret, ent, shootPos, turretPos, closestCanidate )
+local function IsBetterCanidate( turret, ent, shootPos, turretPos, closestCanidate, allowableThinnessSqr )
     if turret == ent then return end
     if ent:IsWorld() then return end
     if not CanTarget( ent ) then return end
-    if not turret:CanSee( ent ) then return end
+    if not turret:CanSee( ent, allowableThinnessSqr ) then return end
 
     local size = GetEntityVolume( ent )
     if size <= 0 then return end
@@ -466,13 +486,23 @@ local function IsBetterCanidate( turret, ent, shootPos, turretPos, closestCanida
 end
 
 function ENT:ScanForTarget()
+    local oldTarget = self.CurrentTarget
     local shootPos = self:GetShootPos()
     local closestCanidate = self.MaxRange
     local turretPos = self:GetPos()
     local bestTarget = nil
+    local thicknessToEngageSqr = self.PropThicknessToEngageSqr
+    local thicknessToDisegnageSqr = self.PropThicknessToDisengageSqr
 
     for _, potential in pairs( ents.FindInSphere( turretPos, self.MaxRange ) ) do
-        local betterCanidate, canidateDistance = IsBetterCanidate( self, potential, shootPos, turretPos, closestCanidate )
+
+        local thinnessSqr = thicknessToEngageSqr
+
+        if potential == oldTarget then
+            thinnessSqr = thicknessToDisegnageSqr
+        end
+
+        local betterCanidate, canidateDistance = IsBetterCanidate( self, potential, shootPos, turretPos, closestCanidate, thinnessSqr )
         if betterCanidate then
             bestTarget = betterCanidate
             closestCanidate = canidateDistance
@@ -533,7 +563,7 @@ function ENT:Notice()
     self:SetDTInt( 0, TS_WATCHING )
     self.NextGoSilentTime = CurTime() + 5
     self.NextScanTime = CurTime() + 1 / self.ScanRate
-    self:EmitSound( "snd_jack_turretdetect.mp3", 90, 100 )
+    self:EmitSound( "snd_jack_turretdetect.mp3", 105, 100 )
     self.BatteryCharge = self.BatteryCharge - .25
 end
 
@@ -565,7 +595,7 @@ function ENT:Alert( targ )
             self.flashlight:SetLocalPos( Vector( 0, 0, 50 ) )
             self.flashlight:SetLocalAngles( Angle( 0, 0, 0 ) )
             -- Looks like only one flashlight can have shadows enabled!
-            self.flashlight:SetKeyValue( "enableshadows", 1 )
+            self.flashlight:SetKeyValue( "enableshadows", 0 )
             self.flashlight:SetKeyValue( "farz", 1500 )
             self.flashlight:SetKeyValue( "nearz", 30 )
             self.flashlight:SetKeyValue( "lightfov", 30 )
@@ -616,8 +646,12 @@ function ENT:Traverse()
     end
 
     if IsValid( self.flashlight ) then
-        self.flashlight:SetLocalAngles( self:WorldToLocalAngles( self:GetAttachment( 1 ).Ang ) )
+        self.flashlight:SetLocalAngles( Angle( self.CurrentSwing, self.CurrentSweep, 0 ) )
     end
+end
+
+-- use this to add extra flash when turrets fire, no need to overwrite fireshot
+function ENT:AdditionalShootFX()
 end
 
 function ENT:FireShot()
@@ -628,9 +662,9 @@ function ENT:FireShot()
     self.BatteryCharge = self.BatteryCharge - .1
 
     if self.WillWarn and self.NextWarnTime >= Time then
-        if self.NextWarnTime < Time then
+        if ( self.NextWarnBark or 0 ) < Time then
             self:HostileAlert()
-            self.NextWarnTime = Time + 1
+            self.NextWarnBark = Time + 1
         end
 
         return
@@ -663,6 +697,8 @@ function ENT:FireShot()
     util.Effect( "MuzzleFlash", muzzleFlash, true, true )
     self:SetNWVector( "BarrelSizeMod", Vector( self.BarrelSizeMod.x, self.BarrelSizeMod.y, self.BarrelSizeMod.z * .75 ) )
 
+    self:AdditionalShootFX()
+
     timer.Simple( .1, function()
         if IsValid( self ) then
             self:SetNWVector( "BarrelSizeMod", self.BarrelSizeMod )
@@ -690,15 +726,31 @@ function ENT:FireShot()
         end
     end
 
+    -- manually build spread to avoid weird bug where all shots land in the top right for no apparent reason
+    local Rand = VectorRand( -1, 1 )
+     -- z is behind/in front, just makes the turrets biast towards shooting in the center
+    Rand.z = 0
+    Rand:Normalize()
+
+    local SpreadVec = Rand * spread
+
     local bulletData = {
         Attacker = self:GetCreator(),
         Damage = self.BulletDamage,
         Force = self.BulletDamage / 60,
         Num = self.BulletsPerShot,
-        Tracer = 1,
+        Tracer = 0,
         Dir = Dir,
-        Spread = Vector( spread, spread, spread ),
-        Src = SelfPos
+        Spread = SpreadVec,
+        Src = SelfPos,
+        Callback = function( _, trace )
+            local TracerEffect = EffectData()
+            TracerEffect:SetStart( SelfPos )
+            TracerEffect:SetOrigin( trace.HitPos )
+            TracerEffect:SetFlags( 1 )
+            TracerEffect:SetScale( 30000 )
+            util.Effect( self.TracerEffect, TracerEffect )
+        end
     }
 
     self:FireBullets( bulletData )
@@ -710,6 +762,8 @@ function ENT:FireShot()
     self:EmitSound( self.FarShotNoise, 90, self.ShootSoundPitch - 10 )
     sound.Play( self.NearShotNoise, SelfPos, 75, self.ShootSoundPitch )
     sound.Play( self.FarShotNoise, SelfPos + Vector( 0, 0, 1 ), 90, self.ShootSoundPitch - 10 )
+
+    local Scayul = 1
 
     if self:GetClass() ~= "ent_jack_turret_plinker" then
         sound.Play( self.NearShotNoise, SelfPos, 75, self.ShootSoundPitch )
@@ -788,17 +842,25 @@ function ENT:StandBy()
     self:SetDTBool( 3, false )
 end
 
-function ENT:CanSee( ent )
+function ENT:CanSee( ent, allowableThinnessSqr )
+    local worldSpaceCenter = ent:WorldSpaceCenter()
+
     local traceTable = {
         start = self:GetShootPos(),
-        endpos = ent:WorldSpaceCenter(),
+        endpos = worldSpaceCenter,
         filter = { self, ent },
         mask = MASK_SHOT
     }
 
     local traceResult = util.TraceLine( traceTable )
 
-    return not traceResult.Hit
+    -- return true if target is directly visibile, or behind a thin thing
+    -- common strategy to defeat turrets is to use prop shields, this should make it interesting
+    if not traceResult.Hit then return true end
+
+    if not allowableThinnessSqr then return false end
+    if traceResult.HitWorld then return false end
+    return traceResult.HitPos:DistToSqr( worldSpaceCenter ) < allowableThinnessSqr
 end
 
 function ENT:HardShutDown()
@@ -1133,7 +1195,7 @@ local function light( ... )
 
     local turret = Entity( tonumber( args[3][1] ) )
     local Check = tobool( args[3][2] )
-    turret.WillLight = Check
+    turret.WillLight = turret.WillLightOverride or Check
     turret:EmitSound( "snd_jack_uiselect.mp3", 65, 100 )
 end
 

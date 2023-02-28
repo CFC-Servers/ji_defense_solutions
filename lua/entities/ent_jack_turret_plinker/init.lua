@@ -3,14 +3,15 @@ AddCSLuaFile( "shared.lua" )
 include( "shared.lua" )
 ENT.Base = "ent_jack_turret_base"
 
-ENT.TrackRate = 1.75
-ENT.MaxRange = 1000
-ENT.FireRate = 3.75
-ENT.BulletDamage = 10
-ENT.ScanRate = 2.25
-ENT.ShotSpread = .035
+ENT.TrackRate = 1.5
+ENT.MaxRange = 1750
+ENT.FireRate = 3
+ENT.BulletDamage = 8
+ENT.ScanRate = 1.5
+ENT.ShotSpread = .020
 ENT.RoundInChamber = false
-ENT.MaxBatteryCharge = 3000
+ENT.MaxBatteryCharge = 4000
+ENT.IdleDrainMul = 0.5
 ENT.ShellEffect = "ShellEject"
 ENT.BulletsPerShot = 1
 ENT.TurretSkin = "models/mat_jack_plinkerturret"
@@ -24,7 +25,7 @@ ENT.Autoloading = true
 ENT.MechanicsSizeMod = .5
 
 function ENT:SpawnFunction( ply, tr )
-    local SpawnPos = tr.HitPos + tr.HitNormal * 16
+    local SpawnPos = tr.HitPos + tr.HitNormal * 5
     local ent = ents.Create( "ent_jack_turret_plinker" )
     ent:SetPos( SpawnPos )
     ent:SetNWEntity( "Owner", ply )

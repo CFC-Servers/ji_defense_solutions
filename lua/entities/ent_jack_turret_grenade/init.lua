@@ -17,14 +17,15 @@ local HULL_TARGETING = {
 }
 
 
-ENT.TrackRate = .2
-ENT.MaxRange = 6000
-ENT.FireRate = .2
-ENT.BulletDamage = 200
+ENT.TrackRate = .25
+ENT.MaxRange = 5000
+ENT.FireRate = .15
+ENT.BulletDamage = 250
 ENT.ScanRate = .75
 ENT.ShotSpread = .017
 ENT.RoundInChamber = false
-ENT.MaxBatteryCharge = 3000
+ENT.MaxBatteryCharge = 2000
+ENT.IdleDrainMul = 2
 ENT.ShellEffect = "RifleShellEject"
 ENT.BulletsPerShot = 1
 ENT.TurretSkin = "models/mat_jack_grenadeturret"
@@ -36,10 +37,13 @@ ENT.MuzzEff = "muzzleflash_smg"
 ENT.BarrelSizeMod = Vector( 2.1, 2.1, 1 )
 ENT.Autoloading = false
 ENT.CycleSound = "snd_jack_glcycle.mp3"
-ENT.MechanicsSizeMod = 2.1
+ENT.MechanicsSizeMod = 2.2
+
+ENT.PropThicknessToEngageSqr = 100^2
+ENT.PropThicknessToDisengageSqr = 300^2
 
 function ENT:SpawnFunction( ply, tr )
-    local SpawnPos = tr.HitPos + tr.HitNormal * 16
+    local SpawnPos = tr.HitPos + tr.HitNormal * 5
     local ent = ents.Create( "ent_jack_turret_grenade" )
     ent:SetPos( SpawnPos )
     ent:SetNWEntity( "Owner", ply )
@@ -129,7 +133,8 @@ function ENT:FireShot()
             return
         end
 
-        TargPos = TargPos + Vector( 0, 0, Dist / 60 )
+        local distPow = Dist ^ 1.06
+        TargPos = TargPos + Vector( 0, 0, distPow / 60 )
         local Vec = TargPos - SelfPos
         local Dir = Vec:GetNormalized()
         local Spred = self.ShotSpread
