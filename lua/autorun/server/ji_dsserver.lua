@@ -105,6 +105,22 @@ function JID.DetermineAttacker( ent )
     return ent
 end
 
+function JID.CanConstrain( checker, toConstrain )
+    if not CPPI then return true end
+
+    if not IsValid( checker ) then return end
+
+    local checkerOwner = checker:CPPIGetOwner()
+    local toConstrainOwner = toConstrain:CPPIGetOwner()
+    local isWorld = toConstrain:IsWorld()
+    local noOwnerAndIsNotWorld = not IsValid( toConstrainOwner ) and not isWorld
+
+    if noOwnerAndIsNotWorld then return true end
+    local sameOwner = checkerOwner == toConstrainOwner
+
+    if isWorld or sameOwner then return true end
+end
+
 local toolsToBlock = {
     ["material"] = true,
     ["colour"] = true
