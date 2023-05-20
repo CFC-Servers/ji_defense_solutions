@@ -145,7 +145,7 @@ function ENT:Use( activator )
         local Tr = util.QuickTrace( activator:GetShootPos(), activator:GetAimVector() * 100, { self, activator } )
 
         if Tr.Hit and IsValid( Tr.Entity:GetPhysicsObject() ) then
-            if table.HasValue( PlantableMats, Tr.MatType ) then
+            if table.HasValue( PlantableMats, Tr.MatType ) and JID.CanConstrain( self, Tr.Entity ) then
                 local TheAngle = activator:GetAimVector():Angle()
                 TheAngle:RotateAroundAxis( TheAngle:Forward(), 180 )
                 TheAngle:RotateAroundAxis( TheAngle:Right(), 40 )
@@ -183,8 +183,9 @@ function ENT:NotifySetup( ply )
     net.Start( "JID_ClaymoreNotify" )
     net.Send( ply )
 
-    numpad.OnDown( ply, KEY_PAD_0, "JackaClaymoreDet" )
+    numpad.OnDown( ply, KEY_O, "JackaClaymoreDet" )
     ply.JackaClaymoresCanFire = true
+
 end
 
 local NextTime = 0
@@ -196,13 +197,13 @@ local function DetonateClaymores( ply )
     NextTime = Time + 1
     local FoundEm = false
 
-    for _, lel in pairs( ents.FindByClass( "ent_jack_claymore" ) ) do
-        if lel.Activator and lel.Activator == ply and lel.Armed then
+    for _, claymore in pairs( ents.FindByClass( "ent_jack_claymore" ) ) do
+        if claymore.Activator and claymore.Activator == ply and claymore.Armed then
             FoundEm = true
 
             timer.Simple( .7, function()
-                if IsValid( lel ) then
-                    lel:Detonate()
+                if IsValid( claymore ) then
+                    claymore:Detonate()
                 end
             end )
         end

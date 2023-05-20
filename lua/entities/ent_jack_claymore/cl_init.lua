@@ -21,8 +21,8 @@ local function DrawNotification()
     surface.SetTextPos( w * .3 + 20, h * .4 + 200 )
     local Col = math.sin( CurTime() * 5 ) * 127 + 127
     surface.SetTextColor( Col, Col, Col, opacity )
-    surface.DrawText( "NumPad Zero" )
-    ply.JackaClaymoreNotification = ply.JackaClaymoreNotification - 1.5
+    surface.DrawText( "Press \" O \"" )
+    ply.JackaClaymoreNotification = ply.JackaClaymoreNotification - 0.75
 end
 
 hook.Add( "RenderScreenspaceEffects", "JackaClaymoreDetNote", DrawNotification )

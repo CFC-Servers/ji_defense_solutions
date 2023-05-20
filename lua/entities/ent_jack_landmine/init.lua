@@ -142,11 +142,13 @@ function ENT:Use( activator )
     self:SetAngles( traceResult.HitNormal:Angle() )
     self:SetPos( traceResult.HitPos + traceResult.HitNormal )
 
-    if traceResult.Entity == game.GetWorld() then
+    local stickingToWorld = traceResult.Entity:IsWorld()
+
+    if not stickingToWorld and JID.CanConstrain( self, traceResult.Entity ) then
+        self:SetParent( traceResult.Entity )
+    else
         local phys = self:GetPhysicsObject()
         phys:EnableMotion( false )
-    else
-        self:SetParent( traceResult.Entity )
     end
 
     self:Arm()
