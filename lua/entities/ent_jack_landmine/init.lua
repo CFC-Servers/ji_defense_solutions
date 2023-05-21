@@ -142,9 +142,9 @@ function ENT:Use( activator )
     self:SetAngles( traceResult.HitNormal:Angle() )
     self:SetPos( traceResult.HitPos + traceResult.HitNormal )
 
-    local stickingToWorld = traceResult.Entity:IsWorld()
+    local canConstrain = JID.CanConstrain( self, traceResult.Entity )
 
-    if not stickingToWorld and JID.CanConstrain( self, traceResult.Entity ) then
+    if canConstrain then
         self:SetParent( traceResult.Entity )
     else
         local phys = self:GetPhysicsObject()

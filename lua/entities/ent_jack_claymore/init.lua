@@ -145,7 +145,10 @@ function ENT:Use( activator )
         local Tr = util.QuickTrace( activator:GetShootPos(), activator:GetAimVector() * 100, { self, activator } )
 
         if Tr.Hit and IsValid( Tr.Entity:GetPhysicsObject() ) then
-            if table.HasValue( PlantableMats, Tr.MatType ) and JID.CanConstrain( self, Tr.Entity ) then
+            local canConstrain = JID.CanConstrain( self, Tr.Entity ) or Tr.Entity:IsWorld()
+
+            -- stick into loose mats solidly
+            if table.HasValue( PlantableMats, Tr.MatType ) and canConstrain then
                 local TheAngle = activator:GetAimVector():Angle()
                 TheAngle:RotateAroundAxis( TheAngle:Forward(), 180 )
                 TheAngle:RotateAroundAxis( TheAngle:Right(), 40 )
@@ -158,7 +161,7 @@ function ENT:Use( activator )
                 local TheAngle = activator:GetAimVector():Angle()
                 TheAngle:RotateAroundAxis( TheAngle:Forward(), 180 )
                 TheAngle:RotateAroundAxis( TheAngle:Right(), 40 )
-                self:SetPos( Tr.HitPos + Tr.HitNormal * 7 )
+                self:SetPos( Tr.HitPos + Tr.HitNormal * 10 )
                 self:SetAngles( TheAngle )
                 self:NotifySetup( activator )
             end
