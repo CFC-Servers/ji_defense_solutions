@@ -10,7 +10,6 @@ ENT.BulletDamage = 14
 ENT.ScanRate = 3
 ENT.ShotSpread = .072
 ENT.RoundInChamber = false
-ENT.MaxBatteryCharge = 2000
 ENT.IdleDrainMul = 2
 ENT.ShellEffect = "ShotgunShellEject"
 ENT.BulletsPerShot = 12
@@ -24,6 +23,9 @@ ENT.BarrelSizeMod = Vector( 2, 2, 1 )
 ENT.Autoloading = false
 ENT.CycleSound = "snd_jack_shottyturretcycle.mp3"
 ENT.MechanicsSizeMod = 1.8
+
+ENT.MaxStructuralIntegrity = 600
+ENT.StructuralIntegrity = 600
 
 ENT.PropThicknessToDisengageSqr = 100^2
 

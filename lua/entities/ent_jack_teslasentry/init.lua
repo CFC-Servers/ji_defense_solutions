@@ -10,10 +10,6 @@ ENT.HasBatteryOne = false
 ENT.HasBattery = false
 ENT.PlugPosition = Vector( 0, 0, 0 )
 
-local DoesNotHaveHealthTable = { "npc_rollermine", "npc_turret_floor", "npc_turret_ceiling", "npc_turret_ground", "npc_grenade_frag", "rpg_missile", "crossbow_bolt", "hunter_flechette", "ent_jack_rocket", "prop_combine_ball", "grenade_ar2", "combine_mine", "npc_combinedropship", "hunter_flechette" }
-
-local SpecialTargetTable = { "ent_jack_teslasentry", "sent_spawnpoint", "rpg_missile", "crossbow_bolt", "cfc_shaped_charge", "ent_ins2rpgrocket", "grenade_ar2", "npc_grenade_bugbait" }
-
 function ENT:SpawnFunction( ply, tr )
     local SpawnPos = tr.HitPos + tr.HitNormal * 50
     local ent = ents.Create( "ent_jack_teslasentry" )
@@ -65,18 +61,25 @@ function ENT:Initialize()
     self.CapacitorChargeRate = 20 --maximum is 90, minimum is 10
     self.MaxEngagementRange = 600 -- range to engage
     self.NextAlertTime = 0
+    self.NextWhineTime = 0
     self:SetDTBool( 1, self.HasBatteryOne )
     self:SetDTBool( 2, self.HasBatteryTwo )
     self:SetNWInt( "JackIndex", self:EntIndex() )
 end
 
-function ENT:PhysicsCollide( data, physobj )
+function ENT:PhysicsCollide( data, _ )
+
+    -- getting turrets smashed by proppushers SUCKS!
+    if IsValid( data.HitEntity ) and data.HitEntity:IsPlayerHolding() then return end
+
     if data.Speed > 80 and data.DeltaTime > 0.2 then
         self:EmitSound( "Canister.ImpactHard" )
     end
 
     if data.Speed > 750 then
         self.StructuralIntegrity = self.StructuralIntegrity - data.Speed / 10
+
+        self:Whine()
 
         if self.StructuralIntegrity <= 0 then
             self:Break()
@@ -86,23 +89,39 @@ end
 
 function ENT:Break()
     if not self.Broken then
-        self:EmitSound( "snd_jack_turretbreak.mp3" )
+        self:EmitSound( "snd_jack_turretbreak.mp3", 85, 100, 1, CHAN_STATIC )
         self.Broken = true
         self:Disengage()
+        for _ = 1, 8 do
+            self:MiniSpark( 1 )
+        end
     end
+end
+
+function ENT:MiniSpark( scale )
+    local effectdata = EffectData()
+    effectdata:SetOrigin( self:GetPos() + self:GetUp() * math.random( -15, 15 ) )
+    effectdata:SetNormal( VectorRand() )
+    effectdata:SetMagnitude( 3 * scale ) --amount and shoot hardness
+    effectdata:SetScale( 1 * scale ) --length of strands
+    effectdata:SetRadius( 3 * scale ) --thickness of strands
+    util.Effect( "Sparks", effectdata, true, true )
+
 end
 
 function ENT:OnTakeDamage( dmginfo )
     self:TakePhysicsDamage( dmginfo )
 
-    if dmginfo:IsDamageType( DMG_BUCKSHOT ) or dmginfo:IsDamageType( DMG_BULLET ) or dmginfo:IsDamageType( DMG_BLAST ) or dmginfo:IsDamageType( DMG_CLUB ) or dmginfo:IsDamageType( DMG_BURN ) then
-        self.StructuralIntegrity = self.StructuralIntegrity - dmginfo:GetDamage()
+    -- if we're already broken, it shouldnt look like we're breaking further
+    if self.Broken then return end
 
-        if self.StructuralIntegrity <= 0 then
-            self:Break()
-        end
-    elseif dmginfo:IsDamageType( DMG_SHOCK ) then
-        self.StructuralIntegrity = self.StructuralIntegrity - dmginfo:GetDamage() / 2
+    -- dont proppush turrets pls! 
+    if IsValid( dmginfo:GetInflictor() ) and dmginfo:GetInflictor():IsPlayerHolding() then return end
+
+    if dmginfo:IsDamageType( DMG_SHOCK ) or dmginfo:IsDamageType( DMG_BUCKSHOT ) or dmginfo:IsDamageType( DMG_BULLET ) or dmginfo:IsDamageType( DMG_BLAST ) or dmginfo:IsDamageType( DMG_CLUB ) or dmginfo:IsDamageType( DMG_BURN ) then
+        self.StructuralIntegrity = self.StructuralIntegrity - dmginfo:GetDamage()
+        self:MiniSpark( math.Clamp( dmginfo:GetDamage() / 50, 0.2, 1 ) )
+        self:EmitSound( "weapon.ImpactHard" )
 
         if self.StructuralIntegrity <= 0 then
             self:Break()
@@ -144,7 +163,7 @@ function ENT:FindRepairKit()
 end
 
 function ENT:Fix( kit )
-    self.StructuralIntegrity = 300
+    self.StructuralIntegrity = self.MaxStructuralIntegrity
     self:EmitSound( "snd_jack_turretrepair.mp3", 70, 100 )
 
     timer.Simple( 3.25, function()
@@ -154,18 +173,7 @@ function ENT:Fix( kit )
         end
     end )
 
-    local Empty = ents.Create( "prop_ragdoll" )
-    Empty:SetModel( "models/props_junk/cardboard_box003a_gib01.mdl" )
-    Empty:SetMaterial( "models/mat_jack_turretrepairkit" )
-    Empty:SetPos( kit:GetPos() )
-    Empty:SetAngles( kit:GetAngles() )
-    Empty:Spawn()
-    Empty:Activate()
-    Empty:SetCollisionGroup( COLLISION_GROUP_WEAPON )
-    Empty:GetPhysicsObject():ApplyForceCenter( Vector( 0, 0, 1000 ) )
-    Empty:GetPhysicsObject():AddAngleVelocity( VectorRand() * 1000 )
-    SafeRemoveEntityDelayed( Empty, 20 )
-    SafeRemoveEntity( kit )
+    kit:Empty()
 end
 
 function ENT:Engage()
@@ -236,10 +244,11 @@ end
 function ENT:Disengage()
     if self.State ~= "Engaged" then return end
     self.State = "Disengaging"
-    self:EmitSound( "snd_jack_turretshutdown.mp3" )
+    -- wasnt playing
+    self:EmitSound( "snd_jack_turretshutdown.mp3", 80, 80, CHAN_STATIC )
 end
 
-function ENT:GetPoz()
+function ENT:GetShootFromPos()
     return self:GetPos() + self:GetUp() * ( 30 + self.UpAmount * 1.6 )
 end
 
@@ -279,21 +288,70 @@ function ENT:FindBattery()
     return nil
 end
 
+ENT.BlockedLinesOfCurrent = {}
+local timeToBlock = 0.5
+
+function ENT:LineOfCurrentIsBlocked( check )
+    if self.BlockedLinesOfCurrent[ check:GetCreationID() ] == true then return true end
+
+end
+function ENT:FlagLineOfCurrentAsBlocked( theBlocked )
+    local creationId = theBlocked:GetCreationID()
+    self.BlockedLinesOfCurrent[ creationId ] = true
+    timer.Simple( timeToBlock, function()
+        if not IsValid( self ) then return end
+        self.BlockedLinesOfCurrent[ creationId ] = nil
+
+    end )
+end
+
+local DoesNotHaveHealthTable = {
+    "npc_rollermine",
+    "npc_turret_floor",
+    "npc_turret_ceiling",
+    "npc_turret_ground",
+    "npc_grenade_frag",
+    "rpg_missile",
+    "crossbow_bolt",
+    "hunter_flechette",
+    "ent_jack_rocket",
+    "prop_combine_ball",
+    "grenade_ar2",
+    "combine_mine",
+    "npc_combinedropship",
+    "hunter_flechette"
+}
+
+local SpecialTargetTable = { 
+    "ent_jack_teslasentry",
+    "sent_spawnpoint",
+    "rpg_missile",
+    "crossbow_bolt",
+    "cfc_shaped_charge",
+    "ent_ins2rpgrocket",
+    "grenade_ar2",
+    "npc_grenade_bugbait"
+}
+
 function ENT:FindTarget()
     self.BatteryCharge = self.BatteryCharge - .0125
     local NewTarg = nil
     local Closest = self.MaxEngagementRange^2
 
-    for _, found in pairs( ents.FindInSphere( self:GetPoz(), self.MaxEngagementRange ) ) do
+    local LineOfCurrentIsBlocked = self.LineOfCurrentIsBlocked
+
+    for count, found in pairs( ents.FindInSphere( self:GetShootFromPos(), self.MaxEngagementRange ) ) do
+        if count >= 100 then break end
         if found == self then continue end
         if found:IsPlayer() and found:HasGodMode() then continue end
-        if ( found.TeslaTurretNoZapTime or 0 ) > CurTime() then continue end
+        if found.JackaTeslaTurretIgnore then continue end
+        if LineOfCurrentIsBlocked( self, found ) then continue end
         local Class = found:GetClass()
         local Phys = found:GetPhysicsObject()
 
         if table.HasValue( SpecialTargetTable, Class ) then
 
-            local Dist = ( found:LocalToWorld( found:OBBCenter() ) - self:GetPoz() ):LengthSqr()
+            local Dist = ( found:LocalToWorld( found:OBBCenter() ) - self:GetShootFromPos() ):LengthSqr()
 
             if Dist < Closest then
                 NewTarg = found
@@ -304,7 +362,7 @@ function ENT:FindTarget()
             local Spd = Vel:Length()
 
             if Spd > 20 then
-                local Dist = ( found:LocalToWorld( found:OBBCenter() ) - self:GetPoz() ):LengthSqr()
+                local Dist = ( found:LocalToWorld( found:OBBCenter() ) - self:GetShootFromPos() ):LengthSqr()
 
                 if Dist < Closest then
                     NewTarg = found
@@ -330,6 +388,39 @@ end
 function ENT:Think()
     if self.MenuOpen then return end
 
+    if self.Broken then
+        self.BatteryCharge = 0
+
+        if math.random( 1, 8 ) == 7 then
+            self:MiniSpark( 1 )
+            self:EmitSound( "snd_jack_turretfizzle.mp3", 70, 100 )
+        else
+            local effectdata = EffectData()
+            effectdata:SetOrigin( self:GetShootFromPos() )
+            effectdata:SetScale( 1 )
+            util.Effect( "eff_jack_tinyturretburn", effectdata, true, true )
+        end
+
+        self:Disengage()
+
+    end
+
+    if self.State == "Disengaging" then
+        self.UpAmount = self.UpAmount - .30
+
+        if self.UpAmount <= 0 then
+            self.UpAmount = 0
+            self.State = "Off"
+        else
+            self:EmitSound( "snd_jack_turretservo.mp3", 70, 90 )
+        end
+
+        self:SetDTFloat( 0, self.UpAmount )
+        self:NextThink( CurTime() + .05 )
+
+        return true
+    end
+
     if self.State == "Engaging" then
         self.UpAmount = self.UpAmount + .30
 
@@ -351,48 +442,16 @@ function ENT:Think()
         return true
     end
 
-    if self.State == "Disengaging" then
-        self.UpAmount = self.UpAmount - .30
+    if self.Broken then return end
 
-        if self.UpAmount <= 0 then
-            self.UpAmount = 0
-            self.State = "Off"
-        else
-            self:EmitSound( "snd_jack_turretservo.mp3", 70, 90 )
-        end
+    self:SetDTInt( 2, math.Round( self.BatteryCharge / self.BatteryMaxCharge * 100 ) )
 
-        self:SetDTFloat( 0, self.UpAmount )
-        self:NextThink( CurTime() + .05 )
-
-        return true
-    end
-
-    if self.Broken then
-        self.BatteryCharge = 0
-
-        if math.random( 1, 8 ) == 7 then
-            local effectdata = EffectData()
-            effectdata:SetOrigin( self:GetPos() + self:GetUp() * math.random( 30, 40 ) )
-            effectdata:SetNormal( VectorRand() )
-            effectdata:SetMagnitude( 3 ) --amount and shoot hardness
-            effectdata:SetScale( 1 ) --length of strands
-            effectdata:SetRadius( 3 ) --thickness of strands
-            util.Effect( "Sparks", effectdata, true, true )
-            self:EmitSound( "snd_jack_turretfizzle.mp3", 70, 100 )
-        else
-            local effectdata = EffectData()
-            effectdata:SetOrigin( self:GetPoz() )
-            effectdata:SetScale( 1 )
-            util.Effect( "eff_jack_tinyturretburn", effectdata, true, true )
-        end
-
-        self:Disengage()
-
-        return
-    end
-
-    self:SetDTInt( 2, math.Round( self.BatteryCharge / 6000 * 100 ) )
     if self.State == "Off" then return end
+
+    if self.BatteryCharge < self.BatteryMaxCharge * 0.1 then
+        self:Whine()
+
+    end
 
     if self.CapacitorCharge <= 0 and self.BatteryCharge <= 0 then
         self:Disengage()
@@ -401,6 +460,7 @@ function ENT:Think()
     end
 
     if self:IsUnfair() then
+        self:Whine()
         self:Disengage()
 
         return
@@ -410,10 +470,13 @@ function ENT:Think()
         local Target = self:FindTarget()
 
         if IsValid( Target ) then
+            -- has capacitor and valid target
             local Class = Target:GetClass()
+            local nextFire = self.NextFire or 0
 
-            if not self.JaFired then
-                self.JaFired = true
+            if nextFire < CurTime() then
+
+                self.NextFire = CurTime() + 0.1
 
                 --this staggers the capacitor firings to make the sentries work together
                 timer.Simple( math.Rand( 0, self.CapacitorMaxCharge / 1000 ), function()
@@ -421,7 +484,8 @@ function ENT:Think()
                     if not IsValid( Target ) or not JID.CanTarget( Target ) then return end
                     if ( not Target.Health and not Target:Health() <= 0 and not table.HasValue( DoesNotHaveHealthTable, Class ) ) or Target.JackyTeslaKilled then return end
                     if not self:LineOfCurrentBetween( self, Target ) then
-                        Target.TeslaTurretNoZapTime = CurTime() + 1.5
+                        -- find another target for a second
+                        self:FlagLineOfCurrentAsBlocked( Target )
                         return
                     end
                     local DmgAmt = self.CapacitorCharge ^ 1.2 / 3
@@ -431,12 +495,12 @@ function ENT:Think()
                 end )
             end
         else
+            -- has capacitor charge but no battery charge
             self.Zapped = false
-            self.JaFired = false
         end
     else
+        -- battery has charge we can draw from
         self.Zapped = false
-        self.JaFired = false
         self.CapacitorCharge = self.CapacitorCharge + 1
         local ChargeTaken = self.CapacitorChargeRate / 8
         self.BatteryCharge = self.BatteryCharge - ChargeTaken
@@ -452,7 +516,7 @@ function ENT:ClearHead()
     local Hits = 0
 
     for i = 0, 10 do
-        local Tr = util.QuickTrace( self:GetPoz(), VectorRand() * 15, { self } )
+        local Tr = util.QuickTrace( self:GetShootFromPos(), VectorRand() * 15, { self } )
 
         if Tr.Hit then
             Hits = Hits + 1
@@ -462,10 +526,15 @@ function ENT:ClearHead()
     return Hits < 4 and self:WaterLevel() == 0
 end
 
+local batteryChargePerCBall = 750
+local damagePerOverchargeCBall = 25
+
 function ENT:AbsorbCombineBall( TheBall, Powa )
     local Class = TheBall:GetClass()
 
     if Class ~= "prop_combine_ball" then return end
+    -- never absorb a single ball twice!
+    if TheBall.AbsorbedByTeslaTurret then return end
 
     for _ = 1, 4 do
         local SparkPos = self:WorldSpaceCenter() + VectorRand() * math.Rand( 25, 75 )
@@ -473,16 +542,25 @@ function ENT:AbsorbCombineBall( TheBall, Powa )
 
         local randomSparkId = math.random( 5, 9 )
 
-        self:EmitSound( "ambient/energy/zap".. tostring( randomSparkId ) .."wav", 80, math.random( 80, 100 ), 1, CHAN_STATIC )
+        self:EmitSound( "ambient/energy/zap" .. tostring( randomSparkId ) .. "wav", 80, math.random( 80, 100 ), 1, CHAN_STATIC )
 
     end
 
-    local BatteryAcceptedCharge = self:ExternalCharge( 500 )
+    local BatteryAcceptedCharge = self:ExternalCharge( batteryChargePerCBall )
 
     self:ElectricalArcEffect( self, TheBall, 200 )
 
     if BatteryAcceptedCharge == true then
         self:EmitSound( "ambient/levels/labs/electric_explosion1.wav", 100, math.random( 110, 120 ), 1, CHAN_STATIC )
+
+
+        for I = 1, 3 do
+            timer.Simple( I * 1, function()
+                if not IsValid( self ) then return end
+                self:Whine()
+
+            end )
+        end
 
         for Index = 1, 2 do
             timer.Simple( Index * math.Rand( 0.1, 0.4 ), function()
@@ -493,8 +571,16 @@ function ENT:AbsorbCombineBall( TheBall, Powa )
     else
         self:EmitSound( "ambient/levels/labs/electric_explosion1.wav", 100, math.random( 60, 70 ), 1, CHAN_STATIC )
 
+        timer.Simple( 1, function()
+            if not IsValid( self ) then return end
+            if self.State ~= "Engaged" then return end
+
+            self:HostileAlert()
+
+        end )
+
         local Dmg = DamageInfo()
-        Dmg:SetDamage( 25 )
+        Dmg:SetDamage( damagePerOverchargeCBall )
         Dmg:SetDamageType( DMG_BLAST )
         Dmg:SetAttacker( self )
         Dmg:SetInflictor( TheBall )
@@ -502,6 +588,7 @@ function ENT:AbsorbCombineBall( TheBall, Powa )
         if self.StructuralIntegrity < ( self.MaxStructuralIntegrity / 2 ) then
             Dmg:SetDamage( 1000 )
             self:DetachBattery( true )
+            self:Break()
             for _ = 1, 2 do
                 local ExplPos = self:WorldSpaceCenter() + VectorRand() * math.Rand( 25, 75 )
                 ExplEffect( ExplPos )
@@ -519,6 +606,8 @@ function ENT:AbsorbCombineBall( TheBall, Powa )
         self:TakeDamageInfo( Dmg )
     end
 
+    TheBall.AbsorbedByTeslaTurret = true
+    TheBall.JackaTeslaTurretIgnore = true
     TheBall:Fire( "Explode" )
 
     return true
@@ -527,20 +616,20 @@ end
 function ENT:ZapTheShitOutOf( Target, DmgAmt, Powa )
     if self.Zapped then return end
     self.Zapped = true
-    local Dayumege = DamageInfo()
-    Dayumege:SetDamageType( DMG_SHOCK )
-    Dayumege:SetDamagePosition( self:GetPoz() )
+    local ZapDamage = DamageInfo()
+    ZapDamage:SetDamageType( DMG_SHOCK )
+    ZapDamage:SetDamagePosition( self:GetShootFromPos() )
     local Phys = Target:GetPhysicsObject()
 
     if IsValid( Phys ) then
-        Dayumege:SetDamageForce( Target:GetUp() * Target:GetPhysicsObject():GetMass() ^ 0.6 * DmgAmt * 5 )
+        ZapDamage:SetDamageForce( Target:GetUp() * Target:GetPhysicsObject():GetMass() ^ 0.6 * DmgAmt * 5 )
     else
-        Dayumege:SetDamageForce( Target:GetUp() * 50 * DmgAmt * 5 )
+        ZapDamage:SetDamageForce( Target:GetUp() * 50 * DmgAmt * 5 )
     end
 
-    Dayumege:SetDamage( DmgAmt )
-    Dayumege:SetInflictor( self )
-    Dayumege:SetAttacker( self:GetCreator() )
+    ZapDamage:SetDamage( DmgAmt )
+    ZapDamage:SetInflictor( self )
+    ZapDamage:SetAttacker( self:GetCreator() )
 
     local Class = Target:GetClass()
 
@@ -560,7 +649,7 @@ function ENT:ZapTheShitOutOf( Target, DmgAmt, Powa )
         end
     end
 
-    if Class == "prop_combine_ball" and self:AbsorbCombineBall( Target, Powa ) then return end
+    Target:TakeDamageInfo( ZapDamage )
 
     if table.HasValue( SpecialTargetTable, Target:GetClass() ) then
         Target:SetVelocity( VectorRand() * 100000 )
@@ -574,30 +663,22 @@ function ENT:ZapTheShitOutOf( Target, DmgAmt, Powa )
 
     end
 
-    Target.IsSpasmingFromElectrocution = true
     local Chance = DmgAmt / 100 * 0.1
 
     if math.Rand( 0, 1 ) < Chance then
         Target:Ignite( 5 )
     end
 
-    timer.Simple( 0.1, function()
-        if IsValid( Target ) then
-            Target.IsSpasmingFromElectrocution = false
-        end
-    end )
-
-    local Pos = Target:GetPos()
-    Target:TakeDamageInfo( Dayumege )
-
     self:ElectricalArcEffect( self, Target, Powa )
     self:ArcToGround( Target, Powa )
+
+    if Class == "prop_combine_ball" then self:AbsorbCombineBall( Target, Powa ) end
 
 end
 
 function ENT:ElectricalArcEffect( Attacker, Victim, Powa )
     local VictimPos = Victim:LocalToWorld( Victim:OBBCenter() )
-    local SelfPos = Attacker:GetPoz()
+    local SelfPos = Attacker:GetShootFromPos()
     local ToVector = VictimPos - SelfPos
     local Dist = ToVector:Length()
     local WanderDirection = self:GetUp()
@@ -754,7 +835,7 @@ end
 
 function ENT:HostileAlert()
     local Flash = EffectData()
-    Flash:SetOrigin( self:GetPoz() )
+    Flash:SetOrigin( self:GetShootFromPos() )
     Flash:SetScale( 2 )
     util.Effect( "eff_jack_redflash", Flash, true, true )
     self:EmitSound( "snd_jack_friendlylarm.mp3", 85, 95 )
@@ -767,7 +848,7 @@ function ENT:LineOfCurrentBetween( Searcher, Searchee )
     local TracesMax = 30
     local TraceData = {}
     local End = Searchee:LocalToWorld( Searchee:OBBCenter() ) + Vector( 0, 0, 5 )
-    TraceData.start = Searcher:GetPoz()
+    TraceData.start = Searcher:GetShootFromPos()
     TraceData.endpos = End
 
     TraceData.filter = { Searcher, Searchee }
@@ -790,36 +871,12 @@ function ENT:LineOfCurrentBetween( Searcher, Searchee )
     end
 end
 
-local function MakeSpasms( ent, ragdoll )
-    if ent.IsSpasmingFromElectrocution then
-        local r, g, b, a = ent:GetColor()
-        ragdoll:SetColor( r, g, b, a )
-
-        if ent:IsOnFire() then
-            ragdoll:Ignite( 5 )
-        end
-
-        ragdoll.NextSpazTime = CurTime()
-        local OriginalForce = ragdoll:GetPhysicsObject():GetMass() ^ 0.75 * 20
-        local Force = OriginalForce
-
-        timer.Create( "SpasmingOnEntity" .. ragdoll:EntIndex(), 0.01, 500, function()
-            if not IsValid( ragdoll ) then
-                timer.Remove( "SpasmingOnEntity" .. ragdoll:EntIndex() )
-
-                return
-            end
-
-            if ragdoll.NextSpazTime < CurTime() then
-                ragdoll:GetPhysicsObject():ApplyForceCenter( VectorRand() * Force )
-                ragdoll:GetPhysicsObject():AddAngleVelocity( VectorRand() * Force )
-                Force = Force - OriginalForce / 500
-            end
-        end )
-    end
+function ENT:Whine()
+    if self.NextWhineTime > CurTime() then return end
+    self.NextWhineTime = CurTime() + 0.95
+    self:EmitSound( "snd_jack_turretwhine.mp3", 80, 80, 1, CHAN_STATIC )
+    self.BatteryCharge = self.BatteryCharge - .05
 end
-
-hook.Add( "CreateEntityRagdoll", "JackSpasmLectricSentreh", MakeSpasms )
 
 local function Battery( ... )
     local args = { ... }

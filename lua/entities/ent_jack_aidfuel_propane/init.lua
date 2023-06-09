@@ -16,6 +16,9 @@ function ENT:Initialize()
         phys:Wake()
         phys:SetMass( 35 )
     end
+
+    self.StructuralIntegrity = 50
+    self.Asploded = false
 end
 
 function ENT:PhysicsCollide( data )
@@ -28,4 +31,59 @@ end
 
 function ENT:OnTakeDamage( dmginfo )
     self:TakePhysicsDamage( dmginfo )
+    self.StructuralIntegrity = self.StructuralIntegrity - dmginfo:GetDamage()
+
+    if self.StructuralIntegrity <= 0 then
+        self:Break()
+    end
+end
+
+function ENT:Break()
+    if self.Broken then return end
+    self.Broken = true
+    self.DieTime = CurTime() + math.Rand( 3, 5 )
+    self.ThrustingSound = CreateSound( self, "PhysicsCannister.ThrusterLoop" )
+    self.ThrustingSound:Play()
+
+end
+
+function ENT:Think()
+    if self.Broken then
+        if self.DieTime < CurTime() then
+            self.ThrustingSound:Stop()
+            self:Explode()
+            return
+
+        end
+        local phys = self:GetPhysicsObject()
+        if not IsValid( phys ) then return end
+        phys:ApplyForceCenter( self:GetUp() * phys:GetMass() * 200 )
+
+    end
+end
+
+function ENT:OnRemove()
+    if not self.ThrustingSound then return end
+    if not self.ThrustingSound:IsPlaying() then return end
+    self.ThrustingSound:Stop()
+
+end
+
+function ENT:Explode()
+    if self.Exploded then return end
+    self.Exploded = true
+    -- tiny explosion
+    local explode = ents.Create( "env_explosion" )
+    explode:SetPos( self:WorldSpaceCenter() )
+    explode:SetOwner( self )
+    explode:Spawn()
+    explode:Activate()
+    explode:SetKeyValue( "iMagnitude", "20" )
+    explode:Fire( "Explode", 0, 0 )
+
+    if IsValid( self.JackaGenerator ) then
+        self.JackaGenerator:Fire( "Ignite", 15 )
+    end
+
+    self:Remove()
 end

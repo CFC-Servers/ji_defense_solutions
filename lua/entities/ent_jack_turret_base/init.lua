@@ -29,6 +29,8 @@ local BOXES = {
     ["ATrocket"] = "ent_jack_turretrocketpod"
 }
 
+ENT.IsJackaTurret = true
+
 ENT.CurrentTarget = nil
 ENT.HasAmmoBox = false
 ENT.HasBattery = false
@@ -52,6 +54,7 @@ ENT.NextWarnTime = 0
 ENT.WillWarn = false
 ENT.WillLight = false
 ENT.WillLightOverride = nil
+ENT.MaxStructuralIntegrity = 400
 ENT.StructuralIntegrity = 400
 ENT.Broken = false
 ENT.FiredAtCurrentTarget = false
@@ -67,6 +70,7 @@ ENT.GroundLastWhine = 0
 ENT.IsOnValidGround = true
 ENT.PlugPosition = Vector( 0, 0, 20 )
 ENT.TracerEffect = "Tracer"
+ENT.MechanicsSizeMod = 1
 
 -- if already acquired target is greater than this far behind something, lose em.
 ENT.PropThicknessToDisengageSqr = nil
@@ -141,6 +145,8 @@ function ENT:Initialize()
     self:ResetSequence( 0 )
     self:ManipulateBoneScale( 0, Vector( 1.5, 1.1, 1 ) )
     self:SetNWVector( "BarrelSizeMod", self.BarrelSizeMod )
+
+    self:SetNWFloat( "MechanicsSizeMod", self.MechanicsSizeMod )
     self:ManipulateBoneScale( 1, Vector( self.MechanicsSizeMod, 1, 1 ) )
 
     if self.AmmoType == "AAmissile" or self.AmmoType == "ATrocket" then
@@ -159,6 +165,12 @@ end
 
 function ENT:GetTargetPos( ent )
     return ent:WorldSpaceCenter()
+end
+
+function ENT:TargetIsInvalidOrDead()
+    if not IsValid( self.CurrentTarget ) then return true end
+    if self.CurrentTarget:GetMaxHealth() > 0 and self.CurrentTarget:Health() <= 0 then return true end
+
 end
 
 function ENT:PhysicsCollide( data )
@@ -182,12 +194,26 @@ end
 function ENT:OnTakeDamage( dmginfo )
     self:TakePhysicsDamage( dmginfo )
 
+    -- if we're already broken, it shouldnt look like we're breaking further
+    if self.Broken then return end
+
+    -- dont proppush turrets pls! 
+    if IsValid( dmginfo:GetInflictor() ) and dmginfo:GetInflictor():IsPlayerHolding() then return end
+
     if dmginfo:IsDamageType( DMG_BUCKSHOT ) or dmginfo:IsDamageType( DMG_BULLET ) or dmginfo:IsDamageType( DMG_BLAST ) or dmginfo:IsDamageType( DMG_CLUB ) then
-        self.StructuralIntegrity = self.StructuralIntegrity - dmginfo:GetDamage()
+        local damage = dmginfo:GetDamage()
+        self.StructuralIntegrity = self.StructuralIntegrity - damage
+
 
         if self.StructuralIntegrity <= 0 then
             self:Break()
         else
+            self:MiniSpark( math.Clamp( damage / 50, 0.2, 1 ) )
+
+            local pitch = math.random( 110, 120 ) + ( -damage / 4 )
+
+            self:EmitSound( "Computer.BulletImpact" )
+            self:EmitSound( "physics/metal/metal_canister_impact_hard" .. math.random( 1, 3 ) .. ".wav", 75, pitch, 1, CHAN_STATIC )
             if self:GetDTInt( 0 ) == TS_IDLING then
                 self:Notice()
             end
@@ -196,6 +222,7 @@ function ENT:OnTakeDamage( dmginfo )
 end
 
 function ENT:Use( activator )
+    if not activator:IsPlayer() then return end
     if not JID.CanBeUsed( activator, self ) then return end
     if self.StructuralIntegrity <= 0 then
         local Kit = self:FindRepairKit()
@@ -254,13 +281,7 @@ function ENT:Think()
         self:SetDTInt( 2, 0 )
 
         if math.random( 1, 8 ) == 7 then
-            local effectdata = EffectData()
-            effectdata:SetOrigin( self:GetPos() + self:GetUp() * math.random( 30, 55 ) )
-            effectdata:SetNormal( VectorRand() )
-            effectdata:SetMagnitude( 3 ) --amount and shoot hardness
-            effectdata:SetScale( 1 ) --length of strands
-            effectdata:SetRadius( 3 ) --thickness of strands
-            util.Effect( "Sparks", effectdata, true, true )
+            self:MiniSpark( 1 )
             self:EmitSound( "snd_jack_turretfizzle.mp3", 70, 100 )
         else
             local effectdata = EffectData()
@@ -365,7 +386,8 @@ function ENT:Think()
                     self.CurrentTarget = self:ScanForTarget()
                 end
 
-                if self.NextScanTime < Time then
+                -- switch targets instantly if our current one just died
+                if self.NextScanTime < Time or self:TargetIsInvalidOrDead() then
                     self.CurrentTarget = self:ScanForTarget()
 
                     if not IsValid( self.CurrentTarget ) then
@@ -596,7 +618,7 @@ function ENT:Alert( targ )
             self.flashlight:SetLocalAngles( Angle( 0, 0, 0 ) )
             -- Looks like only one flashlight can have shadows enabled!
             self.flashlight:SetKeyValue( "enableshadows", 0 )
-            self.flashlight:SetKeyValue( "farz", 1500 )
+            self.flashlight:SetKeyValue( "farz", 800 )
             self.flashlight:SetKeyValue( "nearz", 30 )
             self.flashlight:SetKeyValue( "lightfov", 30 )
             self.flashlight:SetKeyValue( "lightcolor", "4080 4080 4080 255" )
@@ -689,26 +711,42 @@ function ENT:FireShot()
         return
     end
 
-    local PosAng = self:GetAttachment( 1 )
-    local muzzleFlash = EffectData()
-    muzzleFlash:SetStart( PosAng.Pos + PosAng.Ang:Forward() * self.BarrelSizeMod.z * 4 )
-    muzzleFlash:SetAngles( PosAng.Ang )
-    muzzleFlash:SetFlags( 1 )
-    util.Effect( "MuzzleFlash", muzzleFlash, true, true )
+    local fakeDPS = self.BulletDamage * ( self.BulletsPerShot / 2 )
+    local additionalScale = math.Clamp( fakeDPS / 8, 0, 3 )
+
+    local sweepAng = Angle( self.CurrentSwing, self.CurrentSweep, 0 )
+    sweepAng = self:LocalToWorldAngles( sweepAng )
+    local up = sweepAng:Up()
+    local forward = sweepAng:Forward()
+    local right = sweepAng:Right()
+
+    local ShootPos = self:GetBonePosition( 1 ) -- turret pivot bone
+
+    ShootPos = ShootPos + -right * 4
+    ShootPos = ShootPos + up * 22
+
+    local muzzleEffect = EffectData()
+    muzzleEffect:SetOrigin( ShootPos + forward * self.BarrelSizeMod.z * 5 )
+    muzzleEffect:SetAngles( sweepAng )
+    muzzleEffect:SetScale( 0.5 + additionalScale )
+    util.Effect( "MuzzleEffect", muzzleEffect, true, true )
+
+    local fakeRecoilTime = .1
+    self.returnFakeRecoil = CurTime() + fakeRecoilTime
     self:SetNWVector( "BarrelSizeMod", Vector( self.BarrelSizeMod.x, self.BarrelSizeMod.y, self.BarrelSizeMod.z * .75 ) )
+
+    timer.Simple( fakeRecoilTime, function()
+        if not IsValid( self ) then return end
+        local returnFakeRecoil = self.returnFakeRecoil or 0
+        if returnFakeRecoil > CurTime() then return end
+        self:SetNWVector( "BarrelSizeMod", self.BarrelSizeMod )
+    end )
 
     self:AdditionalShootFX()
 
-    timer.Simple( .1, function()
-        if IsValid( self ) then
-            self:SetNWVector( "BarrelSizeMod", self.BarrelSizeMod )
-        end
-    end )
-
-    local SelfPos = self:GetShootPos()
     local TargPos = self:GetTargetPos( self.CurrentTarget )
 
-    local Dir = ( TargPos - SelfPos ):GetNormalized()
+    local Dir = ( TargPos - ShootPos ):GetNormalized()
     local spread
     if self:IsPlayerHolding() then
         spread = self.ShotSpread * 10
@@ -742,13 +780,13 @@ function ENT:FireShot()
         Tracer = 0,
         Dir = Dir,
         Spread = SpreadVec,
-        Src = SelfPos,
+        Src = ShootPos,
         Callback = function( _, trace )
             local TracerEffect = EffectData()
-            TracerEffect:SetStart( SelfPos )
+            TracerEffect:SetStart( ShootPos )
             TracerEffect:SetOrigin( trace.HitPos )
             TracerEffect:SetFlags( 1 )
-            TracerEffect:SetScale( 30000 )
+            TracerEffect:SetScale( self.MaxRange * 8 )
             util.Effect( self.TracerEffect, TracerEffect )
         end
     }
@@ -760,32 +798,28 @@ function ENT:FireShot()
 
     self:EmitSound( self.NearShotNoise, 75, self.ShootSoundPitch )
     self:EmitSound( self.FarShotNoise, 90, self.ShootSoundPitch - 10 )
-    sound.Play( self.NearShotNoise, SelfPos, 75, self.ShootSoundPitch )
-    sound.Play( self.FarShotNoise, SelfPos + Vector( 0, 0, 1 ), 90, self.ShootSoundPitch - 10 )
+    sound.Play( self.NearShotNoise, ShootPos, 75, self.ShootSoundPitch )
+    sound.Play( self.FarShotNoise, ShootPos + Vector( 0, 0, 1 ), 90, self.ShootSoundPitch - 10 )
 
-    local Scayul = 1
 
     if self:GetClass() ~= "ent_jack_turret_plinker" then
-        sound.Play( self.NearShotNoise, SelfPos, 75, self.ShootSoundPitch )
-        sound.Play( self.FarShotNoise, SelfPos + Vector( 0, 0, 1 ), 110, self.ShootSoundPitch - 10 )
-    else
-        Scayul = .5
+        sound.Play( self.NearShotNoise, ShootPos, 75, self.ShootSoundPitch )
+        sound.Play( self.FarShotNoise, ShootPos + Vector( 0, 0, 1 ), 110, self.ShootSoundPitch - 10 )
+
     end
 
     if self.AmmoType == "7.62x51mm" or self.AmmoType == ".338 Lapua Magnum" then
-        sound.Play( self.NearShotNoise, SelfPos + Vector( 0, 0, 1 ), 75, self.ShootSoundPitch + 10 )
+        sound.Play( self.NearShotNoise, ShootPos + Vector( 0, 0, 1 ), 75, self.ShootSoundPitch + 10 )
 
         if self:GetClass() ~= "ent_jack_turret_mg" then
-            sound.Play( self.FarShotNoise, SelfPos + Vector( 0, 0, 2 ), 100, self.ShootSoundPitch )
+            sound.Play( self.FarShotNoise, ShootPos + Vector( 0, 0, 2 ), 100, self.ShootSoundPitch )
         end
 
-        Scayul = 1.5
     end
 
     if self.AmmoType == ".338 Lapua Magnum" then
-        sound.Play( self.NearShotNoise, SelfPos + Vector( 0, 0, 3 ), 75, self.ShootSoundPitch + 10 )
-        sound.Play( self.FarShotNoise, SelfPos + Vector( 0, 0, 4 ), 100, self.ShootSoundPitch + 5 )
-        Scayul = 2.5
+        sound.Play( self.NearShotNoise, ShootPos + Vector( 0, 0, 3 ), 75, self.ShootSoundPitch + 10 )
+        sound.Play( self.FarShotNoise, ShootPos + Vector( 0, 0, 4 ), 100, self.ShootSoundPitch + 5 )
     end
 
     if self.RoundsOnBelt > 0 then
@@ -793,7 +827,7 @@ function ENT:FireShot()
             self.RoundsOnBelt = self.RoundsOnBelt - 1
             self.RoundInChamber = true
             local effectdata = EffectData()
-            effectdata:SetOrigin( SelfPos )
+            effectdata:SetOrigin( ShootPos )
             effectdata:SetAngles( Dir:Angle():Right():Angle() )
             effectdata:SetEntity( self )
             util.Effect( self.ShellEffect, effectdata, true, true )
@@ -809,7 +843,7 @@ function ENT:FireShot()
                     self.RoundsOnBelt = self.RoundsOnBelt - 1
                     self.RoundInChamber = true
                     local effectdata = EffectData()
-                    effectdata:SetOrigin( SelfPos )
+                    effectdata:SetOrigin( ShootPos )
                     effectdata:SetAngles( Dir:Angle():Right():Angle() )
                     effectdata:SetEntity( self )
                     util.Effect( self.ShellEffect, effectdata, true, true )
@@ -818,7 +852,7 @@ function ENT:FireShot()
         end
     end
 
-    self:GetPhysicsObject():ApplyForceOffset( -Dir * self.BulletDamage * 6 * self.BulletsPerShot, SelfPos + self:GetUp() * 30 )
+    self:GetPhysicsObject():ApplyForceOffset( -Dir * self.BulletDamage * 6 * self.BulletsPerShot, ShootPos + self:GetUp() * 30 )
 end
 
 function ENT:Whine()
@@ -974,12 +1008,19 @@ function ENT:Break()
     self.LockPass = ""
     self.CurrentTarget = nil
 
+    -- ppl expect explosions when stuff breaks
+    local effectdata = EffectData()
+    effectdata:SetOrigin( self:ChassisPos() )
+    effectdata:SetMagnitude( 0.2 ) --length of strands
+    effectdata:SetScale( 0.2 )
+    util.Effect( "Explosion", effectdata, true, true )
+
     SafeRemoveEntity( self.flashlight )
     self:SetDTBool( 3, false )
 end
 
 function ENT:Fix( kit )
-    self.StructuralIntegrity = 400
+    self.StructuralIntegrity = self.MaxStructuralIntegrity
     self:EmitSound( "snd_jack_turretrepair.mp3", 70, 100 )
 
     timer.Simple( 3.25, function()
@@ -989,19 +1030,8 @@ function ENT:Fix( kit )
         end
     end )
 
-    local Empty = ents.Create( "prop_ragdoll" )
-    Empty:SetModel( "models/props_junk/cardboard_box003a_gib01.mdl" )
-    Empty:SetMaterial( "models/mat_jack_turretrepairkit" )
-    Empty:SetPos( kit:GetPos() )
-    Empty:SetAngles( kit:GetAngles() )
-    Empty:Spawn()
-    Empty:Activate()
-    Empty:SetCollisionGroup( COLLISION_GROUP_WEAPON )
-    Empty:GetPhysicsObject():ApplyForceCenter( Vector( 0, 0, 1000 ) )
-    Empty:GetPhysicsObject():AddAngleVelocity( VectorRand() * 1000 )
+    kit:Empty()
 
-    SafeRemoveEntityDelayed( Empty, 20 )
-    SafeRemoveEntity( kit )
 end
 
 function ENT:FindRepairKit()
@@ -1047,12 +1077,39 @@ local function SentryChat( ply, txt )
     if Found then return "" end
 end
 
+function ENT:MiniSpark( scale )
+    local effectdata = EffectData()
+    effectdata:SetOrigin( self:ChassisPos() )
+    effectdata:SetNormal( VectorRand() )
+    effectdata:SetMagnitude( 3 * scale ) --amount and shoot hardness
+    effectdata:SetScale( 1 * scale ) --length of strands
+    effectdata:SetRadius( 3 * scale ) --thickness of strands
+    util.Effect( "Sparks", effectdata, true, true )
+
+end
+
+function ENT:ChassisPos()
+    return self:GetPos() + self:GetUp() * math.random( 30, 55 )
+
+end
+
+local _IsValid = IsValid
+
+local function IsAValidJackaTurret( ent )
+    if not _IsValid( ent ) then return end
+    if not ent.IsJackaTurret then return end
+    return true
+
+end
+
 hook.Add( "PlayerSay", "JackaSentryChat", SentryChat )
 
 local function closeOn( ... )
     local args = { ... }
 
     local turret = Entity( tonumber( args[3][1] ) )
+    if not IsAValidJackaTurret( turret ) then return end
+
     turret:EmitSound( "snd_jack_uiselect.mp3", 65, 100 )
     turret.MenuOpen = false
 
@@ -1068,6 +1125,8 @@ local function closeOff( ... )
     local args = { ... }
 
     local turret = Entity( tonumber( args[3][1] ) )
+    if not IsAValidJackaTurret( turret ) then return end
+
     turret:EmitSound( "snd_jack_uiselect.mp3", 65, 100 )
     turret.MenuOpen = false
 
@@ -1083,6 +1142,8 @@ local function closeCancel( ... )
     local args = { ... }
 
     local turret = Entity( tonumber( args[3][1] ) )
+    if not IsAValidJackaTurret( turret ) then return end
+
     turret:EmitSound( "snd_jack_uiselect.mp3", 65, 100 )
     turret.MenuOpen = false
 end
@@ -1093,6 +1154,7 @@ local function addAmmo( ... )
     local args = { ... }
 
     local turret = Entity( tonumber( args[3][1] ) )
+    if not IsAValidJackaTurret( turret ) then return end
 
     if turret.AmmoType == "AAmissile" or turret.AmmoType == "ATrocket" then
         if not turret.RoundInChamber then
@@ -1144,6 +1206,8 @@ local function targetingGroupType( ... )
     local args = { ... }
 
     local turret = Entity( tonumber( args[3][1] ) )
+    if not IsAValidJackaTurret( turret ) then return end
+
     local Check = tobool( args[3][3] )
     local Type = args[3][2]
     turret[Type] = Check
@@ -1156,6 +1220,8 @@ local function IFFTag( ... )
     local args = { ... }
 
     local turret = Entity( tonumber( args[3][1] ) )
+    if not IsAValidJackaTurret( turret ) then return end
+
     local ply = args[1]
     turret:EmitSound( "snd_jack_uiselect.mp3", 65, 100 )
     turret.MenuOpen = false
@@ -1167,13 +1233,13 @@ local function IFFTag( ... )
                 table.ForceInsert( turret.IFFTags, Tag )
             end
 
-            ply:PrintMessage( HUD_PRINTTALK, "Personal IFF tag ID recorded." )
+            ply:PrintMessage( HUD_PRINTTALK, "IFF tag ID recorded." )
         else
             table.remove( turret.IFFTags, table.KeyFromValue( turret.IFFTags, Tag ) )
-            ply:PrintMessage( HUD_PRINTTALK, "Personal IFF tag ID forgotten." )
+            ply:PrintMessage( HUD_PRINTTALK, "IFF tag ID forgotten." )
         end
     else
-        ply:PrintMessage( HUD_PRINTCENTER, "You don't have an IFF tag equipped." )
+        ply:PrintMessage( HUD_PRINTCENTER, "You don't have an IFF tag implanted." )
     end
 end
 
@@ -1183,6 +1249,8 @@ local function warn( ... )
     local args = { ... }
 
     local turret = Entity( tonumber( args[3][1] ) )
+    if not IsAValidJackaTurret( turret ) then return end
+
     local Check = tobool( args[3][2] )
     turret.WillWarn = Check
     turret:EmitSound( "snd_jack_uiselect.mp3", 65, 100 )
@@ -1194,6 +1262,8 @@ local function light( ... )
     local args = { ... }
 
     local turret = Entity( tonumber( args[3][1] ) )
+    if not IsAValidJackaTurret( turret ) then return end
+
     local Check = tobool( args[3][2] )
     turret.WillLight = turret.WillLightOverride or Check
     turret:EmitSound( "snd_jack_uiselect.mp3", 65, 100 )
@@ -1205,6 +1275,7 @@ local function addBattery( ... )
     local args = { ... }
 
     local turret = Entity( tonumber( args[3][1] ) )
+    if not IsAValidJackaTurret( turret ) then return end
 
     if not turret.BatteryCharge then
         turret.BatteryCharge = 0
@@ -1238,12 +1309,15 @@ local function upright( ... )
 
     local ply = args[1]
     local turret = Entity( tonumber( args[3][1] ) )
+    if not IsAValidJackaTurret( turret ) then return end
+
     local AimVec = ply:GetAimVector()
 
     local Trace = util.QuickTrace( ply:GetShootPos(), AimVec * 150, { turret, ply } )
 
     if Trace.Hit then
         turret:SetPos( Trace.HitPos + Trace.HitNormal * 3 )
+
         local Ang = AimVec:Angle()
         local AngDiff = AimVec:AngleEx( Trace.HitNormal )
         Ang:RotateAroundAxis( Ang:Right(), AngDiff.p )

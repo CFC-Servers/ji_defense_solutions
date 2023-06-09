@@ -142,7 +142,8 @@ function ENT:StartTouch( ent )
     if not JID.CanTarget( ent ) then return end
 
     self.State = "Preparing"
-    self:EmitSound( "snd_jack_metallicclick.mp3", 60, 100 )
+    -- play sound above so it is audible when our origin is in the ground
+    sound.Play( "snd_jack_metallicclick.mp3", self:GetPos() + vector_up * 20, 60, 100 )
 
     timer.Simple( math.Rand( .75, 1.25 ), function()
         if IsValid( self ) then
@@ -161,7 +162,7 @@ function ENT:EndTouch( ent )
     end )
 
     self.State = "Preparing"
-    self:EmitSound( "snd_jack_metallicclick.mp3", 60, 100 )
+    sound.Play( "snd_jack_metallicclick.mp3", self:GetPos() + vector_up * 20, 60, 100 )
 end
 
 function ENT:OnTakeDamage( dmginfo )

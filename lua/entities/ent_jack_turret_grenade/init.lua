@@ -20,11 +20,10 @@ local HULL_TARGETING = {
 ENT.TrackRate = .25
 ENT.MaxRange = 5000
 ENT.FireRate = .15
-ENT.BulletDamage = 250
+ENT.BulletDamage = 320
 ENT.ScanRate = .75
 ENT.ShotSpread = .017
 ENT.RoundInChamber = false
-ENT.MaxBatteryCharge = 2000
 ENT.IdleDrainMul = 2
 ENT.ShellEffect = "RifleShellEject"
 ENT.BulletsPerShot = 1
@@ -38,6 +37,10 @@ ENT.BarrelSizeMod = Vector( 2.1, 2.1, 1 )
 ENT.Autoloading = false
 ENT.CycleSound = "snd_jack_glcycle.mp3"
 ENT.MechanicsSizeMod = 2.2
+
+
+ENT.MaxStructuralIntegrity = 600
+ENT.StructuralIntegrity = 600
 
 ENT.PropThicknessToEngageSqr = 100^2
 ENT.PropThicknessToDisengageSqr = 300^2

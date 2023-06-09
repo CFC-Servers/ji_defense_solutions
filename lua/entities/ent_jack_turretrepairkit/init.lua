@@ -47,3 +47,20 @@ end
 function ENT:Use( activator, caller )
     activator:PickupObject( self )
 end
+
+function ENT:Empty()
+    local Empty = ents.Create( "prop_ragdoll" )
+    Empty:SetModel( "models/props_junk/cardboard_box003a_gib01.mdl" )
+    Empty:SetMaterial( "models/mat_jack_turretrepairkit" )
+    Empty:SetPos( self:GetPos() )
+    Empty:SetAngles( self:GetAngles() )
+    Empty:Spawn()
+    Empty:Activate()
+    Empty:SetCollisionGroup( COLLISION_GROUP_WEAPON )
+    Empty:GetPhysicsObject():ApplyForceCenter( Vector( 0, 0, 1000 ) )
+    Empty:GetPhysicsObject():AddAngleVelocity( VectorRand() * 1000 )
+
+    SafeRemoveEntityDelayed( Empty, 20 )
+    SafeRemoveEntity( self )
+
+end

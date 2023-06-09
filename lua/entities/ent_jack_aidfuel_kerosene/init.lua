@@ -32,6 +32,10 @@ function ENT:PhysicsCollide( data )
     end
 end
 
+function ENT:OnTakeDamage( dmginfo )
+    self:TakePhysicsDamage( dmginfo )
+end
+
 function ENT:Use( activator )
     if self.FuelLeft <= 0 then return end
     JID.genericUseEffect( activator )
@@ -81,8 +85,4 @@ function ENT:Think()
     self:NextThink( CurTime() + .1 )
 
     return true
-end
-
-function ENT:OnTakeDamage( dmginfo )
-    self:TakePhysicsDamage( dmginfo )
 end

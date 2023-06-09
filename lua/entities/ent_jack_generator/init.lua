@@ -7,6 +7,7 @@ local fuelsEntsTable = {
     ["ent_jack_aidfuel_gasoline"] = true,
     ["ent_jack_aidfuel_kerosene"] = true,
     ["ent_jack_aidfuel_propane"] = true,
+    ["ent_jack_aidfuel_diesel"] = true,
 }
 
 function ENT:SpawnFunction( ply, tr )
@@ -191,6 +192,7 @@ function ENT:Refuel()
     for _, found in pairs( ents.FindInSphere( self:GetPos(), 125 ) ) do
         if fuelsEntsTable[found:GetClass()] and not found.Burning then
             self:FuelWith( found )
+            found.JackaGenerator = self
         end
     end
 end

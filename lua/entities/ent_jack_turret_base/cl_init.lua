@@ -107,7 +107,7 @@ function ENT:Draw()
     local Pos, Ang = self:GetBonePosition( 1 )
     Ang:RotateAroundAxis( Ang:Up(), 90 )
     Ang:RotateAroundAxis( Ang:Forward(), 90 )
-    Pos = Pos - Ang:Right() * 11 + Ang:Up() * 1.75 * self.MechanicsSizeMod
+    Pos = Pos - Ang:Right() * 12 + Ang:Up() * 1.75 * self:GetNWFloat( "MechanicsSizeMod", 1 )
     cam.Start3D2D( Pos, Ang, .05 )
     local Ambient = render.GetLightColor( Pos )
 

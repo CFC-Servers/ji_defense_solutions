@@ -25,7 +25,6 @@ ENT.ScanRate = .75
 ENT.ShotSpread = .005
 ENT.RoundsOnBelt = 0
 ENT.RoundInChamber = false
-ENT.MaxBatteryCharge = 3000
 ENT.ShellEffect = "RifleShellEject"
 ENT.BulletsPerShot = 1
 ENT.TurretSkin = "models/mat_jack_rocketturret"

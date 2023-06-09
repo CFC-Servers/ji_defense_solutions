@@ -10,7 +10,6 @@ ENT.BulletDamage = 32
 ENT.ScanRate = 0.25
 ENT.ShotSpread = .003
 ENT.RoundInChamber = false
-ENT.MaxBatteryCharge = 2000
 ENT.IdleDrainMul = 4
 ENT.ShellEffect = "RifleShellEject"
 ENT.BulletsPerShot = 1
@@ -27,6 +26,10 @@ ENT.MechanicsSizeMod = 2.5
 ENT.WillLight = true
 ENT.WillLightOverride = true
 ENT.TracerEffect = "AirboatGunTracer"
+
+
+ENT.MaxStructuralIntegrity = 600
+ENT.StructuralIntegrity = 600
 
 ENT.PropThicknessToDisengageSqr = 200^2
 
