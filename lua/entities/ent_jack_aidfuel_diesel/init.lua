@@ -15,9 +15,6 @@ function ENT:Initialize()
         phys:Wake()
         phys:SetMass( 35 )
     end
-
-    self.StructuralIntegrity = 100
-    self.Asploded = false
 end
 
 function ENT:OnTakeDamage( dmginfo )
