@@ -190,11 +190,13 @@ function ENT:Use( activator )
     self:SetAngles( Ang )
     self:SetPos( Pos )
 
-    if traceResult.Entity == game.GetWorld() then
+    local canConstrain = JID.CanConstrain( self, traceResult.Entity )
+
+    if canConstrain then
+        self:SetParent( traceResult.Entity )
+    else
         local phys = self:GetPhysicsObject()
         phys:EnableMotion( false )
-    else
-        self:SetParent( traceResult.Entity )
     end
 
     local Fff = EffectData()

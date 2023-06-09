@@ -6,7 +6,14 @@ include( "shared.lua" )
 
 util.AddNetworkString( "JID_ClaymoreNotify" )
 
-local PlantableMats = { MAT_WOOD, MAT_DIRT, MAT_SAND, MAT_SLOSH, MAT_FOLIAGE }
+local plantableMats = {
+    [MAT_WOOD] = true,
+    [MAT_DIRT] = true,
+    [MAT_SAND] = true,
+    [MAT_SLOSH] = true,
+    [MAT_FOLIAGE] = true,
+    [MAT_SNOW] = true
+}
 
 function ENT:SpawnFunction( ply, tr )
     local SpawnPos = tr.HitPos + tr.HitNormal * 10
@@ -145,7 +152,11 @@ function ENT:Use( activator )
         local Tr = util.QuickTrace( activator:GetShootPos(), activator:GetAimVector() * 100, { self, activator } )
 
         if Tr.Hit and IsValid( Tr.Entity:GetPhysicsObject() ) then
-            if table.HasValue( PlantableMats, Tr.MatType ) then
+            -- can never .canconstrain to world, but sent is more fun if it can!
+            local canConstrain = JID.CanConstrain( self, Tr.Entity ) or Tr.Entity:IsWorld()
+
+            -- stick into loose mats solidly
+            if plantableMats[Tr.MatType] and canConstrain then
                 local TheAngle = activator:GetAimVector():Angle()
                 TheAngle:RotateAroundAxis( TheAngle:Forward(), 180 )
                 TheAngle:RotateAroundAxis( TheAngle:Right(), 40 )
@@ -158,7 +169,7 @@ function ENT:Use( activator )
                 local TheAngle = activator:GetAimVector():Angle()
                 TheAngle:RotateAroundAxis( TheAngle:Forward(), 180 )
                 TheAngle:RotateAroundAxis( TheAngle:Right(), 40 )
-                self:SetPos( Tr.HitPos + Tr.HitNormal * 7 )
+                self:SetPos( Tr.HitPos + Tr.HitNormal * 10 )
                 self:SetAngles( TheAngle )
                 self:NotifySetup( activator )
             end
@@ -183,8 +194,9 @@ function ENT:NotifySetup( ply )
     net.Start( "JID_ClaymoreNotify" )
     net.Send( ply )
 
-    numpad.OnDown( ply, KEY_PAD_0, "JackaClaymoreDet" )
+    numpad.OnDown( ply, KEY_O, "JackaClaymoreDet" )
     ply.JackaClaymoresCanFire = true
+
 end
 
 local NextTime = 0
@@ -196,13 +208,13 @@ local function DetonateClaymores( ply )
     NextTime = Time + 1
     local FoundEm = false
 
-    for _, lel in pairs( ents.FindByClass( "ent_jack_claymore" ) ) do
-        if lel.Activator and lel.Activator == ply and lel.Armed then
+    for _, claymore in pairs( ents.FindByClass( "ent_jack_claymore" ) ) do
+        if claymore.Activator and claymore.Activator == ply and claymore.Armed then
             FoundEm = true
 
             timer.Simple( .7, function()
-                if IsValid( lel ) then
-                    lel:Detonate()
+                if IsValid( claymore ) then
+                    claymore:Detonate()
                 end
             end )
         end
