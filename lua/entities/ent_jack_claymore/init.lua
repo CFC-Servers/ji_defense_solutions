@@ -156,9 +156,7 @@ function ENT:Use( activator )
             local canConstrain = JID.CanConstrain( self, Tr.Entity ) or Tr.Entity:IsWorld()
 
             -- stick into loose mats solidly
-            local isPlantableMat = plantableMats[Tr.MatType]
-
-            if isPlantableMat and canConstrain then
+            if plantableMats[Tr.MatType] and canConstrain then
                 local TheAngle = activator:GetAimVector():Angle()
                 TheAngle:RotateAroundAxis( TheAngle:Forward(), 180 )
                 TheAngle:RotateAroundAxis( TheAngle:Right(), 40 )
