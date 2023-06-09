@@ -105,8 +105,6 @@ function JID.DetermineAttacker( ent )
     return ent
 end
 
-local CPPI = CPPI
-
 function JID.CanConstrain( ent, toConstrain )
     if not IsValid( ent ) then return end
     if not IsValid( toConstrain ) then return end
