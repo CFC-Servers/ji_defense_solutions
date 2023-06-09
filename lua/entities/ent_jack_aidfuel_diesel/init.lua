@@ -9,8 +9,8 @@ function ENT:Initialize()
     self:SetMoveType( MOVETYPE_VPHYSICS )
     self:SetSolid( SOLID_VPHYSICS )
     self:DrawShadow( true )
-    local phys = self:GetPhysicsObject()
 
+    local phys = self:GetPhysicsObject()
     if phys:IsValid() then
         phys:Wake()
         phys:SetMass( 35 )
