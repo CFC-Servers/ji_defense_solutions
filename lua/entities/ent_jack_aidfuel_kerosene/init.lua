@@ -2,20 +2,6 @@ AddCSLuaFile( "cl_init.lua" )
 AddCSLuaFile( "shared.lua" )
 include( "shared.lua" )
 
-function ENT:SpawnFunction( ply, tr )
-    local SpawnPos = tr.HitPos + tr.HitNormal * 16
-    local ent = ents.Create( "ent_jack_aidfuel_kerosene" )
-    ent:SetPos( SpawnPos )
-    ent:SetNWEntity( "Owner", ply )
-    ent:Spawn()
-    ent:Activate()
-    local effectdata = EffectData()
-    effectdata:SetEntity( ent )
-    util.Effect( "propspawn", effectdata )
-
-    return ent
-end
-
 function ENT:Initialize()
     self:SetModel( "models/props_phx/wheels/magnetic_med_base.mdl" )
     self:SetColor( Color( 50, 50, 50 ) )
@@ -44,10 +30,6 @@ function ENT:PhysicsCollide( data )
             self:EmitSound( "Wade.StepLeft" )
         end
     end
-end
-
-function ENT:OnTakeDamage( dmginfo )
-    self:TakePhysicsDamage( dmginfo )
 end
 
 function ENT:Use( activator )
@@ -99,4 +81,8 @@ function ENT:Think()
     self:NextThink( CurTime() + .1 )
 
     return true
+end
+
+function ENT:OnTakeDamage( dmginfo )
+    self:TakePhysicsDamage( dmginfo )
 end
