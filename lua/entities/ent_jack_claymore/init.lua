@@ -6,7 +6,14 @@ include( "shared.lua" )
 
 util.AddNetworkString( "JID_ClaymoreNotify" )
 
-local PlantableMats = { [MAT_WOOD] = true, [MAT_DIRT] = true, [MAT_SAND] = true, [MAT_SLOSH] = true, [MAT_FOLIAGE] = true, [MAT_SNOW] = true }
+local plantableMats = {
+    [MAT_WOOD] = true,
+    [MAT_DIRT] = true,
+    [MAT_SAND] = true,
+    [MAT_SLOSH] = true,
+    [MAT_FOLIAGE] = true,
+    [MAT_SNOW] = true
+}
 
 function ENT:SpawnFunction( ply, tr )
     local SpawnPos = tr.HitPos + tr.HitNormal * 10
@@ -149,7 +156,7 @@ function ENT:Use( activator )
             local canConstrain = JID.CanConstrain( self, Tr.Entity ) or Tr.Entity:IsWorld()
 
             -- stick into loose mats solidly
-            local isPlantableMat = PlantableMats[Tr.MatType]
+            local isPlantableMat = plantableMats[Tr.MatType]
 
             if isPlantableMat and canConstrain then
                 local TheAngle = activator:GetAimVector():Angle()
