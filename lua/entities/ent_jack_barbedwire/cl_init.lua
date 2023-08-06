@@ -8,6 +8,8 @@ end
 
 language.Add( "ent_jack_barbedwire", "J.I. Barbed Wire" )
 
+local _IsValid = IsValid
+
 local finalBarbScale = Vector( 3.5, 5.5, 3 )
 
 function ENT:Initialize()
@@ -25,7 +27,7 @@ function ENT:Initialize()
 end
 
 function ENT:DoBarbedWires()
-    if not IsValid( self.Wires1 ) then
+    if not _IsValid( self.Wires1 ) then
         self.Wires1 = ClientsideModel( "models/bf1/barbed_wire_destroyed02.mdl" )
         self.Wires1:SetPos( self:GetPos() )
         self.Wires1:SetAngles( self:GetForward():Angle() )
@@ -33,7 +35,7 @@ function ENT:DoBarbedWires()
 
     end
 
-    if not IsValid( self.Wires2 ) then
+    if not _IsValid( self.Wires2 ) then
         self.Wires2 = ClientsideModel( "models/bf1/barbed_wire_destroyed02.mdl" )
         self.Wires2:SetAngles( self:GetRight():Angle() )
         self.Wires2:SetPos( self:GetPos() )
@@ -59,13 +61,12 @@ function ENT:DoScaling( scale )
 
 end
 
--- draw nuthin!
+-- actual ent is invis
 function ENT:Draw()
 end
 
 function ENT:Think()
-
-    -- according to wiki, barbs will remove themselves sometimes
+    -- according to wiki, barb models will remove themselves sometimes
     -- invisible damage dealers, not good!
     self:DoBarbedWires()
 
@@ -80,16 +81,18 @@ function ENT:Think()
     local madeProgress = math.abs( timeToFullyMadeReversed ) / growDuration
     local trueMadeProgress = self.trueMadeProgress
 
+    -- spawning in...
     if trueMadeProgress < 1 then
         self.trueMadeProgress = madeProgress
         -- looks dumb when it appears from nothing, so make it at least start with some size
-        local progressNeverZero = math.Clamp( madeProgress, .3, 1 )
-        self:DoScaling( finalBarbScale * progressNeverZero )
+        local progressRescaled = math.Clamp( madeProgress + .3, .3, 1 )
+        self:DoScaling( finalBarbScale * progressRescaled )
 
         self:EmitSound( "ChainLink.ImpactSoft" )
 
         self:SetNextClientThink( CurTime() + 1 + math.Rand( -.1, .1 ) )
 
+    -- need to update
     elseif integrityLatest ~= self.StructuralIntegrity then
         self.StructuralIntegrity = integrityLatest
 
@@ -98,9 +101,56 @@ function ENT:Think()
         self:DoScaling( finalBarbScale * Vector( 1, 1, scale ) )
         self:SetNextClientThink( CurTime() + 1 )
 
+    -- nothin changed
     else
         self:SetNextClientThink( CurTime() + 3 )
         return true
 
     end
 end
+
+local mat = surface.GetTextureID( "sprites/mat_jack_cutwire" )
+
+local tooFarToCut = 100^2
+local maxSpeedCanCut = 100^2
+
+local function ShouldDrawNotification( ply )
+    local eyeTr = ply:GetEyeTrace()
+    if not IsValid( eyeTr.Entity ) then return end
+
+    if eyeTr.Entity:GetClass() ~= "ent_jack_barbedwire" then return end
+    if eyeTr.HitPos:DistToSqr( ply:GetShootPos() ) > tooFarToCut then return end
+    if ply:GetVelocity():LengthSqr() > maxSpeedCanCut then return end
+
+    ply.JackaCutWireNotification = 100
+
+end
+
+
+local function DrawNotification()
+    local ply = LocalPlayer()
+
+    ShouldDrawNotification( ply )
+
+    if not ply.JackaCutWireNotification then return end
+    if ply.JackaCutWireNotification <= 0 then return end
+
+    local w = ScrW()
+    local h = ScrH()
+    local opacity = math.Clamp( ply.JackaCutWireNotification ^ 1.5, 0, 255 )
+    surface.SetDrawColor( 255, 255, 255, opacity )
+    surface.SetTexture( mat )
+    surface.DrawTexturedRect( w * .3, h * .4, 200, 200 )
+
+    surface.SetFont( "Trebuchet24" )
+    surface.SetTextPos( w * .3 + 20, h * .4 + 200 )
+    local Col = math.sin( CurTime() * 5 ) * 127 + 127
+    surface.SetTextColor( Col, Col, Col, opacity )
+    surface.DrawText( "\" USE \" to cut." )
+
+    ply.JackaClaymoreNotification = ply.JackaClaymoreNotification - 0.75
+    ply.JackaCutWireNotification = ply.JackaCutWireNotification - 0.75
+
+end
+
+hook.Add( "RenderScreenspaceEffects", "JackaCutWireNote", DrawNotification )

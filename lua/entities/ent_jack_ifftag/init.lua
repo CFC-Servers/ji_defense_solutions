@@ -26,6 +26,8 @@ function ENT:SpawnFunction( _, tr )
     return ent
 end
 
+local gray = Color( 150, 150, 150 )
+
 function ENT:Initialize()
     self:SetModel( "models/props_lab/powerbox02b.mdl" )
     self:SetMaterial( "models/mat_jack_dullscratchedmetal.vmt" )
@@ -35,7 +37,7 @@ function ENT:Initialize()
     self:SetCollisionGroup( COLLISION_GROUP_DEBRIS )
     self:DrawShadow( true )
 
-    self:SetColor( Color( 150, 150, 150 ) )
+    self:SetColor( gray )
 
     self:SetTrigger( true )
     self:UseTriggerBounds( true, 60 )
@@ -51,6 +53,7 @@ function ENT:Initialize()
     self.myIFFTagId = math.random( 1, 100000 )
     self.activationTime = CurTime() + activationOffset
 
+    -- wake up sounds
     timer.Simple( 0, function()
         if not IsValid( self ) then return end
         self:EmitSound( "snd_jack_turretwhine.mp3", 75, 30, 1, CHAN_STATIC )
@@ -58,6 +61,7 @@ function ENT:Initialize()
 
     end )
 
+    -- finished booting sounds
     timer.Simple( activationOffset, function()
         if not IsValid( self ) then return end
 
@@ -95,9 +99,10 @@ function ENT:Think()
 end
 
 function ENT:PhysicsCollide( data )
+    -- fragile!
     if data.Speed > 80 and data.DeltaTime > .2 then
-        sound.Play( "SolidMetal.ImpactHard", self:WorldSpaceCenter() )
-        sound.Play( "Computer.ImpactHard", self:WorldSpaceCenter() )
+        self:EmitSound( "SolidMetal.ImpactHard" )
+        self:EmitSound( "Computer.ImpactHard" )
         local damageInfo = DamageInfo()
 
         local damage = data.Speed / 5
@@ -125,7 +130,6 @@ function ENT:OnTakeDamage( dmginfo )
     -- dont proppush me! 
     if IsValid( dmginfo:GetInflictor() ) and dmginfo:GetInflictor():IsPlayerHolding() and dmginfo:GetInflictor() ~= self then return end
 
-    -- excluded blast damage intentionally, not fun to have this naded
     if dmginfo:IsDamageType( DMG_BUCKSHOT ) or dmginfo:IsDamageType( DMG_BULLET ) or dmginfo:IsDamageType( DMG_CLUB ) or dmginfo:IsExplosionDamage() then
         local damage = dmginfo:GetDamage()
 
@@ -160,7 +164,7 @@ function ENT:StartTouch( toucher )
 end
 
 function ENT:Use( activator )
-    if self.StructuralIntegrity <= 0 then
+    if self.StructuralIntegrity <= 0 and JID.CanBeUsed( activator, self ) then
         local kit = self:FindRepairKit()
         if not IsValid( kit ) then return end
 
@@ -175,7 +179,7 @@ end
 
 function ENT:Taggify( ent )
     if not ent:IsPlayer() then return end
-    -- dont allow checking same thing if we have to
+    -- dont spam check the same thing!
     if self.nextAllowSameEnt > CurTime() and self.lastTaggifiedEnt == ent then return end
 
     self.lastTaggifiedEnt = ent
@@ -194,15 +198,22 @@ function ENT:Taggify( ent )
 
     end
 
-    local Tagged = ent:GetNWInt( "JackyIFFTag" )
-
     if self.activationTime > CurTime() then
         ent:PrintMessage( HUD_PRINTCENTER, "IFF implanter booting up..." )
         self:EmitSound( "buttons/button16.wav", 85, 150 )
         self.nextAllowSameEnt = CurTime() + .1
-
         return
+
     end
+
+    if not JID.CanBeUsed( ent, self ) then
+        self.nextAllowSameEnt = CurTime() + .8
+        self:EmitSound( "buttons/button16.wav", 85, 150 )
+        return
+
+    end
+
+    local Tagged = ent:GetNWInt( "JackyIFFTag" )
 
     if Tagged and Tagged == self.myIFFTagId then
         self:EmitSound( "buttons/button16.wav", 85, 100, .6 )
@@ -211,24 +222,25 @@ function ENT:Taggify( ent )
         self:FlashScreen( .15 )
 
     else
-        JID.genericUseEffect( ent )
         ent:SetNWInt( "JackyIFFTag", self.myIFFTagId )
         ent:PrintMessage( HUD_PRINTCENTER, "IFF tag implanted." )
-        ent:EmitSound( "snd_jack_tinyequip.mp3", 85, 100 )
-        self:EmitSound( "npc/roller/blade_in.wav", 70, 200, .6 )
-        self:SetNW2Vector( "implantedpos", entsNearestToMe )
-        self:SetNW2Float( "implantedtime", CurTime() )
         self.nextAllowSameEnt = CurTime() + .4
 
+        self:EmitSound( "npc/roller/blade_in.wav", 70, 200, .6 )
+        ent:EmitSound( "snd_jack_tinyequip.mp3", 85, 100 )
+        self:SetNW2Vector( "implantedpos", entsNearestToMe )
+        self:SetNW2Float( "implantedtime", CurTime() )
+
+        JID.genericUseEffect( ent )
         self:FlashScreen( .15 )
 
     end
-
 end
 
 function ENT:FindRepairKit()
     for _, potential in pairs( ents.FindInSphere( self:GetPos(), 150 ) ) do
         if potential:GetClass() == "ent_jack_turretrepairkit" then return potential end
+
     end
 
     return nil
@@ -242,6 +254,7 @@ function ENT:Fix( kit )
         if IsValid( self ) then
             self.Broken = false
             self:RemoveAllDecals()
+
         end
     end )
 

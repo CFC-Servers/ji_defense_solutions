@@ -1,5 +1,9 @@
 include( "shared.lua" )
 
+language.Add( "ent_jack_ifftag", "J.I. IFF Tag Implanter" )
+
+local _IsValid = IsValid
+
 local implanterArmEmergePos = Vector( 6, 3, 4 )
 local armsBeginPos = Vector( 15.11, 1.14, -6.26 )
 local fullExtend = Vector( 2, 1, 1 )
@@ -37,12 +41,12 @@ function ENT:Initialize()
     self.armMatrix = Matrix()
     self.ImplantingArm = ClientsideModel( "models/props_combine/combinecamera001.mdl" )
 
-    self:DoScaling( retracted )
+    self:DoArmScaling( retracted )
     self.ImplantingArm:SetParent( self )
     self:UpdateArm( self:RetractedAng() )
 
     self:CallOnRemove( "removemodels", function()
-        self.ImplantingArm:Remove()
+        SafeRemoveEntity( self.ImplantingArm )
         SafeRemoveEntity( self.Model1 )
         SafeRemoveEntity( self.Model2 )
         SafeRemoveEntity( self.Model3 )
@@ -66,7 +70,7 @@ function ENT:UpdateArm( ang )
 
 end
 
-function ENT:DoScaling( scaleVec )
+function ENT:DoArmScaling( scaleVec )
     self.armsScale = scaleVec
     self.armMatrix:SetScale( scaleVec )
     self.ImplantingArm:EnableMatrix( "RenderMultiply", self.armMatrix )
@@ -90,12 +94,12 @@ function ENT:Draw()
 
         local dirAsAng = ( ( aimDir * ratioReversed ) + ( retractedDir * ratio ) ):Angle()
 
-        self:DoScaling( ( fullExtend * ratioReversed ) + ( retracted * ratio ) )
+        self:DoArmScaling( ( fullExtend * ratioReversed ) + ( retracted * ratio ) )
         self:UpdateArm( dirAsAng )
 
     elseif not self.isDefinitelyRetracted then
         self.isDefinitelyRetracted = true
-        self:DoScaling( retracted )
+        self:DoArmScaling( retracted )
         self:UpdateArm( self:RetractedAng() )
 
     end
@@ -103,10 +107,8 @@ function ENT:Draw()
 
 end
 
-language.Add( "ent_jack_ifftag", "J.I. IFF Tag Implanter" )
-
 function ENT:DoDetails()
-    if not IsValid( self.Model1 ) then
+    if not _IsValid( self.Model1 ) then
         self.Model1 = ClientsideModel( "models/props_lab/reciever01b.mdl" )
         self.Model1.vecOffset = model1Offset
         self.Model1.angOffset = model1AngOffset
@@ -117,7 +119,7 @@ function ENT:DoDetails()
 
     end
 
-    if not IsValid( self.Model2 ) then
+    if not _IsValid( self.Model2 ) then
         self.Model2 = ClientsideModel( "models/props_lab/tpplug.mdl" )
         self.Model2.vecOffset = model2Offset
         self.Model2.angOffset = model2AngOffset
@@ -129,7 +131,7 @@ function ENT:DoDetails()
 
     end
 
-    if not IsValid( self.Model3 ) then
+    if not _IsValid( self.Model3 ) then
         self.Model3 = ClientsideModel( "models/props_rooftop/antenna03a.mdl" )
         self.Model3.vecOffset = model3Offset
         self.Model3.angOffset = model3AngOffset
@@ -141,7 +143,7 @@ function ENT:DoDetails()
 
     end
 
-    if not IsValid( self.Model4 ) then
+    if not _IsValid( self.Model4 ) then
         self.Model4 = ClientsideModel( "models/props_lab/rotato.mdl" )
         self.Model4.vecOffset = model4Offset
         self.Model4.angOffset = model4AngOffset
@@ -163,5 +165,4 @@ function ENT:DoDetails()
         model:SetParent( self )
 
     end
-
 end

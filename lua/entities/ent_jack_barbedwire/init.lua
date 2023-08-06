@@ -11,7 +11,6 @@ ENT.nextTouchThink = ENT.nextTouchThink or math.huge -- prevents it doing 1 tick
 ENT.nextDeconstruct = 0
 
 function ENT:Initialize()
-
     self:SetModel( "models/hunter/plates/plate075x075.mdl" )
     self:PhysicsInit( SOLID_VPHYSICS )
     self:SetMoveType( MOVETYPE_VPHYSICS )
@@ -43,18 +42,12 @@ function ENT:Initialize()
         self:SetPos( self:GetPos() + vector_up * 5 )
 
     end )
-
-end
-
-function ENT:OnTakeDamage( dmginfo )
-    self:TakePhysicsDamage( dmginfo )
-
 end
 
 function ENT:Use( user )
     if self.nextDeconstruct > CurTime() then return end
     if not JID.CanBeUsed( user, self ) then return end
-    -- dont just bob and weave!
+    -- have to stop and focus on this!
     if user:GetVelocity():LengthSqr() > 100 then return end
     self.nextDeconstruct = CurTime() + math.Rand( .25, .35 )
     self:TakeStructuralDamage( 50 )
@@ -65,10 +58,10 @@ end
 local damagingMaterials = {
     ["flesh"] = true,
     ["player"] = true,
-    ["$MATERIAL_INDEX_SHADOw"] = true,
+    ["$MATERIAL_INDEX_SHADOw"] = true, -- simfphys tire
     ["rubber"] = true,
     ["jeeptire"] = true,
-    ["friction_00"] = true,
+    ["friction_00"] = true, -- also simfphys tire?
 
 }
 
@@ -102,24 +95,27 @@ function ENT:Touch( toucher )
     if not IsValid( obj ) then return end
 
     local vel = nil
+    -- ply
     if not toucher:IsNPC() then
         vel = toucher:GetVelocity()
 
     else
+        -- npc probably
         if toucher.GetIdealMoveSpeed then
             local moveSpeed = toucher:GetIdealMoveSpeed()
-            vel = Vector( moveSpeed,moveSpeed,moveSpeed )
+            vel = Vector( moveSpeed, moveSpeed, moveSpeed )
 
             --- npcs make everything easier....
             local justNormalVelocity = toucher:GetVelocity()
 
+            -- getvelocity works on this, eg manhack, rollermine
             if vel:LengthSqr() < justNormalVelocity:LengthSqr() then
                 vel = justNormalVelocity
 
             end
 
         else
-            -- :sob:
+            -- physics thing
             vel = toucher:GetVelocity()
 
         end
@@ -131,45 +127,46 @@ function ENT:Touch( toucher )
 
     local speed = math.sqrt( speedSqr )
 
-    local overSpeed = self.SpeedLimit - speed
-    overSpeed = math.Clamp( overSpeed, -50, 0 )
-    overSpeed = math.abs( overSpeed )
-
-    local overSpeedScaled = overSpeed * 1.5
+    local howMuchAboveLimit = self.SpeedLimit - speed
+    howMuchAboveLimit = math.Clamp( howMuchAboveLimit, -50, 0 )
+    howMuchAboveLimit = math.abs( howMuchAboveLimit )
 
     local objsMaterial = obj:GetMaterial()
-    if overSpeed < 0 then return end
+    if howMuchAboveLimit < 0 then return end
     if damagingMaterials[ objsMaterial ] or toucher:IsNPC() then
+        -- if thing is above limit, then 'punish' a bit extra
+        local aboveLimitScaled = howMuchAboveLimit * 1.5
+
         self.nextTouchThink = CurTime() + .15
-        local damage = overSpeedScaled / 35
+        local damage = aboveLimitScaled / 35
 
         self:Damage( toucher, damage )
 
         self:TakeStructuralDamage( .5 )
 
         if toucher:IsPlayer() or toucher:IsNPC() then
-            toucher:SetVelocity( -vel:GetNormalized() * overSpeedScaled * 2.5 )
+            toucher:SetVelocity( -vel:GetNormalized() * aboveLimitScaled * 2.5 )
 
         elseif IsValid( obj ) then
-            obj:ApplyForceCenter( -vel:GetNormalized() * overSpeedScaled * self.Mass )
+            obj:ApplyForceCenter( -vel:GetNormalized() * aboveLimitScaled * self.Mass )
 
         end
     elseif theirMass >= self.Mass then -- big prop!
         self.nextTouchThink = CurTime() + .15
         local structuralDamage = 0
-        -- physics gun pickup makes weight MASSIVE
+        -- physics gun pickup makes mass MASSIVE
         if toucher:IsPlayerHolding() then
             structuralDamage = .5
 
         else
             structuralDamage = theirMass / self.Mass -- get a big number
-            structuralDamage = math.Round( structuralDamage / 10 ) -- bring that damage number down
-            structuralDamage = math.max( structuralDamage + -5, 0 ) -- chop off the bottom of the damage
+            structuralDamage = math.Round( structuralDamage / 10 ) -- divide by magic num
+            structuralDamage = math.max( structuralDamage + -5, 0 ) -- chop off the bottom, so smaller ish stuff does no damage
 
         end
-
-        obj:ApplyForceCenter( ( -vel ):GetNormalized() * overSpeed * self.Mass )
+        obj:ApplyForceCenter( ( -vel ):GetNormalized() * howMuchAboveLimit * self.Mass )
         self:TakeStructuralDamage( structuralDamage )
+
     end
 end
 
@@ -187,7 +184,8 @@ end
 -- decay over time
 function ENT:Think()
     self:TakeStructuralDamage( 1, true )
-    self:NextThink( CurTime() + 15 )
+    local time = math.Rand( 14, 16 ) -- dont decay all at once
+    self:NextThink( CurTime() + time )
 
     return true
 
