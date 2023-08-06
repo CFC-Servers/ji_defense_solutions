@@ -217,7 +217,7 @@ function ENT:Taggify( ent )
 
     if Tagged and Tagged == self.myIFFTagId then
         self:EmitSound( "buttons/button16.wav", 85, 100, .6 )
-        self.nextAllowSameEnt = CurTime() + .1
+        self.nextAllowSameEnt = CurTime() + .4
 
         self:FlashScreen( .15 )
 

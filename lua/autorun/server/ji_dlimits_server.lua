@@ -54,6 +54,7 @@ local function getLimitName( class )
     end
 
     return "jacka_" .. name, name
+
 end
 
 local function isLimited( class )
@@ -74,6 +75,7 @@ for name, limit in pairs( limits ) do
 
     if CLIENT then
         language.Add( "sboxlimit_" .. limitName, "You've hit the " .. cleanName .. " limit!" )
+
     end
 end
 
@@ -85,6 +87,7 @@ local function playerCanSpawn( ply, class )
 
     local canSpawn = ply:CheckLimit( limitName )
     if not canSpawn then return false end
+
 end
 
 local function playerSpawnedEnt( ply, ent )
@@ -94,6 +97,7 @@ local function playerSpawnedEnt( ply, ent )
     local limitName = getLimitName( class )
 
     ply:AddCount( limitName, ent )
+
 end
 
 function JID.IsOverLimit( ply, class )

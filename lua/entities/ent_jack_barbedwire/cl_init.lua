@@ -148,7 +148,6 @@ local function DrawNotification()
     surface.SetTextColor( Col, Col, Col, opacity )
     surface.DrawText( "\" USE \" to cut." )
 
-    ply.JackaClaymoreNotification = ply.JackaClaymoreNotification - 0.75
     ply.JackaCutWireNotification = ply.JackaCutWireNotification - 0.75
 
 end
