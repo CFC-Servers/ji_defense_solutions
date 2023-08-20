@@ -104,6 +104,8 @@ function ENT:OpenTheMenu( tab )
     DermaPanel:SetDraggable( true )
     DermaPanel:ShowCloseButton( false )
     DermaPanel:MakePopup()
+    DermaPanel:SetKeyboardInputEnabled( false )
+
     DermaPanel:Center()
     local MainPanel = vgui.Create( "DPanel", DermaPanel )
     MainPanel:SetPos( 5, 25 )
