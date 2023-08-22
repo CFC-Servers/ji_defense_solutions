@@ -17,7 +17,7 @@ function JID.genericUseEffect( ply )
     end
 end
 
-function JID.CanTarget( ent, target, isBlind )
+function JID.CanTarget( ent, target )
     if not IsValid( target ) then return false end
 
     local canTarget = hook.Run( "JIDCanTarget", target )

@@ -6,6 +6,7 @@ include( "shared.lua" )
 ENT.SpeedLimit = 110
 ENT.SpeedLimitSqr = ENT.SpeedLimit^2
 ENT.Mass = 30
+ENT.ACF_DamageMult = 0
 
 ENT.nextTouchThink = ENT.nextTouchThink or math.huge -- prevents it doing 1 tick of damage before initialize
 ENT.nextDeconstruct = 0
