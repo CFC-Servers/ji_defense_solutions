@@ -481,7 +481,7 @@ function ENT:Think()
                 --this staggers the capacitor firings to make the sentries work together
                 timer.Simple( math.Rand( 0, self.CapacitorMaxCharge / 1000 ), function()
                     if not IsValid( self ) then return end
-                    if not IsValid( Target ) or not JID.CanTarget( Target ) then return end
+                    if not IsValid( Target ) or not JID.CanTarget( self, Target ) then return end
                     if ( not Target.Health and not Target:Health() <= 0 and not table.HasValue( DoesNotHaveHealthTable, Class ) ) or Target.JackyTeslaKilled then return end
                     if not self:LineOfCurrentBetween( self, Target ) then
                         -- find another target for a second

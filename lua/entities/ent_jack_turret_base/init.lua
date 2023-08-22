@@ -461,20 +461,10 @@ function ENT:ClearHead()
     end
 end
 
-local function CanTarget( ent )
-    if not JID.CanTarget( ent ) then return false end
-    if ent:GetClass() == "cfc_shaped_charge" then return true end
-    if ent:IsPlayer() and ent:Alive() and not ent:HasGodMode() then return true end
-    if ent:IsNPC() and ent:Health() > 0 then return true end
-    if ent:IsNextBot() then return true end
-    if ent:IsVehicle() and JID.CanTarget( ent:GetDriver() ) then return true end
-    return false
-end
-
 local function IsBetterCanidate( turret, ent, shootPos, turretPos, closestCanidate, allowableThinnessSqr )
     if turret == ent then return end
     if ent:IsWorld() then return end
-    if not CanTarget( ent ) then return end
+    if not turret:CanTarget( ent ) then return end
     if not turret:CanSee( ent, allowableThinnessSqr ) then return end
 
     local size = GetEntityVolume( ent )
@@ -505,6 +495,16 @@ local function IsBetterCanidate( turret, ent, shootPos, turretPos, closestCanida
     end
 
     return ent, distance
+end
+
+function ENT:CanTarget( ent )
+    if not JID.CanTarget( self, ent ) then return false end
+    if ent:GetClass() == "cfc_shaped_charge" then return true end
+    if ent:IsPlayer() and ent:Alive() and not ent:HasGodMode() then return true end
+    if ent:IsNPC() and ent:Health() > 0 then return true end
+    if ent:IsNextBot() then return true end
+    if ent:IsVehicle() and JID.CanTarget( ent:GetDriver() ) then return true end
+    return false
 end
 
 function ENT:ScanForTarget()

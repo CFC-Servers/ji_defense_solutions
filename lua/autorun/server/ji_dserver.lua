@@ -17,21 +17,22 @@ function JID.genericUseEffect( ply )
     end
 end
 
-function JID.CanTarget( ent, isBlind )
-    if not IsValid( ent ) then return false end
+function JID.CanTarget( ent, target, isBlind )
+    if not IsValid( target ) then return false end
     -- if checker cant see why are we checking this?
     if not isBlind and ent:GetRenderMode() == RENDERMODE_TRANSALPHA then return false end
 
-    local canTarget = hook.Run( "JIDCanTarget", ent )
+    local canTarget = hook.Run( "JIDCanTarget", target )
     if canTarget == false then return false end
 
     if not CFCPvp then return true end
 
-    local owner = ent:GetCreator()
-    if ent:IsPlayer() and ent:IsInBuild() then return false end
-    if owner and owner:IsPlayer() and owner:IsInBuild() then return false end
+    local targetsOwner = target:GetCreator()
+    if target:IsPlayer() and target:IsInBuild() then return false end
+    if IsValid( targetsOwner ) and targetsOwner:IsPlayer() and targetsOwner:IsInBuild() then return false end
 
-    if IsValid( owner ) and owner:IsPlayer() and owner:IsInBuild() then return false end
+    local myOwner = ent:GetCreator()
+    if IsValid( myOwner ) and myOwner:IsPlayer() and myOwner:IsInBuild() then return false end
 
     return true
 end
