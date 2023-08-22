@@ -1034,12 +1034,13 @@ function ENT:Fix( kit )
         if IsValid( self ) then
             self.Broken = false
             self:RemoveAllDecals()
+
+            self.ACF_DamageMult = self.BaseACFDamageMult
+
         end
     end )
 
     kit:Empty()
-
-    self.ACF_DamageMult = self.BaseACFDamageMult
 
 end
 

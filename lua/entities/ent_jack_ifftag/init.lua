@@ -9,6 +9,9 @@ ENT.MaxStructuralIntegrity = ENT.StructuralIntegrity
 
 ENT.Broken = nil
 
+ENT.ACF_DamageMult = 0.05
+ENT.BaseACFDamageMult = ENT.ACF_DamageMult -- when ifftag runs out of fake health, switch to dmgmult of 'nil', when repaired, restore to BaseACFDamageMult
+
 -- in front of the "screen" csideent
 local screenPos = Vector( 10, -2.7, 4 )
 
@@ -143,12 +146,8 @@ function ENT:OnTakeDamage( dmginfo )
 
 
         if self.StructuralIntegrity <= 0 then
-            self:EmitSound( "snd_jack_turretbreak.mp3", 100, 120 )
-            for _ = 1, 6 do
-                self:MiniSpark( 1 )
-                self.Broken = true
+            self:Break()
 
-            end
         else
             self:EmitSound( "Computer.BulletImpact" )
             self:MiniSpark( math.Clamp( damage / 20, .1, 1 ) )
@@ -246,6 +245,18 @@ function ENT:FindRepairKit()
     return nil
 end
 
+function ENT:Break()
+    self:EmitSound( "snd_jack_turretbreak.mp3", 100, 120 )
+    for _ = 1, 6 do
+        self:MiniSpark( 1 )
+        self.Broken = true
+
+    end
+
+    self.ACF_DamageMult = nil
+
+end
+
 function ENT:Fix( kit )
     self.StructuralIntegrity = self.MaxStructuralIntegrity
     self:EmitSound( "snd_jack_turretrepair.mp3", 70, 150 )
@@ -254,6 +265,8 @@ function ENT:Fix( kit )
         if IsValid( self ) then
             self.Broken = false
             self:RemoveAllDecals()
+
+            self.ACF_DamageMult = self.BaseACFDamageMult
 
         end
     end )
