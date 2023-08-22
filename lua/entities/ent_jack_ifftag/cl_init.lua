@@ -57,7 +57,6 @@ function ENT:Initialize()
 end
 
 function ENT:UpdateArm( ang )
-
     self.ImplantingArm:SetAngles( ang )
 
     local worldEmergeFromPos = self:LocalToWorld( implanterArmEmergePos )
@@ -71,6 +70,7 @@ function ENT:UpdateArm( ang )
 end
 
 function ENT:DoArmScaling( scaleVec )
+    if not IsValid( self.ImplantingArm ) then return end -- rare bug
     self.armsScale = scaleVec
     self.armMatrix:SetScale( scaleVec )
     self.ImplantingArm:EnableMatrix( "RenderMultiply", self.armMatrix )
