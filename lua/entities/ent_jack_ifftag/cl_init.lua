@@ -38,11 +38,7 @@ function ENT:ArmsBeginPos()
 end
 
 function ENT:Initialize()
-    self.armMatrix = Matrix()
-    self.ImplantingArm = ClientsideModel( "models/props_combine/combinecamera001.mdl" )
-
-    self:DoArmScaling( retracted )
-    self.ImplantingArm:SetParent( self )
+    self:CheckArm()
     self:UpdateArm( self:RetractedAng() )
 
     self:CallOnRemove( "removemodels", function()
@@ -56,21 +52,32 @@ function ENT:Initialize()
 
 end
 
-function ENT:UpdateArm( ang )
-    self.ImplantingArm:SetAngles( ang )
+function ENT:CheckArm()
+    if not IsValid( self.ImplantingArm ) then
+        self.ImplantingArm = ClientsideModel( "models/props_combine/combinecamera001.mdl" )
+        self.armMatrix = Matrix()
+        self:DoArmScaling( retracted )
 
+    end
+    if IsValid( self.ImplantingArm ) and self.ImplantingArm:GetParent() ~= self then
+        self.ImplantingArm:SetParent( self )
+
+    end
+end
+
+function ENT:UpdateArm( ang )
     local worldEmergeFromPos = self:LocalToWorld( implanterArmEmergePos )
     local offsetToApplyWorld = LocalToWorld( armsBeginPos * self.armsScale, angle_zero, vector_origin, ang )
     local posToSetArmAt = worldEmergeFromPos + offsetToApplyWorld
 
     self.ImplantingArm:SetPos( posToSetArmAt )
+    self.ImplantingArm:SetAngles( ang )
 
     self:EmitSound( "snd_jack_turretservo.mp3", 70, 150 )
 
 end
 
 function ENT:DoArmScaling( scaleVec )
-    if not IsValid( self.ImplantingArm ) then return end -- rare bug
     self.armsScale = scaleVec
     self.armMatrix:SetScale( scaleVec )
     self.ImplantingArm:EnableMatrix( "RenderMultiply", self.armMatrix )
@@ -94,11 +101,13 @@ function ENT:Draw()
 
         local dirAsAng = ( ( aimDir * ratioReversed ) + ( retractedDir * ratio ) ):Angle()
 
+        self:CheckArm()
         self:DoArmScaling( ( fullExtend * ratioReversed ) + ( retracted * ratio ) )
         self:UpdateArm( dirAsAng )
 
     elseif not self.isDefinitelyRetracted then
         self.isDefinitelyRetracted = true
+        self:CheckArm()
         self:DoArmScaling( retracted )
         self:UpdateArm( self:RetractedAng() )
 
