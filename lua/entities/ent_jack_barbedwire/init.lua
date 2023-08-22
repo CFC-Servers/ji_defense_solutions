@@ -139,7 +139,7 @@ function ENT:Touch( toucher )
         local aboveLimitScaled = howMuchAboveLimit * 1.5
 
         self.nextTouchThink = CurTime() + .15
-        local damage = aboveLimitScaled / 35
+        local damage = aboveLimitScaled / 25
 
         self:Damage( toucher, damage )
 
