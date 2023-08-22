@@ -21,7 +21,7 @@ function ENT:Initialize()
     local phys = self:GetPhysicsObject()
 
     self:SetTrigger( true )
-    self:UseTriggerBounds( true, 40 )
+    self:UseTriggerBounds( true, 50 )
 
     if phys:IsValid() then
         phys:SetMaterial( "chainlink" )
