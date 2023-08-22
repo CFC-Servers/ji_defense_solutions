@@ -90,7 +90,7 @@ function ENT:Touch( toucher )
     if self.nextTouchThink > CurTime() then return end
     self.nextTouchThink = CurTime() + .08
 
-    if not JID.CanTarget( self, toucher, true ) then return end
+    if not JID.CanTarget( self, toucher ) then return end
 
     local obj = toucher:GetPhysicsObject()
     if not IsValid( obj ) then return end

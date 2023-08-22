@@ -139,7 +139,7 @@ end
 
 function ENT:StartTouch( ent )
     if self.State ~= "Armed" then return end
-    if not JID.CanTarget( self, ent, true ) then return end
+    if not JID.CanTarget( self, ent ) then return end
 
     self.State = "Preparing"
     -- play sound above so it is audible when our origin is in the ground
@@ -154,7 +154,7 @@ end
 
 function ENT:EndTouch( ent )
     if self.State ~= "Armed" then return end
-    if not JID.CanTarget( self, ent, true ) then return end
+    if not JID.CanTarget( self, ent ) then return end
     timer.Simple( math.Rand( 1, 2 ), function()
         if IsValid( self ) then
             self:Launch( ent )
