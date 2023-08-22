@@ -117,6 +117,8 @@ local maxSpeedCanCut = 100^2
 local function ShouldDrawNotification( ply )
     local eyeTr = ply:GetEyeTrace()
     if not IsValid( eyeTr.Entity ) then return end
+    -- evil pvp check, possibly replace with cached hook result?
+    if ply.IsInBuild and ply:IsInBuild() then return end
 
     if eyeTr.Entity:GetClass() ~= "ent_jack_barbedwire" then return end
     if eyeTr.HitPos:DistToSqr( ply:GetShootPos() ) > tooFarToCut then return end
