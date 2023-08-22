@@ -499,6 +499,7 @@ end
 
 function ENT:CanTarget( ent )
     if not JID.CanTarget( self, ent ) then return false end
+    if not JID.IsTargetVisibile( Target ) then return false end
     if ent:GetClass() == "cfc_shaped_charge" then return true end
     if ent:IsPlayer() and ent:Alive() and not ent:HasGodMode() then return true end
     if ent:IsNPC() and ent:Health() > 0 then return true end

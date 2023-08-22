@@ -19,8 +19,6 @@ end
 
 function JID.CanTarget( ent, target, isBlind )
     if not IsValid( target ) then return false end
-    -- if checker cant see why are we checking this?
-    if not isBlind and ent:GetRenderMode() == RENDERMODE_TRANSALPHA then return false end
 
     local canTarget = hook.Run( "JIDCanTarget", target )
     if canTarget == false then return false end
@@ -33,6 +31,13 @@ function JID.CanTarget( ent, target, isBlind )
 
     local myOwner = ent:GetCreator()
     if IsValid( myOwner ) and myOwner:IsPlayer() and myOwner:IsInBuild() then return false end
+
+    return true
+end
+
+function JID.IsTargetVisibile( target )
+    if not IsValid( target ) then return false end
+    if target:GetRenderMode() == RENDERMODE_TRANSALPHA then return false end
 
     return true
 end
