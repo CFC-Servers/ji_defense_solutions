@@ -21,3 +21,5 @@ function ENT:CanTool( tooler, _, toolname )
     return false
 
 end
+
+cleanup.Register( "Barbed Wire" )

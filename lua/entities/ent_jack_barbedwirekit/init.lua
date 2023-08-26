@@ -144,6 +144,11 @@ function ENT:DoBarbedWire()
         undo.SetPlayer( creator )
     undo.Finish()
 
+    for _, barbed in ipairs( barbs ) do
+        cleanup.Add( creator, "Barbed Wire", barbed )
+
+    end
+
     self:EmptyOut()
 
     return true
