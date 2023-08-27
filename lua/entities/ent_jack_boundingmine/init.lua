@@ -191,7 +191,7 @@ function ENT:Use( activator )
     self:SetAngles( Ang )
     self:SetPos( Pos )
 
-    local canConstrain = JID.CanConstrain( self, traceResult.Entity )
+    local canConstrain = JID.CanConstrain( self, traceResult.Entity, "parent" )
 
     if canConstrain then
         self:SetParent( traceResult.Entity )

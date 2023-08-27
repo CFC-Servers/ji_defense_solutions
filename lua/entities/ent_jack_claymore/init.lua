@@ -153,7 +153,7 @@ function ENT:Use( activator )
 
         if Tr.Hit and IsValid( Tr.Entity:GetPhysicsObject() ) then
             -- can never .canconstrain to world, but sent is more fun if it can!
-            local canConstrain = JID.CanConstrain( self, Tr.Entity ) or Tr.Entity:IsWorld()
+            local canConstrain = JID.CanConstrain( self, Tr.Entity, "weld" ) or Tr.Entity:IsWorld()
 
             -- stick into loose mats solidly
             if plantableMats[Tr.MatType] and canConstrain then

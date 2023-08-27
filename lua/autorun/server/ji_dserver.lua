@@ -73,17 +73,17 @@ function JID.DetermineAttacker( ent )
     return ent
 end
 
-function JID.CanConstrain( ent, toConstrain )
+function JID.CanConstrain( ent, toConstrain, toolMode )
     if not IsValid( ent ) then return end
     if not IsValid( toConstrain ) then return end
 
     local entOwner = CPPI and ent:CPPIGetOwner() or ent:GetOwner()
     if not IsValid( entOwner ) then return end
-    if CPPI and not toConstrain:CPPICanTool( entOwner ) then return end
+    if CPPI and not toConstrain:CPPICanTool( entOwner, toolMode ) then return end
 
     local toConstrainOwner = CPPI and toConstrain:CPPIGetOwner() or toConstrain:GetOwner()
     if not IsValid( toConstrainOwner ) then return end
-    if CPPI and not ent:CPPICanTool( toConstrainOwner ) then return end
+    if CPPI and not ent:CPPICanTool( toConstrainOwner, toolMode ) then return end
 
     if CPPI then return true end -- CPPI exists and hasn't blocked, so allow
     if entOwner == toConstrainOwner then return true end -- CPPI doesn't exist, directly compare owners

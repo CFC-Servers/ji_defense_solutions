@@ -142,7 +142,7 @@ function ENT:Use( activator )
     self:SetAngles( traceResult.HitNormal:Angle() )
     self:SetPos( traceResult.HitPos + traceResult.HitNormal )
 
-    local canConstrain = JID.CanConstrain( self, traceResult.Entity )
+    local canConstrain = JID.CanConstrain( self, traceResult.Entity, "parent" )
 
     if canConstrain then
         self:SetParent( traceResult.Entity )
