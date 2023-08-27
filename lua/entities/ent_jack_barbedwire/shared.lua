@@ -14,6 +14,8 @@ hook.Add( "PhysgunPickup", "JID_CannotPickup_BarbedWire", function( _, pickedUp 
 end )
 
 function ENT:CanTool( tooler, _, toolname )
+    if not IsValid( tooler ) then return end
+    if not toolname or not isstring( toolname ) then return false end
     if string.find( toolname, "remove" ) then return true end
 
     tooler:PrintMessage( HUD_PRINTTALK, "You can only use \"removing\" tools on me." )

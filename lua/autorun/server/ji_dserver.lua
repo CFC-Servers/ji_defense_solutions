@@ -79,7 +79,6 @@ function JID.CanConstrain( ent, toConstrain )
 
     local entOwner = CPPI and ent:CPPIGetOwner() or ent:GetOwner()
     if not IsValid( entOwner ) then return end
-    print( toConstrain:CPPICanTool( entOwner ), ent:CPPIGetOwner(), ent:GetOwner() )
     if CPPI and not toConstrain:CPPICanTool( entOwner ) then return end
 
     local toConstrainOwner = CPPI and toConstrain:CPPIGetOwner() or toConstrain:GetOwner()
