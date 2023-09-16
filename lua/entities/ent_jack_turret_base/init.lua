@@ -173,7 +173,6 @@ end
 function ENT:TargetIsInvalidOrDead()
     if not IsValid( self.CurrentTarget ) then return true end
     if self.CurrentTarget:GetMaxHealth() > 0 and self.CurrentTarget:Health() <= 0 then return true end
-
 end
 
 function ENT:PhysicsCollide( data )
@@ -265,22 +264,23 @@ function ENT:Use( activator )
 end
 
 function ENT:Think()
-    self.Heat = self.Heat - .01
+    local selfTbl = self:GetTable()
+    selfTbl.Heat = selfTbl.Heat - .01
 
-    if self.Heat < 0 then
-        self.Heat = 0
-    elseif self.Heat >= 50 then
+    if selfTbl.Heat < 0 then
+        selfTbl.Heat = 0
+    elseif selfTbl.Heat >= 50 then
         if math.random( 1, 5 ) == 1 then
             local PosAng = self:GetAttachment( 1 )
             local effect = EffectData()
             effect:SetOrigin( PosAng.Pos + PosAng.Ang:Forward() * math.random( -7, 7 ) )
-            effect:SetScale( self.Heat / 50 )
+            effect:SetScale( selfTbl.Heat / 50 )
             util.Effect( "eff_jack_gunoverheat", effect, true, true )
         end
     end
 
-    if self.Broken then
-        self.BatteryCharge = 0
+    if selfTbl.Broken then
+        selfTbl.BatteryCharge = 0
         self:SetDTInt( 2, 0 )
 
         if math.random( 1, 8 ) == 7 then
@@ -298,14 +298,14 @@ function ENT:Think()
 
     local State = self:GetDTInt( 0 )
     if State == TS_NOTHING then return end
-    if self.MenuOpen then return end
+    if selfTbl.MenuOpen then return end
     local SelfPos = self:GetShootPos()
     local Time = CurTime()
     local WeAreClear = self:ClearHead()
-    self:SetDTInt( 4, self.RoundsOnBelt )
+    self:SetDTInt( 4, selfTbl.RoundsOnBelt )
 
-    if self.GroundCheckTime < Time then
-        self.GroundCheckTime = Time + 3
+    if selfTbl.GroundCheckTime < Time then
+        selfTbl.GroundCheckTime = Time + 3
         local traceData = {
             start = self:GetPos(),
             endpos = -self:GetUp() * 50 + self:GetPos(),
@@ -314,109 +314,109 @@ function ENT:Think()
 
         local trace = util.TraceLine( traceData )
         if not trace.Hit then
-            self.IsOnValidGround = false
+            selfTbl.IsOnValidGround = false
         else
-            self.IsOnValidGround = true
+            selfTbl.IsOnValidGround = true
         end
     end
 
-    if self.BatteryCharge <= 0 then
+    if selfTbl.BatteryCharge <= 0 then
         self:HardShutDown()
 
         return
-    elseif self.BatteryCharge < self.MaxBatteryCharge * .2 then
-        if self.NextBatteryAlertTime < Time then
+    elseif selfTbl.BatteryCharge < selfTbl.MaxBatteryCharge * .2 then
+        if selfTbl.NextBatteryAlertTime < Time then
             self:Whine()
-            self.NextBatteryAlertTime = Time + 4.75
+            selfTbl.NextBatteryAlertTime = Time + 4.75
         end
     end
 
-    if State ~= TS_WHINING and ( not WeAreClear or not self.IsOnValidGround ) then
+    if State ~= TS_WHINING and ( not WeAreClear or not selfTbl.IsOnValidGround ) then
         self:SetDTInt( 0, TS_WHINING )
     end
 
     if State == TS_IDLING then
-        if self.NextWatchTime < Time then
+        if selfTbl.NextWatchTime < Time then
             local possibleTarget = self:ScanForTarget()
             if possibleTarget then
                 self:Notice()
             end
-            self.BatteryCharge = self.BatteryCharge - ( .0010 * self.IdleDrainMul )
-            self.NextWatchTime = Time + 1 / ( self.ScanRate * 1.5 )
+            selfTbl.BatteryCharge = selfTbl.BatteryCharge - ( .0010 * selfTbl.IdleDrainMul )
+            selfTbl.NextWatchTime = Time + 1 / ( selfTbl.ScanRate * 1.5 )
         end
     elseif State == TS_WATCHING then
-        if self.NextScanTime < Time then
-            self.CurrentTarget = self:ScanForTarget()
-            self.NextScanTime = Time + 1 / self.ScanRate
+        if selfTbl.NextScanTime < Time then
+            selfTbl.CurrentTarget = self:ScanForTarget()
+            selfTbl.NextScanTime = Time + 1 / selfTbl.ScanRate
 
-            if IsValid( self.CurrentTarget ) then
-                self:Alert( self.CurrentTarget )
+            if IsValid( selfTbl.CurrentTarget ) then
+                self:Alert( selfTbl.CurrentTarget )
             end
-        elseif self.NextGoSilentTime < Time then
+        elseif selfTbl.NextGoSilentTime < Time then
             self:StandDown()
         end
 
-        self.BatteryCharge = self.BatteryCharge - ( .05  * self.IdleDrainMul )
+        selfTbl.BatteryCharge = selfTbl.BatteryCharge - ( .05  * selfTbl.IdleDrainMul )
     elseif State == TS_CONCENTRATING then
-        if self.NextScanTime < Time then
-            self.CurrentTarget = self:ScanForTarget()
-            self.NextScanTime = Time + ( 1 / self.ScanRate ) / 4
+        if selfTbl.NextScanTime < Time then
+            selfTbl.CurrentTarget = self:ScanForTarget()
+            selfTbl.NextScanTime = Time + ( 1 / selfTbl.ScanRate ) / 4
 
-            if IsValid( self.CurrentTarget ) then
-                self:Alert( self.CurrentTarget )
+            if IsValid( selfTbl.CurrentTarget ) then
+                self:Alert( selfTbl.CurrentTarget )
             end
-        elseif self.NextGoSilentTime < Time then
+        elseif selfTbl.NextGoSilentTime < Time then
             self:StandDown()
         end
 
-        self.BatteryCharge = self.BatteryCharge - ( .025 * self.IdleDrainMul )
+        selfTbl.BatteryCharge = selfTbl.BatteryCharge - ( .025 * selfTbl.IdleDrainMul )
     elseif State == TS_TRACKING then
-        if not IsValid( self.CurrentTarget ) then
+        if not IsValid( selfTbl.CurrentTarget ) then
             self:SetDTInt( 0, TS_CONCENTRATING )
-            self.NextGoSilentTime = Time + 2
+            selfTbl.NextGoSilentTime = Time + 2
         else
-            if self:CanSee( self.CurrentTarget, self.PropThicknessToDisengageSqr ) then
-                local TargPos = self:GetTargetPos( self.CurrentTarget )
+            if self:CanSee( selfTbl.CurrentTarget, selfTbl.PropThicknessToDisengageSqr ) then
+                local TargPos = self:GetTargetPos( selfTbl.CurrentTarget )
                 local Ang = ( TargPos - SelfPos ):GetNormalized():Angle()
                 local TargAng = self:WorldToLocalAngles( Ang )
                 local ProperSweep = TargAng.y
                 local ProperSwing = TargAng.p
 
                 if TargAng.y > -90 and TargAng.y < 90 and TargAng.p > -90 and TargAng.p < 90 then
-                    self.GoalSweep = ProperSweep
-                    self.GoalSwing = ProperSwing
+                    selfTbl.GoalSweep = ProperSweep
+                    selfTbl.GoalSwing = ProperSwing
                 else
-                    self.CurrentTarget = self:ScanForTarget()
+                    selfTbl.CurrentTarget = self:ScanForTarget()
                 end
 
                 -- switch targets instantly if our current one just died
-                if self.NextScanTime < Time or self:TargetIsInvalidOrDead() then
-                    self.CurrentTarget = self:ScanForTarget()
+                if selfTbl.NextScanTime < Time or self:TargetIsInvalidOrDead() then
+                    selfTbl.CurrentTarget = self:ScanForTarget()
 
-                    if not IsValid( self.CurrentTarget ) then
+                    if not IsValid( selfTbl.CurrentTarget ) then
                         self:StandDown()
                     end
 
-                    self.NextScanTime = Time + 1 / self.ScanRate * 2
+                    selfTbl.NextScanTime = Time + 1 / selfTbl.ScanRate * 2
                 end
 
-                if self.NextShotTime < Time and self.CurrentSweep < self.GoalSweep + 2 and self.CurrentSweep > self.GoalSweep - 2 and self.CurrentSwing < self.GoalSwing + 2 and self.CurrentSwing > self.GoalSwing - 2 then
+                if selfTbl.NextShotTime < Time and selfTbl.CurrentSweep < selfTbl.GoalSweep + 2 and selfTbl.CurrentSweep > selfTbl.GoalSweep - 2 and selfTbl.CurrentSwing < selfTbl.GoalSwing + 2 and selfTbl.CurrentSwing > selfTbl.GoalSwing - 2 then
                     self:FireShot()
-                    self.NextShotTime = Time + 1 / self.FireRate * math.Rand( .9, 1.1 )
+                    selfTbl.NextShotTime = Time + 1 / selfTbl.FireRate * math.Rand( .9, 1.1 )
                 end
             else
                 self:HoldFire()
             end
         end
     elseif State == TS_WHINING then
-        if WeAreClear and self.IsOnValidGround then
+        if WeAreClear and selfTbl.IsOnValidGround then
             self:SetDTInt( 0, TS_IDLING )
-            self.GoalSweep = 0
-            self.GoalSwing = 0
+            selfTbl.GoalSweep = 0
+            selfTbl.GoalSwing = 0
         else
-            if self.NextWhineTime < Time then
+            if selfTbl.NextWhineTime < Time then
                 self:Whine()
-                self.NextWhineTime = Time + .85
+                selfTbl.NextWhineTime = Time + .85
 
                 if math.random( 1, 5 ) == 4 then
                     self:HardShutDown()
@@ -424,18 +424,18 @@ function ENT:Think()
             end
         end
     elseif State == TS_ASLEEPING then
-        if self.CurrentSweep <= 2 and self.CurrentSwing <= 2 then
+        if selfTbl.CurrentSweep <= 2 and selfTbl.CurrentSwing <= 2 then
             self:StandBy()
         else
-            if self.NextScanTime < Time then
+            if selfTbl.NextScanTime < Time then
                 self:SetDTInt( 0, TS_WATCHING )
-                self.NextScanTime = Time + 1 / self.TrackRate * 1.5
+                selfTbl.NextScanTime = Time + 1 / selfTbl.TrackRate * 1.5
             end
         end
     end
 
-    self:SetDTInt( 2, math.Round( self.BatteryCharge / self.MaxBatteryCharge * 100 ) )
-    self:Traverse()
+    self:SetDTInt( 2, math.Round( selfTbl.BatteryCharge / selfTbl.MaxBatteryCharge * 100 ) )
+    self:Traverse( selfTbl )
     self:NextThink( CurTime() + .02 )
 
     return true
@@ -640,39 +640,39 @@ function ENT:Alert( targ )
     end
 end
 
-function ENT:Traverse()
-    local PowerDrain = .2 * self.TrackRate * self.MechanicsSizeMod ^ 1.5
+function ENT:Traverse( selfTbl )
+    local PowerDrain = .2 * selfTbl.TrackRate * selfTbl.MechanicsSizeMod ^ 1.5
 
-    if self.CurrentSweep > self.GoalSweep + 2 then
-        self.CurrentSweep = self.CurrentSweep - self.TrackRate
+    if selfTbl.CurrentSweep > selfTbl.GoalSweep + 2 then
+        selfTbl.CurrentSweep = selfTbl.CurrentSweep - selfTbl.TrackRate
         self:EmitSound( "snd_jack_turretservo.mp3", 66, 90 )
-        self.BatteryCharge = self.BatteryCharge - PowerDrain
-    elseif self.CurrentSweep < self.GoalSweep - 2 then
-        self.CurrentSweep = self.CurrentSweep + self.TrackRate
+        selfTbl.BatteryCharge = selfTbl.BatteryCharge - PowerDrain
+    elseif selfTbl.CurrentSweep < selfTbl.GoalSweep - 2 then
+        selfTbl.CurrentSweep = selfTbl.CurrentSweep + selfTbl.TrackRate
         self:EmitSound( "snd_jack_turretservo.mp3", 66, 90 )
-        self.BatteryCharge = self.BatteryCharge - PowerDrain
+        selfTbl.BatteryCharge = selfTbl.BatteryCharge - PowerDrain
     end
 
-    if self.CurrentSwing > self.GoalSwing + 2 then
-        self.CurrentSwing = self.CurrentSwing - self.TrackRate * .6667
+    if selfTbl.CurrentSwing > selfTbl.GoalSwing + 2 then
+        selfTbl.CurrentSwing = selfTbl.CurrentSwing - selfTbl.TrackRate * .6667
         self:EmitSound( "snd_jack_turretservo.mp3", 66, 110 )
-        self.BatteryCharge = self.BatteryCharge - PowerDrain
-    elseif self.CurrentSwing < self.GoalSwing - 2 then
-        self.CurrentSwing = self.CurrentSwing + self.TrackRate * .6667
+        selfTbl.BatteryCharge = selfTbl.BatteryCharge - PowerDrain
+    elseif selfTbl.CurrentSwing < selfTbl.GoalSwing - 2 then
+        selfTbl.CurrentSwing = selfTbl.CurrentSwing + selfTbl.TrackRate * .6667
         self:EmitSound( "snd_jack_turretservo.mp3", 66, 110 )
-        self.BatteryCharge = self.BatteryCharge - PowerDrain
+        selfTbl.BatteryCharge = selfTbl.BatteryCharge - PowerDrain
     end
 
-    if self:GetNWFloat( "CurrentSweep" ) ~= self.CurrentSweep then
-        self:SetNWFloat( "CurrentSweep", self.CurrentSweep )
+    if self:GetNWFloat( "CurrentSweep" ) ~= selfTbl.CurrentSweep then
+        self:SetNWFloat( "CurrentSweep", selfTbl.CurrentSweep )
     end
 
-    if self:GetNWFloat( "CurrentSwing" ) ~= self.CurrentSwing then
-        self:SetNWFloat( "CurrentSwing", self.CurrentSwing )
+    if self:GetNWFloat( "CurrentSwing" ) ~= selfTbl.CurrentSwing then
+        self:SetNWFloat( "CurrentSwing", selfTbl.CurrentSwing )
     end
 
-    if IsValid( self.flashlight ) then
-        self.flashlight:SetLocalAngles( Angle( self.CurrentSwing, self.CurrentSweep, 0 ) )
+    if IsValid( selfTbl.flashlight ) then
+        selfTbl.flashlight:SetLocalAngles( Angle( selfTbl.CurrentSwing, selfTbl.CurrentSweep, 0 ) )
     end
 end
 
