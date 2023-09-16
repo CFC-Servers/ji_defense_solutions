@@ -3,7 +3,7 @@ AddCSLuaFile( 'shared.lua' )
 include( "shared.lua" )
 ENT.Base = "ent_jack_turretammobox_base"
 ENT.AmmoType = "5.56x45mm"
-ENT.NumberOfRounds = 500
+ENT.NumberOfRounds = 550
 
 function ENT:SpawnFunction( ply, tr )
     local SpawnPos = tr.HitPos + tr.HitNormal * 16

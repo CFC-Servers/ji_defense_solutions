@@ -139,10 +139,11 @@ end
 
 function ENT:StartTouch( ent )
     if self.State ~= "Armed" then return end
-    if not JID.CanTarget( ent ) then return end
+    if not JID.CanTarget( self, ent ) then return end
 
     self.State = "Preparing"
-    self:EmitSound( "snd_jack_metallicclick.mp3", 60, 100 )
+    -- play sound above so it is audible when our origin is in the ground
+    sound.Play( "snd_jack_metallicclick.mp3", self:GetPos() + vector_up * 20, 60, 100 )
 
     timer.Simple( math.Rand( .75, 1.25 ), function()
         if IsValid( self ) then
@@ -153,7 +154,7 @@ end
 
 function ENT:EndTouch( ent )
     if self.State ~= "Armed" then return end
-    if not JID.CanTarget( ent ) then return end
+    if not JID.CanTarget( self, ent ) then return end
     timer.Simple( math.Rand( 1, 2 ), function()
         if IsValid( self ) then
             self:Launch( ent )
@@ -161,7 +162,7 @@ function ENT:EndTouch( ent )
     end )
 
     self.State = "Preparing"
-    self:EmitSound( "snd_jack_metallicclick.mp3", 60, 100 )
+    sound.Play( "snd_jack_metallicclick.mp3", self:GetPos() + vector_up * 20, 60, 100 )
 end
 
 function ENT:OnTakeDamage( dmginfo )
@@ -190,7 +191,7 @@ function ENT:Use( activator )
     self:SetAngles( Ang )
     self:SetPos( Pos )
 
-    local canConstrain = JID.CanConstrain( self, traceResult.Entity )
+    local canConstrain = JID.CanConstrain( self, traceResult.Entity, "parent" )
 
     if canConstrain then
         self:SetParent( traceResult.Entity )

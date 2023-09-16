@@ -1,5 +1,4 @@
 include( "shared.lua" )
-language.Add( "env_fire", "Fire" )
 
 function ENT:Initialize()
     self.Prettiness = ClientsideModel( "models/props_junk/propane_tank001a.mdl" )

@@ -15,8 +15,15 @@ function ENT:Initialize()
         phys:Wake()
         phys:SetMass( 35 )
     end
+
+    self.StructuralIntegrity = 100
 end
 
 function ENT:OnTakeDamage( dmginfo )
     self:TakePhysicsDamage( dmginfo )
+    self.StructuralIntegrity = self.StructuralIntegrity - dmginfo:GetDamage()
+
+    if self.StructuralIntegrity <= 0 then
+        self:Remove()
+    end
 end

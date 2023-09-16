@@ -10,7 +10,6 @@ ENT.BulletDamage = 20
 ENT.ScanRate = 2
 ENT.ShotSpread = .01
 ENT.RoundInChamber = false
-ENT.MaxBatteryCharge = 2000
 ENT.IdleDrainMul = 2
 ENT.ShellEffect = "RifleShellEject"
 ENT.BulletsPerShot = 1
@@ -25,6 +24,10 @@ ENT.BarrelSizeMod = Vector( 1.5, 1.5, 2.5 )
 ENT.Autoloading = true
 ENT.MechanicsSizeMod = 2.2
 ENT.TracerEffect = "StriderTracer"
+
+
+ENT.MaxStructuralIntegrity = 600
+ENT.StructuralIntegrity = 600
 
 ENT.PropThicknessToEngageSqr = 20^2
 ENT.PropThicknessToDisengageSqr = 200^2

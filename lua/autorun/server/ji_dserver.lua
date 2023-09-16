@@ -1,45 +1,6 @@
 local IsValid = IsValid
 local RENDERMODE_TRANSALPHA = RENDERMODE_TRANSALPHA
 
-local limits = {
-    ent_jack_generator = 1,
-    ent_jack_turretammobox_22 = 2,
-    ent_jack_turretammobox_338 = 2,
-    ent_jack_turretammobox_50 = 2,
-    ent_jack_turretammobox_shot = 2,
-    ent_jack_turretammobox_40mm = 2,
-    ent_jack_turretammobox_556 = 2,
-    ent_jack_turretammobox_762 = 2,
-    ent_jack_turretammobox_9mm = 2,
-    ent_jack_turret_amateriel = 1,
-    ent_jack_turretbattery = 3,
-    ent_jack_boundingmine = 2,
-    ent_jack_aidfuel_gasoline = 2,
-    ent_jack_aidfuel_kerosene = 2,
-    ent_jack_aidfuel_propane = 2,
-    ent_jack_claymore = 1,
-    ent_jack_powernode = 4,
-    ent_jack_turret_grenade = 1,
-    ent_jack_ifftag = 2,
-    ent_jack_landmine = 2,
-    ent_jack_turret_mg = 2,
-    ent_jack_turret_dmr = 1,
-    ent_jack_paintcan = 2,
-    ent_jack_turret_pistol = 2,
-    ent_jack_turret_plinker = 2,
-    ent_jack_turret_rifle = 2,
-    ent_jack_turret_shotty = 2,
-    ent_jack_turret_sniper = 1,
-    ent_jack_turret_smg = 2,
-    ent_jack_teslasentry = 1,
-    ent_jack_turretrepairkit = 3,
-}
-
-for class, limit in pairs( limits ) do
-    CreateConVar( "sbox_max" .. class, limit, FCVAR_ARCHIVE )
-end
-
-
 local function CmdDet( ... )
     local args = { ... }
     local ply = args[1]
@@ -56,20 +17,27 @@ function JID.genericUseEffect( ply )
     end
 end
 
-function JID.CanTarget( ent )
-    if not IsValid( ent ) then return false end
-    if ent:GetRenderMode() == RENDERMODE_TRANSALPHA then return false end
+function JID.CanTarget( ent, target )
+    if not IsValid( target ) then return false end
 
-    local canTarget = hook.Run( "JIDCanTarget", ent )
+    local canTarget = hook.Run( "JIDCanTarget", target )
     if canTarget == false then return false end
 
     if not CFCPvp then return true end
 
-    local owner = ent:GetCreator()
-    if ent:IsPlayer() and ent:IsInBuild() then return false end
-    if owner and owner:IsPlayer() and owner:IsInBuild() then return false end
+    local targetsOwner = target:GetCreator()
+    if target:IsPlayer() and target:IsInBuild() then return false end
+    if IsValid( targetsOwner ) and targetsOwner:IsPlayer() and targetsOwner:IsInBuild() then return false end
 
-    if IsValid( owner ) and owner:IsPlayer() and owner:IsInBuild() then return false end
+    local myOwner = ent:GetCreator()
+    if IsValid( myOwner ) and myOwner:IsPlayer() and myOwner:IsInBuild() then return false end
+
+    return true
+end
+
+function JID.IsTargetVisibile( target )
+    if not IsValid( target ) then return false end
+    if target:GetRenderMode() == RENDERMODE_TRANSALPHA then return false end
 
     return true
 end
@@ -105,17 +73,17 @@ function JID.DetermineAttacker( ent )
     return ent
 end
 
-function JID.CanConstrain( ent, toConstrain )
+function JID.CanConstrain( ent, toConstrain, toolMode )
     if not IsValid( ent ) then return end
     if not IsValid( toConstrain ) then return end
 
     local entOwner = CPPI and ent:CPPIGetOwner() or ent:GetOwner()
     if not IsValid( entOwner ) then return end
-    if CPPI and not toConstrain:CPPICanTool( entOwner ) then return end
+    if CPPI and not toConstrain:CPPICanTool( entOwner, toolMode ) then return end
 
     local toConstrainOwner = CPPI and toConstrain:CPPIGetOwner() or toConstrain:GetOwner()
     if not IsValid( toConstrainOwner ) then return end
-    if CPPI and not ent:CPPICanTool( toConstrainOwner ) then return end
+    if CPPI and not ent:CPPICanTool( toConstrainOwner, toolMode ) then return end
 
     if CPPI then return true end -- CPPI exists and hasn't blocked, so allow
     if entOwner == toConstrainOwner then return true end -- CPPI doesn't exist, directly compare owners

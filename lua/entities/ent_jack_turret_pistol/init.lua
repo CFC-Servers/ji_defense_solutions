@@ -10,7 +10,6 @@ ENT.BulletDamage = 12
 ENT.ScanRate = 1.5
 ENT.ShotSpread = .010
 ENT.RoundInChamber = false
-ENT.MaxBatteryCharge = 3000
 ENT.IdleDrainMul = 0.75
 ENT.ShellEffect = "ShellEject"
 ENT.BulletsPerShot = 1
@@ -24,6 +23,9 @@ ENT.Automatic = nil
 ENT.BarrelSizeMod = Vector( 0.9, 0.9, 0.9 )
 ENT.Autoloading = true
 ENT.MechanicsSizeMod = 0.9
+
+ENT.MaxStructuralIntegrity = 200
+ENT.StructuralIntegrity = 200
 
 function ENT:SpawnFunction( ply, tr )
     local SpawnPos = tr.HitPos + tr.HitNormal * 5

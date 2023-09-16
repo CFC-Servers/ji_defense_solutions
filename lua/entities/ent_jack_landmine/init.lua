@@ -98,7 +98,7 @@ end
 
 function ENT:StartTouch( ent )
     if self.Armed then
-        if not JID.CanTarget( ent ) then return end
+        if not JID.CanTarget( self, ent ) then return end
         self:Detonate( ent )
 
         util.Decal( "Scorch", self:GetPos(), Vector( 0, 0, -5 ) )
@@ -112,7 +112,7 @@ end
 -- Both end and start touch have to be used otherwise it causes a hard crash.
 function ENT:EndTouch( ent )
     if self.Armed then
-        if not JID.CanTarget( ent ) then return end
+        if not JID.CanTarget( self, ent ) then return end
         self:Detonate( ent )
 
         util.Decal( "Scorch", self:GetPos(), Vector( 0, 0, -5 ) )
@@ -142,7 +142,7 @@ function ENT:Use( activator )
     self:SetAngles( traceResult.HitNormal:Angle() )
     self:SetPos( traceResult.HitPos + traceResult.HitNormal )
 
-    local canConstrain = JID.CanConstrain( self, traceResult.Entity )
+    local canConstrain = JID.CanConstrain( self, traceResult.Entity, "parent" )
 
     if canConstrain then
         self:SetParent( traceResult.Entity )

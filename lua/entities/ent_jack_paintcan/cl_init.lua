@@ -92,6 +92,8 @@ function ENT:OpenTheMenu( tab )
     DermaPanel:SetDraggable( true )
     DermaPanel:ShowCloseButton( false )
     DermaPanel:MakePopup()
+    DermaPanel:SetKeyboardInputEnabled( false )
+
     DermaPanel:Center()
     DermaPanel:SetKeyboardInputEnabled( false )
 
