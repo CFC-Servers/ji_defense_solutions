@@ -43,74 +43,77 @@ function ENT:Draw()
     local Up = self:GetUp()
     local Forward = self:GetForward()
     local Ang2 = self:GetAngles()
-    Ang:RotateAroundAxis( Ang:Forward(), self.RotateAngle )
-    self.RotateAngle = self.RotateAngle + self.RotSpeed
 
-    if self.RotateAngle > 360 then
-        self.RotateAngle = 0
+    local selfTbl = self:GetTable()
+
+    Ang:RotateAroundAxis( Ang:Forward(), selfTbl.RotateAngle )
+    selfTbl.RotateAngle = selfTbl.RotateAngle + selfTbl.RotSpeed
+
+    if selfTbl.RotateAngle > 360 then
+        selfTbl.RotateAngle = 0
     end
 
     if self:GetDTBool( 0 ) then
-        self.RotSpeed = self.RotSpeed + .035
+        selfTbl.RotSpeed = selfTbl.RotSpeed + .035
     else
-        self.RotSpeed = self.RotSpeed - .035
+        selfTbl.RotSpeed = selfTbl.RotSpeed - .035
     end
 
-    if self.RotSpeed > 42 then
-        self.RotSpeed = 42
+    if selfTbl.RotSpeed > 42 then
+        selfTbl.RotSpeed = 42
     end
 
-    if self.RotSpeed < 0 then
-        self.RotSpeed = 0
+    if selfTbl.RotSpeed < 0 then
+        selfTbl.RotSpeed = 0
     end
 
-    if self.RotSpeed > 30 then
-        if not self.Blowing then
-            self.Blowing = true
-            self.Engine1:SetModel( "models/props_silo/fan.mdl" )
-            self.Engine2:SetModel( "models/props_silo/fan.mdl" )
-            self.Engine3:SetModel( "models/props_silo/fan.mdl" )
-            self.Engine4:SetModel( "models/props_silo/fan.mdl" )
+    if selfTbl.RotSpeed > 30 then
+        if not selfTbl.Blowing then
+            selfTbl.Blowing = true
+            selfTbl.Engine1:SetModel( "models/props_silo/fan.mdl" )
+            selfTbl.Engine2:SetModel( "models/props_silo/fan.mdl" )
+            selfTbl.Engine3:SetModel( "models/props_silo/fan.mdl" )
+            selfTbl.Engine4:SetModel( "models/props_silo/fan.mdl" )
         end
     else
-        if self.Blowing then
-            self.Blowing = false
-            self.Engine1:SetModel( "models/props_silo/fanoff.mdl" )
-            self.Engine2:SetModel( "models/props_silo/fanoff.mdl" )
-            self.Engine3:SetModel( "models/props_silo/fanoff.mdl" )
-            self.Engine4:SetModel( "models/props_silo/fanoff.mdl" )
+        if selfTbl.Blowing then
+            selfTbl.Blowing = false
+            selfTbl.Engine1:SetModel( "models/props_silo/fanoff.mdl" )
+            selfTbl.Engine2:SetModel( "models/props_silo/fanoff.mdl" )
+            selfTbl.Engine3:SetModel( "models/props_silo/fanoff.mdl" )
+            selfTbl.Engine4:SetModel( "models/props_silo/fanoff.mdl" )
         end
     end
 
-    self.Engine1:SetRenderOrigin( Pos + Forward * 70 + Up * 55 )
+    selfTbl.Engine1:SetRenderOrigin( Pos + Forward * 70 + Up * 55 )
     Ang:RotateAroundAxis( Ang:Right(), 90 )
-    self.Engine1:SetRenderAngles( Ang )
-    self.Engine1:DrawModel()
-    self.Engine2:SetRenderOrigin( Pos + Forward * 70 + Up * 55 )
+    selfTbl.Engine1:SetRenderAngles( Ang )
+    selfTbl.Engine1:DrawModel()
+    selfTbl.Engine2:SetRenderOrigin( Pos + Forward * 70 + Up * 55 )
 
     Ang:RotateAroundAxis( Ang:Up(), 15 )
-    self.Engine2:SetRenderAngles( Ang )
-    self.Engine3:SetRenderOrigin( Pos + Forward * 70 + Up * 55 )
+    selfTbl.Engine2:SetRenderAngles( Ang )
+    selfTbl.Engine3:SetRenderOrigin( Pos + Forward * 70 + Up * 55 )
 
     Ang:RotateAroundAxis( Ang:Up(), 15 )
-    self.Engine3:SetRenderAngles( Ang )
-    self.Engine4:SetRenderOrigin( Pos + Forward * 70 + Up * 55 )
+    selfTbl.Engine3:SetRenderAngles( Ang )
+    selfTbl.Engine4:SetRenderOrigin( Pos + Forward * 70 + Up * 55 )
 
     Ang:RotateAroundAxis( Ang:Up(), 15 )
-    self.Engine4:SetRenderAngles( Ang )
+    selfTbl.Engine4:SetRenderAngles( Ang )
 
     local R, G, B = render.GetColorModulation()
     render.SetColorModulation( .2, .2, .2 )
-    self.Engine1:DrawModel()
-    self.Engine2:DrawModel()
-    self.Engine3:DrawModel()
-    self.Engine4:DrawModel()
+    selfTbl.Engine1:DrawModel()
+    selfTbl.Engine2:DrawModel()
+    selfTbl.Engine3:DrawModel()
+    selfTbl.Engine4:DrawModel()
 
     render.SetColorModulation( R, G, B )
-    self.Turbine:SetRenderOrigin( Pos + Forward * 65 + Up * 55 )
+    selfTbl.Turbine:SetRenderOrigin( Pos + Forward * 65 + Up * 55 )
     Ang2:RotateAroundAxis( Ang2:Right(), -90 )
-    self.Turbine:SetRenderAngles( Ang2 )
-    self.Turbine:DrawModel()
+    selfTbl.Turbine:SetRenderAngles( Ang2 )
+    selfTbl.Turbine:DrawModel()
     self:DrawModel()
 end
 

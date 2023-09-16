@@ -34,32 +34,37 @@ function ENT:Draw()
     local Up = self:GetUp()
     local Right = self:GetRight()
     local Forward = self:GetForward()
-    self.Camera:SetRenderOrigin( SelfPos + Up * 60.5 - Right )
-    self.CameraPost:SetRenderOrigin( SelfPos + Up * 55 - Right )
-    self.AmmoBox:SetRenderOrigin( SelfPos + Up * 24 - Right * 10.75 - Forward )
-    self.Battery:SetRenderOrigin( SelfPos + Up * 20 + Right * 4.5 - Forward )
+
+    local selfTbl = self:GetTable()
+
+    selfTbl.Camera:SetRenderOrigin( SelfPos + Up * 60.5 - Right )
+    selfTbl.CameraPost:SetRenderOrigin( SelfPos + Up * 55 - Right )
+    selfTbl.AmmoBox:SetRenderOrigin( SelfPos + Up * 24 - Right * 10.75 - Forward )
+    selfTbl.Battery:SetRenderOrigin( SelfPos + Up * 20 + Right * 4.5 - Forward )
+
     local Ang = self:GetAngles()
     local AngTwo = Angle( Ang.p, Ang.y, Ang.r )
     local AngThree = Angle( Ang.p, Ang.y, Ang.r )
     local AngFour = Angle( Ang.p, Ang.y, Ang.r )
     local AngWholes = Angle( Ang.p, Ang.y, Ang.r )
+
     AngTwo:RotateAroundAxis( AngTwo:Forward(), 90 )
-    self.CameraPost:SetRenderAngles( AngTwo )
+    selfTbl.CameraPost:SetRenderAngles( AngTwo )
     AngThree:RotateAroundAxis( AngThree:Up(), 180 )
     AngThree:RotateAroundAxis( AngThree:Forward(), -10 )
-    self.AmmoBox:SetRenderAngles( AngThree )
+    selfTbl.AmmoBox:SetRenderAngles( AngThree )
     AngFour:RotateAroundAxis( AngFour:Forward(), 90 )
     AngFour:RotateAroundAxis( AngFour:Right(), 180 )
-    self.Battery:SetRenderAngles( AngFour )
+    selfTbl.Battery:SetRenderAngles( AngFour )
     Ang:RotateAroundAxis( Ang:Right(), -90 )
     local State = self:GetDTInt( 0 )
 
     local currentSweep = self:GetNWFloat( "CurrentSweep", 0 )
     local currentSwing = self:GetNWFloat( "CurrentSwing", 0 )
 
-    if currentSweep ~= self.LastSweep or currentSwing ~= self.LastSwing then
-        self.LastSweep = currentSweep
-        self.LastSwing = currentSwing
+    if currentSweep ~= selfTbl.LastSweep or currentSwing ~= selfTbl.LastSwing then
+        selfTbl.LastSweep = currentSweep
+        selfTbl.LastSwing = currentSwing
 
         self:ManipulateBoneAngles( 1, Angle( currentSweep, 0, 0 ) )
         self:ManipulateBoneAngles( 2, Angle( 0, 0, currentSwing ) )
@@ -67,8 +72,8 @@ function ENT:Draw()
 
     local currentBarrelSizeMod = self:GetNWVector( "BarrelSizeMod" )
 
-    if currentBarrelSizeMod ~= self.LastBarrelSizeMod then
-        self.LastBarrelSizeMod = currentBarrelSizeMod
+    if currentBarrelSizeMod ~= selfTbl.LastBarrelSizeMod then
+        selfTbl.LastBarrelSizeMod = currentBarrelSizeMod
         self:ManipulateBoneScale( 3, currentBarrelSizeMod )
     end
 
@@ -78,20 +83,20 @@ function ENT:Draw()
         Ang:RotateAroundAxis( Ang:Forward(), -currentSweep )
     end
 
-    self.Camera:SetRenderAngles( Ang )
+    selfTbl.Camera:SetRenderAngles( Ang )
     render.SetColorModulation( 0, 0, 0 )
-    self.CameraPost:DrawModel()
+    selfTbl.CameraPost:DrawModel()
     render.SetColorModulation( 1, 1, 1 )
 
     if self:GetDTBool( 0 ) then
-        self.AmmoBox:DrawModel()
+        selfTbl.AmmoBox:DrawModel()
     end
 
     render.SetColorModulation( OrigR, OrigG, OrigB )
-    self.Camera:DrawModel()
+    selfTbl.Camera:DrawModel()
 
     if self:GetDTBool( 1 ) then
-        self.Battery:DrawModel()
+        selfTbl.Battery:DrawModel()
         local Frac = 1 - self:GetDTInt( 2 ) / 100
 
         if Frac <= .995 then
@@ -112,7 +117,7 @@ function ENT:Draw()
     local Ambient = render.GetLightColor( Pos )
 
     draw.TexturedQuad( {
-        texture = self.AmmoPicID,
+        texture = selfTbl.AmmoPicID,
         x = 100,
         y = 100,
         w = 100,
@@ -120,7 +125,7 @@ function ENT:Draw()
         color = Color( Ambient.x * 255, Ambient.y * 255, Ambient.z * 255 )
     } )
 
-    draw.SimpleText( self.LabelText, "HudHintTextLarge", 170, 182, Color( Ambient.x * 255, Ambient.y * 255, Ambient.z * 255 ), 1, 1 )
+    draw.SimpleText( selfTbl.LabelText, "HudHintTextLarge", 170, 182, Color( Ambient.x * 255, Ambient.y * 255, Ambient.z * 255 ), 1, 1 )
     draw.SimpleText( "Sentry Turret", "HudHintTextLarge", 170, 198, Color( Ambient.x * 255, Ambient.y * 255, Ambient.z * 255 ), 1, 1 )
     cam.End3D2D()
 
