@@ -35,8 +35,9 @@ function ENT:Initialize()
 end
 
 function ENT:Draw()
+    local selfTbl = self:GetTable()
     local OrigR, OrigG, OrigB = render.GetColorModulation()
-    self.UpAmount = self:GetDTFloat( 0 )
+    selfTbl.UpAmount = self:GetDTFloat( 0 )
 
     local Pos = self:GetPos()
     local Up = self:GetUp()
@@ -47,38 +48,38 @@ function ENT:Draw()
     local AngFour = self:GetAngles()
     local AngFive = self:GetAngles()
 
-    self.PoleOne:SetRenderOrigin( Pos + Up * ( 1 + self.UpAmount ) + Right * 5 )
-    self.PoleOne:SetRenderAngles( AngOne )
-    self.PoleTwo:SetRenderOrigin( Pos + Up * ( 10 + self.UpAmount * 1.7 ) + Right * 5 )
-    self.PoleTwo:SetRenderAngles( AngTwo )
-    self.Dissipator:SetRenderOrigin( Pos + Up * ( 25 + self.UpAmount * 1.7 ) + Right * 5 )
-    self.Dissipator:SetRenderAngles( AngThree )
+    selfTbl.PoleOne:SetRenderOrigin( Pos + Up * ( 1 + selfTbl.UpAmount ) + Right * 5 )
+    selfTbl.PoleOne:SetRenderAngles( AngOne )
+    selfTbl.PoleTwo:SetRenderOrigin( Pos + Up * ( 10 + selfTbl.UpAmount * 1.7 ) + Right * 5 )
+    selfTbl.PoleTwo:SetRenderAngles( AngTwo )
+    selfTbl.Dissipator:SetRenderOrigin( Pos + Up * ( 25 + selfTbl.UpAmount * 1.7 ) + Right * 5 )
+    selfTbl.Dissipator:SetRenderAngles( AngThree )
 
-    self.BatOne:SetRenderOrigin( Pos + Up * 5 + Right * 20 )
+    selfTbl.BatOne:SetRenderOrigin( Pos + Up * 5 + Right * 20 )
     AngFour:RotateAroundAxis( AngFour:Right(), -90 )
     AngFour:RotateAroundAxis( AngFour:Forward(), 90 )
     AngFour:RotateAroundAxis( AngFour:Right(), 180 )
-    self.BatOne:SetRenderAngles( AngFour )
+    selfTbl.BatOne:SetRenderAngles( AngFour )
 
-    self.BatTwo:SetRenderOrigin( Pos + Up * 5 - Right * 11 )
+    selfTbl.BatTwo:SetRenderOrigin( Pos + Up * 5 - Right * 11 )
     AngFive:RotateAroundAxis( AngFour:Right(), -90 )
     AngFive:RotateAroundAxis( AngFive:Up(), 90 )
-    self.BatTwo:SetRenderAngles( AngFive )
+    selfTbl.BatTwo:SetRenderAngles( AngFive )
 
     render.SetColorModulation( OrigR / 2, OrigG / 2, OrigB / 2 )
-    self.PoleOne:DrawModel()
-    self.PoleTwo:DrawModel()
+    selfTbl.PoleOne:DrawModel()
+    selfTbl.PoleTwo:DrawModel()
     render.SetColorModulation( OrigR, OrigG, OrigB )
 
     if self:GetDTBool( 1 ) then
-        self.BatOne:DrawModel()
+        selfTbl.BatOne:DrawModel()
     end
 
     if self:GetDTBool( 2 ) then
-        self.BatTwo:DrawModel()
+        selfTbl.BatTwo:DrawModel()
     end
 
-    self.Dissipator:DrawModel()
+    selfTbl.Dissipator:DrawModel()
     self:DrawModel()
 end
 
