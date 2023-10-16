@@ -121,6 +121,7 @@ function ENT:OpenTheMenu( tab )
     ColorPanel:SetSize( 40, 50 )
 
     ColorPanel.Paint = function()
+        if not IsValid( self ) then return end
         local PntCol = Mixer:GetColor()
         local LgtCol = render.GetLightColor( self:GetPos() )
         LgtCol = Color( math.Clamp( LgtCol.r * 4, 0, 1 ), math.Clamp( LgtCol.g * 4, 0, 1 ), math.Clamp( LgtCol.b * 4, 0, 1 ) )
