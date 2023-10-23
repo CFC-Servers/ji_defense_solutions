@@ -17,6 +17,7 @@ function ENT:Initialize()
     self:Fire( "enableshadow", "", 0 )
     self.Exploded = false
     self.ExplosiveMul = 0.5
+    self.HardKillTime = CurTime() + 30
 end
 
 function ENT:PhysicsCollide( data )
@@ -30,6 +31,11 @@ function ENT:OnTakeDamage( dmginfo )
 end
 
 function ENT:Think()
+    if self:GetVar( "Exploded", false ) or self:GetVar( "HardKillTime" ) < CurTime() then
+        self:Remove()
+        return
+    end
+
     local effect = EffectData()
     effect:SetOrigin( self:GetPos() )
     effect:SetNormal( self:GetForward() )
@@ -39,7 +45,7 @@ function ENT:Think()
     return true
 end
 
-local vecUp = Vector( 0,0,1 )
+local vecUp = Vector( 0, 0, 1 )
 
 function ENT:Detonate()
     if self.Exploding then return end
