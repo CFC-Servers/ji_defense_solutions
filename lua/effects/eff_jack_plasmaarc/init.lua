@@ -5,15 +5,6 @@ function EFFECT:Init( data )
     self.Delay = math.Clamp( 0.06 * data:GetScale(), 0.025, 0.06 )
     self.EndTime = CurTime() + self.Delay
     self:SetRenderBoundsWS( self.StartPos, self.EndPos )
-    local dlightend = DynamicLight( 0 )
-    dlightend.Pos = self.EndPos
-    dlightend.Size = 500 * self.Scayul
-    dlightend.Decay = 10000
-    dlightend.R = 100
-    dlightend.G = 150
-    dlightend.B = 255
-    dlightend.Brightness = 3 * self.Scayul
-    dlightend.DieTime = CurTime() + self.Delay
 end
 
 function EFFECT:Think()
