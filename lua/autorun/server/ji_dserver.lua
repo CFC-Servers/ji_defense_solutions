@@ -52,7 +52,7 @@ function JID.CanBeUsed( ply, ent )
     if not CFCPvp then return true end
 
     local owner = ent:GetCreator()
-    if IsValid( owner ) and owner:IsPlayer() then
+    if IsValid( owner ) and owner:IsPlayer() and owner.IsInBuild then
         if owner:IsInBuild() and owner ~= ply then return false end
         if owner:IsInPvp() and ply:IsInBuild() then return false end
     end
