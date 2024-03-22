@@ -79,9 +79,6 @@ ENT.PropThicknessToDisengageSqr = nil
 -- also good for vehicles
 ENT.PropThicknessToEngageSqr = nil
 
-ENT.ACF_DamageMult = 0.05
-ENT.BaseACFDamageMult = ENT.ACF_DamageMult -- when turret runs out of fake health, switch to dmgmult of 'nil', when repaired, restore to BaseACFDamageMult
-
 local function GetEntityVolume( ent )
     local phys = ent:GetPhysicsObject()
     local class = ent:GetClass()
@@ -1022,8 +1019,6 @@ function ENT:Break()
     SafeRemoveEntity( self.flashlight )
     self:SetDTBool( 3, false )
 
-    self.ACF_DamageMult = nil
-
 end
 
 function ENT:Fix( kit )
@@ -1035,12 +1030,18 @@ function ENT:Fix( kit )
             self.Broken = false
             self:RemoveAllDecals()
 
-            self.ACF_DamageMult = self.BaseACFDamageMult
-
         end
     end )
 
     kit:Empty()
+
+end
+
+function ENT:ACF_PreDamage()
+    -- if we're broken, we take acf damage
+    if self.Broken then return end
+    -- not broken yet, dont take acf damage
+    return false
 
 end
 
