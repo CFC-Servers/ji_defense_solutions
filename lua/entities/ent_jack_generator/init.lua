@@ -114,6 +114,7 @@ end
 function ENT:Start()
     if self.Remaining > 0 then
         self:EmitSound( "snd_jack_genstart.mp3" )
+        self:EmitSound( "plats/elevator_start1.wav", 70, 120, CHAN_STATIC )
         self.IsRunning = true
         self:SetDTBool( 0, self.IsRunning )
         self.NextSoundTime = CurTime() + 8
@@ -126,6 +127,7 @@ end
 
 function ENT:ShutOff()
     self:EmitSound( "snd_jack_genstop.mp3" )
+    self:EmitSound( "plats/elevator_stop.wav", 70, 80, CHAN_STATIC )
     self.IsRunning = false
     self:SetDTBool( 0, self.IsRunning )
 end

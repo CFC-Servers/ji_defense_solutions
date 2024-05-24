@@ -3,7 +3,7 @@ AddCSLuaFile( "shared.lua" )
 include( "shared.lua" )
 ENT.Base = "ent_jack_turret_base"
 
-ENT.TrackRate = 1.5
+ENT.TrackRate = 2
 ENT.MaxRange = 1750
 ENT.FireRate = 3
 ENT.BulletDamage = 8
@@ -21,10 +21,14 @@ ENT.AmmoType = ".22 Long Rifle"
 ENT.MuzzEff = "muzzleflash_pistol"
 ENT.BarrelSizeMod = Vector( .8, .8, .8 )
 ENT.Autoloading = true
-ENT.MechanicsSizeMod = .5
+ENT.MechanicsSizeMod = .75
 
 ENT.MaxStructuralIntegrity = 150
 ENT.StructuralIntegrity = 150
+
+ENT.SpawnsWithBattery = true
+ENT.SpawnsWithAmmo = true
+ENT.SpawnInClunk = false
 
 function ENT:SpawnFunction( ply, tr )
     local SpawnPos = tr.HitPos + tr.HitNormal * 5

@@ -22,7 +22,7 @@ ENT.MuzzEff = "muzzleflash_M3"
 ENT.BarrelSizeMod = Vector( 2, 2, 1 )
 ENT.Autoloading = false
 ENT.CycleSound = "snd_jack_shottyturretcycle.mp3"
-ENT.MechanicsSizeMod = 1.8
+ENT.MechanicsSizeMod = 1.9
 
 ENT.MaxStructuralIntegrity = 600
 ENT.StructuralIntegrity = 600

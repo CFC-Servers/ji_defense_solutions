@@ -4,13 +4,13 @@ include( "shared.lua" )
 ENT.Base = "ent_jack_turret_base"
 
 ENT.TrackRate = .06
-ENT.MaxRange = 5000
-ENT.FireRate = .45
-ENT.BulletDamage = 32
-ENT.ScanRate = 0.25
+ENT.MaxRange = 6000
+ENT.FireRate = .75
+ENT.BulletDamage = 60
+ENT.ScanRate = .60
 ENT.ShotSpread = .003
 ENT.RoundInChamber = false
-ENT.IdleDrainMul = 4
+ENT.IdleDrainMul = 6 -- annoying turret to fight, so takes lots of maintinance to keep running
 ENT.ShellEffect = "RifleShellEject"
 ENT.BulletsPerShot = 1
 ENT.TurretSkin = "models/mat_jack_sniperturret"
@@ -25,11 +25,11 @@ ENT.CycleSound = "snd_jack_sniperturretcycle.mp3"
 ENT.MechanicsSizeMod = 2.5
 ENT.WillLight = true
 ENT.WillLightOverride = true
-ENT.TracerEffect = "AirboatGunTracer"
+ENT.TracerEffect = "StriderTracer"
 
 
-ENT.MaxStructuralIntegrity = 600
-ENT.StructuralIntegrity = 600
+ENT.MaxStructuralIntegrity = 400
+ENT.StructuralIntegrity = 400
 
 ENT.PropThicknessToDisengageSqr = 200^2
 

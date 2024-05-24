@@ -80,15 +80,17 @@ end
 
 function ENT:Think()
     if self.Broken then
-        if math.random( 1, 8 ) == 7 then
+        local rand = math.random( 1, 8 )
+
+        if rand >= 8 then
             self:MiniSpark( .5 )
             self:EmitSound( "snd_jack_turretfizzle.mp3", 70, 130 )
 
-        else
+        elseif rand < 4 then
             local effectdata = EffectData()
             effectdata:SetOrigin( self:ChassisPos() )
             effectdata:SetScale( .4 )
-            util.Effect( "eff_jack_tinyturretburn", effectdata, true, true )
+            util.Effect( "eff_jack_tinyturretburn", effectdata, true )
 
         end
         return

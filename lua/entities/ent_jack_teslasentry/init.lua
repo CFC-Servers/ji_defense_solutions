@@ -2,7 +2,7 @@
 AddCSLuaFile( "cl_init.lua" )
 AddCSLuaFile( "shared.lua" )
 include( "shared.lua" )
-ENT.StructuralIntegrity = 300
+ENT.StructuralIntegrity = 400
 ENT.MaxStructuralIntegrity = ENT.StructuralIntegrity
 ENT.Broken = false
 ENT.HasBatteryOne = false
@@ -41,6 +41,8 @@ function ENT:Initialize()
     self:PhysicsInit( SOLID_VPHYSICS )
     self:SetMoveType( MOVETYPE_VPHYSICS )
     self:SetSolid( SOLID_VPHYSICS )
+    -- allow npcs to target me
+    self:AddFlags( FL_OBJECT )
     local phys = self:GetPhysicsObject()
 
     if phys:IsValid() then
@@ -92,6 +94,7 @@ function ENT:Break()
         self:EmitSound( "snd_jack_turretbreak.mp3", 85, 100, 1, CHAN_STATIC )
         self.Broken = true
         self:Disengage()
+        self:AddFlags( FL_NOTARGET )
         for _ = 1, 8 do
             self:MiniSpark( 1 )
         end
@@ -118,9 +121,15 @@ function ENT:OnTakeDamage( dmginfo )
     -- dont proppush turrets pls! 
     if IsValid( dmginfo:GetInflictor() ) and dmginfo:GetInflictor():IsPlayerHolding() then return end
 
+    local damageTaken = nil
     if dmginfo:IsDamageType( DMG_SHOCK ) or dmginfo:IsDamageType( DMG_BUCKSHOT ) or dmginfo:IsDamageType( DMG_BULLET ) or dmginfo:IsDamageType( DMG_BLAST ) or dmginfo:IsDamageType( DMG_CLUB ) or dmginfo:IsDamageType( DMG_BURN ) then
-        self.StructuralIntegrity = self.StructuralIntegrity - dmginfo:GetDamage()
-        self:MiniSpark( math.Clamp( dmginfo:GetDamage() / 50, 0.2, 1 ) )
+        damageTaken = dmginfo:GetDamage()
+    else
+        damageTaken = dmginfo:GetDamage() / 10
+    end
+    if damageTaken then
+        self.StructuralIntegrity = self.StructuralIntegrity - damageTaken
+        self:MiniSpark( math.Clamp( damageTaken / 50, 0.2, 1 ) )
         self:EmitSound( "weapon.ImpactHard" )
 
         if self.StructuralIntegrity <= 0 then
@@ -167,10 +176,10 @@ function ENT:Fix( kit )
     self:EmitSound( "snd_jack_turretrepair.mp3", 70, 100 )
 
     timer.Simple( 3.25, function()
-        if IsValid( self ) then
-            self.Broken = false
-            self:RemoveAllDecals()
-        end
+        if not IsValid( self ) then return end
+        self.Broken = false
+        self:RemoveAllDecals()
+        self:RemoveFlags( FL_NOTARGET )
     end )
 
     kit:Empty()
@@ -390,15 +399,16 @@ function ENT:Think()
 
     if self.Broken then
         self.BatteryCharge = 0
+        local rand = math.random( 1, 8 )
 
-        if math.random( 1, 8 ) == 7 then
+        if rand >= 8 then
             self:MiniSpark( 1 )
             self:EmitSound( "snd_jack_turretfizzle.mp3", 70, 100 )
-        else
+        elseif rand < 4 then
             local effectdata = EffectData()
             effectdata:SetOrigin( self:GetShootFromPos() )
             effectdata:SetScale( 1 )
-            util.Effect( "eff_jack_tinyturretburn", effectdata, true, true )
+            util.Effect( "eff_jack_tinyturretburn", effectdata, true )
         end
 
         self:Disengage()
@@ -470,6 +480,7 @@ function ENT:Think()
         local Target = self:FindTarget()
 
         if IsValid( Target ) then
+            JID.EnrageNPC( self, Target )
             -- has capacitor and valid target
             local Class = Target:GetClass()
             local nextFire = self.NextFire or 0

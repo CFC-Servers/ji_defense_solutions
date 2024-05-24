@@ -1,3 +1,6 @@
+local math = math
+local VectorRand = VectorRand
+
 function EFFECT:Init( data )
     local SelfPos = data:GetOrigin()
     local Scayul = data:GetScale()
@@ -14,46 +17,44 @@ function EFFECT:Init( data )
 
     local Emitter = ParticleEmitter( SelfPos )
 
-    for _ = 0, 1 do
-        local Particle = Emitter:Add( "particles/flamelet" .. tostring( math.random( 1, 5 ) ), SelfPos + VectorRand() * math.Rand( 0, 1 ) )
+    local Particle1 = Emitter:Add( "particles/flamelet" .. tostring( math.random( 1, 5 ) ), SelfPos + VectorRand() * math.Rand( 0, 1 ) )
 
-        if Particle then
-            Particle:SetVelocity( VectorRand() * math.Rand( 0, 10 ) )
-            Particle:SetLifeTime( 0 )
-            Particle:SetDieTime( math.Rand( .1, .4 ) )
-            local shadevariation = math.Rand( -10, 10 )
-            Particle:SetColor( math.Clamp( 255 + shadevariation + math.Rand( -5, 5 ), 0, 255 ), math.Clamp( 255 + shadevariation + math.Rand( -5, 5 ), 0, 255 ), math.Clamp( 255 + shadevariation + math.Rand( -5, 5 ), 0, 255 ) )
-            Particle:SetStartAlpha( math.Rand( 200, 255 ) )
-            Particle:SetEndAlpha( 0 )
-            Particle:SetStartSize( math.Rand( 3, 6 ) * Scayul )
-            Particle:SetEndSize( 0 )
-            Particle:SetRoll( math.Rand( -360, 360 ) )
-            Particle:SetRollDelta( math.Rand( -5, 5 ) )
-            Particle:SetAirResistance( 10 )
-            Particle:SetGravity( Vector( 0, 0, 1000 ) )
-            Particle:SetCollide( false )
-            Particle:SetLighting( false )
-        end
+    if Particle1 then
+        Particle1:SetVelocity( VectorRand() * math.Rand( 0, 10 ) )
+        Particle1:SetLifeTime( 0 )
+        Particle1:SetDieTime( math.Rand( .1, .4 ) )
+        local shadevariation = math.Rand( -10, 10 )
+        Particle1:SetColor( math.Clamp( 255 + shadevariation + math.Rand( -5, 5 ), 0, 255 ), math.Clamp( 255 + shadevariation + math.Rand( -5, 5 ), 0, 255 ), math.Clamp( 255 + shadevariation + math.Rand( -5, 5 ), 0, 255 ) )
+        Particle1:SetStartAlpha( math.Rand( 200, 255 ) )
+        Particle1:SetEndAlpha( 0 )
+        Particle1:SetStartSize( math.Rand( 3, 6 ) * Scayul )
+        Particle1:SetEndSize( 0 )
+        Particle1:SetRoll( math.Rand( -360, 360 ) )
+        Particle1:SetRollDelta( math.Rand( -5, 5 ) )
+        Particle1:SetAirResistance( 10 )
+        Particle1:SetGravity( Vector( 0, 0, 1000 ) )
+        Particle1:SetCollide( false )
+        Particle1:SetLighting( false )
     end
 
-    local Particle = Emitter:Add( "sprites/mat_jack_smoke" .. tostring( math.random( 1, 3 ) ), SelfPos + VectorRand() * math.Rand( 0, 3 ) )
+    local Particle2 = Emitter:Add( "sprites/mat_jack_smoke" .. tostring( math.random( 1, 3 ) ), SelfPos + VectorRand() * math.Rand( 0, 3 ) )
 
-    if Particle then
-        Particle:SetVelocity( Vector( 0, 0, 0 ) )
-        Particle:SetLifeTime( 0 )
-        Particle:SetDieTime( math.Rand( .5, 2 ) )
+    if Particle2 then
+        Particle2:SetVelocity( Vector( 0, 0, 0 ) )
+        Particle2:SetLifeTime( 0 )
+        Particle2:SetDieTime( math.Rand( .5, 2 ) )
         local shadevariation = math.Rand( -10, 10 )
-        Particle:SetColor( math.Clamp( 255 + shadevariation + math.Rand( -5, 5 ), 0, 255 ), math.Clamp( 255 + shadevariation + math.Rand( -5, 5 ), 0, 255 ), math.Clamp( 255 + shadevariation + math.Rand( -5, 5 ), 0, 255 ) )
-        Particle:SetStartAlpha( math.Rand( 50, 100 ) )
-        Particle:SetEndAlpha( 0 )
-        Particle:SetStartSize( math.Rand( 0, 1 ) * Scayul )
-        Particle:SetEndSize( math.Rand( 10, 30 ) * Scayul )
-        Particle:SetRoll( math.Rand( -360, 360 ) )
-        Particle:SetRollDelta( math.Rand( -5, 5 ) )
-        Particle:SetAirResistance( 500 )
-        Particle:SetGravity( Vector( 0, 0, 400 ) + VectorRand() * math.Rand( 0, 300 ) )
-        Particle:SetCollide( false )
-        Particle:SetLighting( true )
+        Particle2:SetColor( math.Clamp( 255 + shadevariation + math.Rand( -5, 5 ), 0, 255 ), math.Clamp( 255 + shadevariation + math.Rand( -5, 5 ), 0, 255 ), math.Clamp( 255 + shadevariation + math.Rand( -5, 5 ), 0, 255 ) )
+        Particle2:SetStartAlpha( math.Rand( 50, 100 ) )
+        Particle2:SetEndAlpha( 0 )
+        Particle2:SetStartSize( math.Rand( 0, 1 ) * Scayul )
+        Particle2:SetEndSize( math.Rand( 10, 30 ) * Scayul )
+        Particle2:SetRoll( math.Rand( -360, 360 ) )
+        Particle2:SetRollDelta( math.Rand( -5, 5 ) )
+        Particle2:SetAirResistance( 500 )
+        Particle2:SetGravity( Vector( 0, 0, 400 ) + VectorRand() * math.Rand( 0, 300 ) )
+        Particle2:SetCollide( false )
+        Particle2:SetLighting( true )
     end
 
     Emitter:Finish()

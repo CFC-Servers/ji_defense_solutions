@@ -26,6 +26,10 @@ ENT.MechanicsSizeMod = 1
 ENT.PropThicknessToEngageSqr = 50^2
 ENT.PropThicknessToDisengageSqr = 100^2
 
+ENT.SpawnsWithBattery = true
+ENT.SpawnsWithAmmo = true
+ENT.SpawnInClunk = false
+
 function ENT:SpawnFunction( ply, tr )
     local SpawnPos = tr.HitPos + tr.HitNormal * 5
     local ent = ents.Create( "ent_jack_turret_smg" )
