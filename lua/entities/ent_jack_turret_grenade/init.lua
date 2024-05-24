@@ -140,7 +140,7 @@ function ENT:FireShot()
 
         end
 
-        local distPow = Dist ^ 1.25 -- magic num, adds vertical to trajectory
+        local distPow = Dist ^ 1.235 -- magic num, adds vertical to trajectory
         TargPos = TargPos + Vector( 0, 0, distPow / 100 )
         local Vec = TargPos - SelfPos
         local Dir = Vec:GetNormalized()
