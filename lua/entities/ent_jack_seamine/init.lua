@@ -75,7 +75,15 @@ function ENT:Detonate()
         util.Effect( "eff_jack_genericboom", splad, true, true )
     end
 
-    util.BlastDamage( self, self:GetCreator(), SelfPos, 3000, 10000 )
+    local damager = self.Armer
+    if not IsValid( damager ) then
+        damager = self:GetCreator()
+    end
+    if not IsValid( damager ) then
+        damager = self
+    end
+
+    util.BlastDamage( self, damager, SelfPos, 3000, 10000 )
     util.ScreenShake( SelfPos, 99999, 99999, 1, 1000 )
     self:Remove()
 end
@@ -107,6 +115,7 @@ end
 
 function ENT:Use( activator )
     if not activator:IsPlayer() then return end
+    if not JID.CanBeUsed( activator, self ) then return end
     if self.NextUseTime >= CurTime() then return end
     self.NextUseTime = CurTime() + .5
 
@@ -115,6 +124,7 @@ function ENT:Use( activator )
 
     self.Fuzed = true
     self:EmitSound( "snd_jack_pinpull.mp3", 65, 90 )
+    self.Armer = activator
 
     timer.Simple( 3, function()
         if IsValid( self ) then
@@ -124,4 +134,10 @@ function ENT:Use( activator )
     end )
 
     JID.genericUseEffect( activator )
+end
+
+function ENT:ACF_PreDamage()
+    -- ball busters are immune
+    return false
+
 end

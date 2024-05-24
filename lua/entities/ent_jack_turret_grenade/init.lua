@@ -91,7 +91,7 @@ function ENT:FireShot()
     local Time = CurTime()
     self.BatteryCharge = self.BatteryCharge - .1
 
-    if self.WillWarn and not ( self.NextWarnTime < CurTime() ) then
+    if self.WillWarn and ( self.NextWarnTime >= CurTime() ) then
         if self.NextWarnTime < CurTime() then
             self:HostileAlert()
             self.NextWarnTime = CurTime() + 1
