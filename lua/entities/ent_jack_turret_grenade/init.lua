@@ -137,7 +137,6 @@ function ENT:FireShot()
 
         if Dist <= 1000 and CurrTarg:IsPlayer() or CurrTarg:IsNPC() then
             TargPos = CurrTarg:GetPos() -- aim at feet if they're close
-
         end
 
         local distPow = Dist ^ 1.235 -- magic num, adds vertical to trajectory

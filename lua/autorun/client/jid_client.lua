@@ -17,9 +17,6 @@ killicon.Add( "ent_jack_landmine", "vgui/hud/jid_landmine_killicon", iconColor )
 killicon.Add( "ent_jack_boundingmine", "vgui/hud/jid_boundingmine_killicon", iconColor )
 killicon.Add( "ent_jack_teslasentry", "vgui/hud/jid_teslasentry_killicon", iconColor )
 
-local input_IsKeyDown = input.IsKeyDown
-local input_IsMouseDown = input.IsMouseDown
-
 local function ShutDownPanel( panel, cmd )
     if not panel then return end
     panel:Close()
@@ -43,9 +40,9 @@ function JID.MakeEasyClose( panel, cmd )
     function panel:Think()
         -- bail if they open any menu, or press use
         if self.nextDeleteThink > CurTime() then return end
-        if input_IsKeyDown( KEY_ESCAPE ) then ShutDownPanel( self, cmd ) return end
-        if input_IsKeyDown( clientsMenuKey ) or input_IsKeyDown( clientsUseKey ) then ShutDownPanel( self, cmd ) return end
-        if not input_IsMouseDown( MOUSE_LEFT ) and not input_IsMouseDown( MOUSE_RIGHT ) then return end
+        if input.IsKeyDown( KEY_ESCAPE ) then ShutDownPanel( self, cmd ) return end
+        if input.IsKeyDown( clientsMenuKey ) or input.IsKeyDown( clientsUseKey ) then ShutDownPanel( self, cmd ) return end
+        if not input.IsMouseDown( MOUSE_LEFT ) and not input.IsMouseDown( MOUSE_RIGHT ) then return end
 
         -- close when clicking off menu
         local myX, myY = self:GetPos()

@@ -136,8 +136,7 @@ function ENT:Initialize()
     self:SetMoveType( MOVETYPE_VPHYSICS )
     self:SetSolid( SOLID_VPHYSICS )
     self:SetUseType( SIMPLE_USE )
-    -- allow npcs to target me
-    self:AddFlags( FL_OBJECT )
+    self:AddFlags( FL_OBJECT ) -- allow npcs to target the turret
     self:DrawShadow( true )
     local phys = self:GetPhysicsObject()
 
@@ -165,8 +164,7 @@ function ENT:Initialize()
 
     timer.Simple( 0, function()
         if not IsValid( self ) then return end
-        -- used by "heavy" turrets
-        if self.SpawnInClunk then
+        if self.SpawnInClunk then -- used by "heavy" turrets
             self:EmitSound( "Canister.ImpactHard" )
         end
         if self.SpawnsWithBattery then
@@ -832,16 +830,16 @@ function ENT:FireShot()
     self.RoundInChamber = false
     self.Heat = self.Heat + ( self.BulletDamage * self.BulletsPerShot ) / 150
 
-    local filterAllPlayers = RecipientFilter()
-    filterAllPlayers:AddAllPlayers()
+    local filterBroader = RecipientFilter()
+    filterBroader:AddPVS( self:GetPos() )
 
     local rangeLevelOffset = self.MaxRange / 300
 
     self:EmitSound( self.NearShotNoise, 70 + rangeLevelOffset, self.ShootSoundPitch, 1, CHAN_WEAPON )
-    -- semi-global sound so players know where they're getting shot from
-    self:EmitSound( self.FarShotNoise, 90 + rangeLevelOffset, self.ShootSoundPitch - 10, 1, CHAN_WEAPON, 0, 0, filterAllPlayers )
-    -- play extra sounds to make it feel punchier.
-    sound.Play( self.NearShotNoise, ShootPos, 65 + rangeLevelOffset, self.ShootSoundPitch )
+    self:EmitSound( self.FarShotNoise, 90 + rangeLevelOffset, self.ShootSoundPitch - 10, 1, CHAN_WEAPON, 0, 0, filterBroader ) -- semi-global sound so players know where they're getting shot from
+
+
+    sound.Play( self.NearShotNoise, ShootPos, 65 + rangeLevelOffset, self.ShootSoundPitch ) -- play extra sounds to make it feel punchier.
     sound.Play( self.FarShotNoise, ShootPos + Vector( 0, 0, 1 ), 85 + rangeLevelOffset, self.ShootSoundPitch - 10 )
 
     if self.RoundsOnBelt > 0 then

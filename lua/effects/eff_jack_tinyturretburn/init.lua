@@ -1,6 +1,3 @@
-local math = math
-local VectorRand = VectorRand
-
 function EFFECT:Init( data )
     local SelfPos = data:GetOrigin()
     local Scayul = data:GetScale()

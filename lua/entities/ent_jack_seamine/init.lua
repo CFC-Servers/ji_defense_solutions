@@ -139,5 +139,4 @@ end
 function ENT:ACF_PreDamage()
     -- ball busters are immune
     return false
-
 end

@@ -1,6 +1,3 @@
-local math = math
-local VectorRand = VectorRand
-
 function EFFECT:Init( data )
     local Scayul = 1
 

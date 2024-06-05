@@ -37,7 +37,6 @@ function ENT:Initialize()
     self.ExplosiveMul = 0.5
     self.HardKillTime = CurTime() + 30
     self.NextEffect = 0
-
 end
 
 function ENT:PhysicsCollide( data )
@@ -69,12 +68,11 @@ function ENT:Think()
     local smokeTrail = self.SmokeTrail
     if IsValid( smokeTrail ) then
         smokeTrail:SetPos( myPos )
-
     end
+
     local tracerTrail = self.TracerTrail
     if IsValid( tracerTrail ) then
         tracerTrail:SetPos( myPos )
-
     end
 
     self:NextThink( CurTime() + 0.01 )
@@ -115,11 +113,10 @@ function ENT:OnRemove()
     local smokeTrail = self.SmokeTrail
     if IsValid( smokeTrail ) then
         SafeRemoveEntityDelayed( smokeTrail, smokeTrailLifetime )
-
     end
+
     local tracerTrail = self.TracerTrail
     if IsValid( tracerTrail ) then
         SafeRemoveEntityDelayed( tracerTrail, nadeTracerLifetime )
-
     end
 end
