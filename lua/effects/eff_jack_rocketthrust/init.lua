@@ -7,39 +7,6 @@ function EFFECT:Init( data )
 
     local dirkshun = data:GetNormal() * 1000 * Scayul
 
-    if self:WaterLevel() > 0 then
-        local NumParticles = 10
-        local emitter = ParticleEmitter( data:GetOrigin() )
-
-        for _ = 0, NumParticles do
-            local Pos = data:GetOrigin()
-            local wind = data:GetStart()
-            local rollparticle = emitter:Add( "effects/bubble", Pos + VectorRand() * 3 )
-
-            if rollparticle then
-                rollparticle:SetVelocity( Vector( math.Rand( -10, 10 ), math.Rand( -10, 10 ), math.Rand( -10, 10 ) ) + dirkshun )
-                rollparticle:SetLifeTime( 0 )
-                local life = math.Rand( 1, 2 )
-                local begin = CurTime()
-                rollparticle:SetDieTime( life )
-                local shadevariation = math.Rand( -10, 10 )
-                rollparticle:SetColor( math.Clamp( 255 + shadevariation + math.Rand( -5, 5 ), 0, 255 ), math.Clamp( 255 + shadevariation + math.Rand( -5, 5 ), 0, 255 ), math.Clamp( 255 + shadevariation + math.Rand( -5, 5 ), 0, 255 ) )
-                rollparticle:SetStartAlpha( 200 )
-                rollparticle:SetEndAlpha( 0 )
-                rollparticle:SetStartSize( 4 )
-                rollparticle:SetEndSize( 15 )
-                rollparticle:SetRoll( math.Rand( -360, 360 ) )
-                rollparticle:SetRollDelta( math.Rand( -0.61, 0.61 ) * 5 )
-                rollparticle:SetAirResistance( 1000 )
-                rollparticle:SetGravity( Vector( math.Rand( -500, 500 ), math.Rand( -500, 500 ), math.Rand( 2000, 5000 ) ) + wind )
-                rollparticle:SetCollide( true )
-                rollparticle:SetLighting( false )
-            end
-        end
-
-        return
-    end
-
     local NumParticles = 1 * Scayul
     local emitter = ParticleEmitter( data:GetOrigin() )
 

@@ -86,6 +86,8 @@ end
 
 usermessage.Hook( "JackaSprayPaintOpenMenu", OpenMenu )
 
+local myLastColor = CreateClientConVar( "JackaSprayPaintLastColor", "128 128 128", true, false )
+
 function ENT:OpenTheMenu( tab )
     local DermaPanel = vgui.Create( "DFrame" )
     DermaPanel:SetPos( 40, 80 )
@@ -98,7 +100,8 @@ function ENT:OpenTheMenu( tab )
     DermaPanel:SetKeyboardInputEnabled( false )
 
     DermaPanel:Center()
-    DermaPanel:SetKeyboardInputEnabled( false )
+
+    JID.MakeEasyClose( DermaPanel, "JackaSprayPaintClose " .. tostring( self:GetNWInt( "JackIndex" ) ) )
 
     local MainPanel = vgui.Create( "DPanel", DermaPanel )
     MainPanel:SetPos( 5, 25 )
@@ -115,7 +118,17 @@ function ENT:OpenTheMenu( tab )
     Mixer:SetPalette( true )
     Mixer:SetAlphaBar( false )
     Mixer:SetWangs( true )
-    Mixer:SetColor( Color( 128, 128, 128 ) )
+
+    local lastColorString = myLastColor:GetString()
+    local lastColorDeconstructed = string.Explode( " ", lastColorString )
+    local lastColor = Color( lastColorDeconstructed[1] or 128, lastColorDeconstructed[2] or 128, lastColorDeconstructed[3] or 128 )
+    Mixer:SetColor( lastColor )
+
+    Mixer.ValueChanged = function( _, Col )
+        local colString = tostring( Col.r ) .. " " .. tostring( Col.g ) .. " " .. tostring( Col.b )
+        RunConsoleCommand( "JackaSprayPaintLastColor", colString )
+    end
+
     local ColorPanel = vgui.Create( "DPanel", DermaPanel )
     ColorPanel:SetPos( 170, 111 )
     ColorPanel:SetSize( 40, 50 )
@@ -130,20 +143,9 @@ function ENT:OpenTheMenu( tab )
         surface.DrawRect( 0, 0, ColorPanel:GetWide(), ColorPanel:GetTall() + 3 )
     end
 
-    local exitbutton = vgui.Create( "Button", MainPanel )
-    exitbutton:SetSize( 90, 40 )
-    exitbutton:SetPos( 10, 220 )
-    exitbutton:SetText( "Exit" )
-    exitbutton:SetVisible( true )
-
-    exitbutton.DoClick = function()
-        DermaPanel:Close()
-        RunConsoleCommand( "JackaSprayPaintClose", tostring( self:GetNWInt( "JackIndex" ) ) )
-    end
-
     local gobutton = vgui.Create( "Button", MainPanel )
-    gobutton:SetSize( 90, 40 )
-    gobutton:SetPos( 115, 220 )
+    gobutton:SetSize( 195, 40 )
+    gobutton:SetPos( 10, 220 )
     gobutton:SetText( "Paint" )
     gobutton:SetVisible( true )
 

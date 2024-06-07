@@ -23,7 +23,10 @@ function ENT:Draw()
     end
 
     if planted and not self.ColorApplied then
-        local color = render.GetSurfaceColor( self:GetPos() + Vector( 0, 10, 0 ) + self:GetForward() * 10, self:GetPos() + Vector( 0, 10, 0 ) - self:GetForward() * 100 )
+        local start = self:GetPos() + Vector( 0, 10, 0 ) + self:GetForward() * 10
+        local endpos = self:GetPos() + Vector( 0, 10, 0 ) - self:GetForward() * 100
+
+        local color = render.GetSurfaceColor( start, endpos )
         self:SetColor( color:ToColor() )
         self.ColorApplied = true
     end

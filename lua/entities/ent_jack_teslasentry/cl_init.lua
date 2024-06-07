@@ -97,9 +97,10 @@ end
 usermessage.Hook( "JackaTeslaTurretOpenMenu", OpenMenu )
 
 function ENT:OpenTheMenu( tab )
+    local panelWidth, panelHeight = 300, 105
     local DermaPanel = vgui.Create( "DFrame" )
     DermaPanel:SetPos( 40, 80 )
-    DermaPanel:SetSize( 300, 100 )
+    DermaPanel:SetSize( panelWidth, panelHeight )
     DermaPanel:SetTitle( "Jackarunda Industries" )
     DermaPanel:SetVisible( true )
     DermaPanel:SetDraggable( true )
@@ -108,11 +109,12 @@ function ENT:OpenTheMenu( tab )
     DermaPanel:SetKeyboardInputEnabled( false )
 
     DermaPanel:Center()
-    DermaPanel:SetKeyboardInputEnabled( false )
+
+    JID.MakeEasyClose( DermaPanel, "JackaTeslaTurretCloseMenu_Cancel " .. tostring( self:GetNWInt( "JackIndex" ) ) )
 
     local MainPanel = vgui.Create( "DPanel", DermaPanel )
     MainPanel:SetPos( 5, 25 )
-    MainPanel:SetSize( 290, 68 )
+    MainPanel:SetSize( panelWidth + -10, panelHeight + -30 )
 
     MainPanel.Paint = function()
         surface.SetDrawColor( 0, 20, 40, 255 )
@@ -146,7 +148,7 @@ function ENT:OpenTheMenu( tab )
     end
 
     local battbutton = vgui.Create( "Button", MainPanel )
-    battbutton:SetSize( 80, 20 )
+    battbutton:SetSize( 125, 25 )
     battbutton:SetPos( 10, 43 )
     battbutton:SetText( "Electricity" )
     battbutton:SetVisible( true )
@@ -156,20 +158,9 @@ function ENT:OpenTheMenu( tab )
         RunConsoleCommand( "JackaTeslaTurretBattery", tostring( self:GetNWInt( "JackIndex" ) ) )
     end
 
-    local exitbutton = vgui.Create( "Button", MainPanel )
-    exitbutton:SetSize( 80, 20 )
-    exitbutton:SetPos( 106, 43 )
-    exitbutton:SetText( "Exit" )
-    exitbutton:SetVisible( true )
-
-    exitbutton.DoClick = function()
-        DermaPanel:Close()
-        RunConsoleCommand( "JackaTeslaTurretCloseMenu_Cancel", tostring( self:GetNWInt( "JackIndex" ) ) )
-    end
-
     local powerbutton = vgui.Create( "Button", MainPanel )
-    powerbutton:SetSize( 80, 20 )
-    powerbutton:SetPos( 200, 43 )
+    powerbutton:SetSize( 125, 25 )
+    powerbutton:SetPos( 155, 43 )
     powerbutton:SetText( "Activate" )
     powerbutton:SetVisible( true )
 

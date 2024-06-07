@@ -1,1 +1,1 @@
-JID = {}
+JID = JID or {}

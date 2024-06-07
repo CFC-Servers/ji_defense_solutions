@@ -152,22 +152,23 @@ end
 usermessage.Hook( "JackaTurretOpenMenu", OpenMenu )
 
 function ENT:OpenTheMenu( tab )
+    local panelWidth, panelHeight = 200, 170
     local DermaPanel = vgui.Create( "DFrame" )
     DermaPanel:SetPos( 50, 50 )
-    DermaPanel:SetSize( 200, 175 )
+    DermaPanel:SetSize( panelWidth, panelHeight )
     DermaPanel:SetTitle( "Jackarunda Industries" )
     DermaPanel:SetVisible( true )
     DermaPanel:SetDraggable( true )
     DermaPanel:ShowCloseButton( false )
     DermaPanel:MakePopup()
-    DermaPanel:SetKeyboardInputEnabled( false )
 
     DermaPanel:Center()
-    DermaPanel:SetKeyboardInputEnabled( false )
+
+    JID.MakeEasyClose( DermaPanel, "JackaTurretCloseMenu_Cancel " .. tostring( self:GetNWInt( "JackIndex" ) ) )
 
     local MainPanel = vgui.Create( "DPanel", DermaPanel )
     MainPanel:SetPos( 5, 25 )
-    MainPanel:SetSize( 190, 145 )
+    MainPanel:SetSize( panelWidth + -10, panelHeight + -30 )
 
     MainPanel.Paint = function()
         surface.SetDrawColor( 0, 20, 40, 255 )
@@ -203,17 +204,6 @@ function ENT:OpenTheMenu( tab )
     battbutton.DoClick = function()
         DermaPanel:Close()
         RunConsoleCommand( "JackaTurretBattery", tostring( self:GetNWInt( "JackIndex" ) ) )
-    end
-
-    local exitbutton = vgui.Create( "Button", MainPanel )
-    exitbutton:SetSize( 80, 25 )
-    exitbutton:SetPos( 10, 55 )
-    exitbutton:SetText( "Exit" )
-    exitbutton:SetVisible( true )
-
-    exitbutton.DoClick = function()
-        DermaPanel:Close()
-        RunConsoleCommand( "JackaTurretCloseMenu_Cancel", tostring( self:GetNWInt( "JackIndex" ) ) )
     end
 
     local On = self:GetDTInt( 0 ) ~= 0
@@ -255,7 +245,7 @@ function ENT:OpenTheMenu( tab )
 
     local syncbutton = vgui.Create( "Button", MainPanel )
     syncbutton:SetSize( 80, 25 )
-    syncbutton:SetPos( 10, 85 )
+    syncbutton:SetPos( 10, 55 )
 
     if not tab.IFFUser then
         syncbutton:SetText( "Sync IFF" )
@@ -272,7 +262,7 @@ function ENT:OpenTheMenu( tab )
 
     local buttbutton = vgui.Create( "Button", MainPanel )
     buttbutton:SetSize( 170, 25 )
-    buttbutton:SetPos( 10, 115 )
+    buttbutton:SetPos( 10, 102 )
     buttbutton:SetText( "Set Upright" )
     buttbutton:SetVisible( true )
 
@@ -292,7 +282,7 @@ function ENT:OpenTheMenu( tab )
     end
 
     local litbox = vgui.Create( "DCheckBoxLabel", MainPanel )
-    litbox:SetPos( 100, 99 )
+    litbox:SetPos( 10, 84 )
     litbox:SetSize( 200, 15 )
     litbox:SetText( "Illuminate" )
     litbox:SetChecked( tab.Light )

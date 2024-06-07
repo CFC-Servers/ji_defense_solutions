@@ -100,3 +100,10 @@ hook.Add( "CanTool", "JID_PreventToolgun", function( _, tr, tool )
     local class = tr.Entity:GetClass()
     if string.StartWith( class, "ent_jack_" ) then return false end
 end )
+
+function JID.EnrageNPC( enrager, npc )
+    if not npc:IsNPC() then return end
+    if not npc.Disposition then return end
+    if npc:Disposition( enrager ) == D_HT then return end
+    npc:AddEntityRelationship( enrager, D_HT, 0 )
+end

@@ -18,7 +18,8 @@ function ENT:CanTool( tooler, _, toolname )
     if not toolname or not isstring( toolname ) then return false end
     if string.find( toolname, "remove" ) then return true end
 
-    tooler:PrintMessage( HUD_PRINTTALK, "You can only use \"removing\" tools on me." )
+    if not tooler.PrintMessage then return end
+    tooler:PrintMessage( HUD_PRINTTALK, "You can only use \"removing\" tools on barbed wire." )
 
     return false
 

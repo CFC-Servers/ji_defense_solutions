@@ -18,13 +18,13 @@ local HULL_TARGETING = {
 
 
 ENT.TrackRate = .25
-ENT.MaxRange = 5000
-ENT.FireRate = .15
-ENT.BulletDamage = 320
+ENT.MaxRange = 4000
+ENT.FireRate = .20
+ENT.BulletDamage = 340
 ENT.ScanRate = .75
-ENT.ShotSpread = .017
+ENT.ShotSpread = .013
 ENT.RoundInChamber = false
-ENT.IdleDrainMul = 2
+ENT.IdleDrainMul = 6 -- annoying turret to fight, so takes lots of maintinance to keep running
 ENT.ShellEffect = "RifleShellEject"
 ENT.BulletsPerShot = 1
 ENT.TurretSkin = "models/mat_jack_grenadeturret"
@@ -39,10 +39,10 @@ ENT.CycleSound = "snd_jack_glcycle.mp3"
 ENT.MechanicsSizeMod = 2.2
 
 
-ENT.MaxStructuralIntegrity = 600
-ENT.StructuralIntegrity = 600
+ENT.MaxStructuralIntegrity = 400
+ENT.StructuralIntegrity = 400
 
-ENT.PropThicknessToEngageSqr = 100^2
+ENT.PropThicknessToEngageSqr = 150^2
 ENT.PropThicknessToDisengageSqr = 300^2
 
 function ENT:SpawnFunction( ply, tr )
@@ -91,15 +91,13 @@ function ENT:FireShot()
     local Time = CurTime()
     self.BatteryCharge = self.BatteryCharge - .1
 
-    if self.WillWarn then
-        if not ( self.NextWarnTime < CurTime() ) then
-            if self.NextWarnTime < CurTime() then
-                self:HostileAlert()
-                self.NextWarnTime = CurTime() + 1
-            end
-
-            return
+    if self.WillWarn and ( self.NextWarnTime >= CurTime() ) then
+        if self.NextWarnTime < CurTime() then
+            self:HostileAlert()
+            self.NextWarnTime = CurTime() + 1
         end
+
+        return
     end
 
     if self.RoundInChamber then
@@ -124,7 +122,8 @@ function ENT:FireShot()
         local SelfPos = self:GetPos() + self:GetUp() * 55
         local TargPos
 
-        if not IsValid( self.CurrentTarget ) then return end
+        local CurrTarg = self.CurrentTarget
+        if not IsValid( CurrTarg ) then return end
 
         TargPos = GetCenterMass( self.CurrentTarget )
 
@@ -136,8 +135,12 @@ function ENT:FireShot()
             return
         end
 
-        local distPow = Dist ^ 1.06
-        TargPos = TargPos + Vector( 0, 0, distPow / 60 )
+        if Dist <= 1000 and CurrTarg:IsPlayer() or CurrTarg:IsNPC() then
+            TargPos = CurrTarg:GetPos() -- aim at feet if they're close
+        end
+
+        local distPow = Dist ^ 1.235 -- magic num, adds vertical to trajectory
+        TargPos = TargPos + Vector( 0, 0, distPow / 100 )
         local Vec = TargPos - SelfPos
         local Dir = Vec:GetNormalized()
         local Spred = self.ShotSpread
@@ -162,13 +165,10 @@ function ENT:FireShot()
         Grenade:Spawn()
         Grenade:Activate()
         constraint.NoCollide( self, Grenade )
-        Grenade:GetPhysicsObject():SetVelocity( self:GetPhysicsObject():GetVelocity() + Dir * 7500 ) --the Mk.19 throws its grenades typically at about 240mps
+        Grenade:GetPhysicsObject():SetVelocity( self:GetPhysicsObject():GetVelocity() + Dir * 5000 ) --the Mk.19 throws its grenades typically at about 240mps
         self.FiredAtCurrentTarget = true
         self.RoundInChamber = false
         self.Heat = self.Heat + 5
-
-        sound.Play( self.NearShotNoise, SelfPos, 70, self.ShootSoundPitch )
-        sound.Play( self.FarShotNoise, SelfPos + Vector( 0, 0, 1 ), 90, self.ShootSoundPitch - 10 )
         sound.Play( self.NearShotNoise, SelfPos, 75, self.ShootSoundPitch )
         sound.Play( self.FarShotNoise, SelfPos + Vector( 0, 0, 2 ), 110, self.ShootSoundPitch - 10 )
         local PosAng = self:GetAttachment( 1 )

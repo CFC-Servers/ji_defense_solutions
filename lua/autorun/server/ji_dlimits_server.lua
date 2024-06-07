@@ -1,11 +1,12 @@
 local limits = {
-    turrets = 4,
-    mines = 10,
+    light_turrets = 4,
+    heavy_turrets = 2,
+    mines = 12,
     ammo = 8,
     fuel = 2,
 
     ent_jack_powernode = 20,
-    ent_jack_barbedwire = 25,
+    ent_jack_barbedwire = 30,
     ent_jack_claymore = 8, -- claymores are very dank to stack up inside vehicles and use as IEDS
     ent_jack_generator = 2,
     ent_jack_barbedwirekit = 6,
@@ -19,16 +20,17 @@ local limits = {
 }
 
 local limitTranslations = {
-    ent_jack_teslasentry = "turrets",
-    ent_jack_turret_grenade = "turrets",
-    ent_jack_turret_mg = "turrets",
-    ent_jack_turret_missile = "turrets",
-    ent_jack_turret_pistol = "turrets",
-    ent_jack_turret_plinker = "turrets",
-    ent_jack_turret_rocket = "turrets",
-    ent_jack_turret_shotty = "turrets",
-    ent_jack_turret_smg = "turrets",
-    ent_jack_turret_sniper = "turrets",
+    ent_jack_teslasentry = "heavy_turrets",
+    ent_jack_turret_grenade = "heavy_turrets",
+    ent_jack_turret_mg = "heavy_turrets",
+    ent_jack_turret_missile = "heavy_turrets",
+    ent_jack_turret_rocket = "heavy_turrets",
+    ent_jack_turret_shotty = "heavy_turrets",
+    ent_jack_turret_sniper = "heavy_turrets",
+
+    ent_jack_turret_smg = "light_turrets",
+    ent_jack_turret_pistol = "light_turrets",
+    ent_jack_turret_plinker = "light_turrets",
 
     ent_jack_boundingmine = "mines",
     ent_jack_landmine = "mines",

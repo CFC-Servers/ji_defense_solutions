@@ -1,4 +1,9 @@
 include( "shared.lua" )
+local nadeSmokeTrailColor = Color( 255, 255, 255, 25 )
+local smokeTrailLifetime = 5
+
+local nadeTracerTrailColor = Color( 255, 255, 255 )
+local nadeTracerLifetime = 0.05
 
 function ENT:Initialize()
     self:SetModel( "models/Items/AR2_Grenade.mdl" )
@@ -14,10 +19,24 @@ function ENT:Initialize()
         phys:SetMass( 7 )
     end
 
+    local startWidth = 25
+    local endWidth = 75
+    local res = 1 / ( startWidth + endWidth ) * 0.5
+    self.SmokeTrail = util.SpriteTrail( self, 0, nadeSmokeTrailColor, true, startWidth, endWidth, smokeTrailLifetime, res, "trails/smoke" )
+    -- stupid hack so the trail sticks around after the shell hits
+    self.SmokeTrail:SetParent( nil )
+
+    startWidth = 25
+    endWidth = 0
+    res = 1 / ( startWidth + endWidth ) * 0.5
+    self.TracerTrail = util.SpriteTrail( self, 0, nadeTracerTrailColor, true, startWidth, endWidth, nadeTracerLifetime, res, "trails/laser" )
+    -- stupid hack so the trail sticks around after the shell hits
+    self.TracerTrail:SetParent( nil )
+
     self:Fire( "enableshadow", "", 0 )
-    self.Exploded = false
     self.ExplosiveMul = 0.5
     self.HardKillTime = CurTime() + 30
+    self.NextEffect = 0
 end
 
 function ENT:PhysicsCollide( data )
@@ -31,16 +50,31 @@ function ENT:OnTakeDamage( dmginfo )
 end
 
 function ENT:Think()
-    if self:GetVar( "Exploded", false ) or self:GetVar( "HardKillTime" ) < CurTime() then
+    if self.HardKillTime < CurTime() then
         self:Remove()
         return
     end
+    local myPos = self:GetPos()
 
-    local effect = EffectData()
-    effect:SetOrigin( self:GetPos() )
-    effect:SetNormal( self:GetForward() )
-    effect:SetScale( 0.8 )
-    util.Effect( "eff_jack_rocketthrust", effect, true, true )
+    if self.NextEffect < CurTime() then
+        self.NextEffect = CurTime() + 0.05
+        local effect = EffectData()
+        effect:SetOrigin( myPos )
+        effect:SetNormal( self:GetForward() )
+        effect:SetScale( 0.8 )
+        util.Effect( "eff_jack_rocketthrust", effect, true )
+    end
+
+    local smokeTrail = self.SmokeTrail
+    if IsValid( smokeTrail ) then
+        smokeTrail:SetPos( myPos )
+    end
+
+    local tracerTrail = self.TracerTrail
+    if IsValid( tracerTrail ) then
+        tracerTrail:SetPos( myPos )
+    end
+
     self:NextThink( CurTime() + 0.01 )
     return true
 end
@@ -61,7 +95,9 @@ function ENT:Detonate()
         attacker = IsValid( creator ) and creator or attacker
     end
 
-    util.BlastDamage( self, attacker, pos, owner.BulletDamage, owner.BulletDamage )
+    if not IsValid( attacker ) then attacker = self end
+
+    util.BlastDamage( self, attacker, pos, owner.BulletDamage or 0, owner.BulletDamage or 0 )
 
     local plooie = EffectData()
     plooie:SetOrigin( self:GetPos() )
@@ -71,4 +107,16 @@ function ENT:Detonate()
     util.Effect( "eff_jack_minesplode", plooie, true, true )
 
     self:Remove()
+end
+
+function ENT:OnRemove()
+    local smokeTrail = self.SmokeTrail
+    if IsValid( smokeTrail ) then
+        SafeRemoveEntityDelayed( smokeTrail, smokeTrailLifetime )
+    end
+
+    local tracerTrail = self.TracerTrail
+    if IsValid( tracerTrail ) then
+        SafeRemoveEntityDelayed( tracerTrail, nadeTracerLifetime )
+    end
 end

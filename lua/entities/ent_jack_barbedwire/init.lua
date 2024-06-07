@@ -6,7 +6,6 @@ include( "shared.lua" )
 ENT.SpeedLimit = 110
 ENT.SpeedLimitSqr = ENT.SpeedLimit^2
 ENT.Mass = 30
-ENT.ACF_DamageMult = 0
 
 ENT.nextTouchThink = ENT.nextTouchThink or math.huge -- prevents it doing 1 tick of damage before initialize
 ENT.nextDeconstruct = 0
@@ -52,6 +51,7 @@ function ENT:Use( user )
     if user:GetVelocity():LengthSqr() > 100 then return end
     self.nextDeconstruct = CurTime() + math.Rand( .25, .35 )
     self:TakeStructuralDamage( 50 )
+    if user:Crouching() then return end
     self:Damage( user, 1 )
 
 end
@@ -189,5 +189,11 @@ function ENT:Think()
     self:NextThink( CurTime() + time )
 
     return true
+
+end
+
+function ENT:ACF_PreDamage()
+    -- barbed wire can't be broken by ACF
+    return false
 
 end
