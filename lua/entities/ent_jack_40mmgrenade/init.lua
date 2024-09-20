@@ -5,8 +5,6 @@ local smokeTrailLifetime = 5
 local nadeTracerTrailColor = Color( 255, 255, 255 )
 local nadeTracerLifetime = 0.05
 
-ENT.HardKillTime = 
-
 function ENT:Initialize()
     self.ExplosiveMul = 0.5
     self.HardKillTime = CurTime() + 30
