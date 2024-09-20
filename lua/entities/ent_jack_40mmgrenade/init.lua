@@ -5,7 +5,13 @@ local smokeTrailLifetime = 5
 local nadeTracerTrailColor = Color( 255, 255, 255 )
 local nadeTracerLifetime = 0.05
 
+ENT.HardKillTime = 
+
 function ENT:Initialize()
+    self.ExplosiveMul = 0.5
+    self.HardKillTime = CurTime() + 30
+    self.NextEffect = 0
+
     self:SetModel( "models/Items/AR2_Grenade.mdl" )
     self:PhysicsInit( SOLID_VPHYSICS )
     self:SetMoveType( MOVETYPE_VPHYSICS )
@@ -34,9 +40,6 @@ function ENT:Initialize()
     self.TracerTrail:SetParent( nil )
 
     self:Fire( "enableshadow", "", 0 )
-    self.ExplosiveMul = 0.5
-    self.HardKillTime = CurTime() + 30
-    self.NextEffect = 0
 end
 
 function ENT:PhysicsCollide( data )
