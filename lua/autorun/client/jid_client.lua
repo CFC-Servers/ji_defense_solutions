@@ -41,7 +41,7 @@ function JID.MakeEasyClose( panel, cmd )
         -- bail if they open any menu, or press use
         if self.nextDeleteThink > CurTime() then return end
         if input.IsKeyDown( KEY_ESCAPE ) then ShutDownPanel( self, cmd ) return end
-        if input.IsKeyDown( clientsMenuKey ) or input.IsKeyDown( clientsUseKey ) then ShutDownPanel( self, cmd ) return end
+        if ( clientsMenuKey and input.IsKeyDown( clientsMenuKey ) ) or ( clientsUseKey and input.IsKeyDown( clientsUseKey ) ) then ShutDownPanel( self, cmd ) return end
         if not input.IsMouseDown( MOUSE_LEFT ) and not input.IsMouseDown( MOUSE_RIGHT ) then return end
 
         -- close when clicking off menu
