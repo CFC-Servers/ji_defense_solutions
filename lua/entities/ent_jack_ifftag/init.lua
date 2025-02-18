@@ -9,9 +9,6 @@ ENT.MaxStructuralIntegrity = ENT.StructuralIntegrity
 
 ENT.Broken = nil
 
-ENT.ACF_DamageMult = 0.05
-ENT.BaseACFDamageMult = ENT.ACF_DamageMult -- when ifftag runs out of fake health, switch to dmgmult of 'nil', when repaired, restore to BaseACFDamageMult
-
 -- in front of the "screen" csideent
 local screenPos = Vector( 10, -2.7, 4 )
 
@@ -255,7 +252,10 @@ function ENT:Break()
 
     end
 
-    self.ACF_DamageMult = nil
+end
+
+function ENT:ShouldDoDamageConversion() -- only take real damage when our JI health runs out
+    return self.Broken
 
 end
 
@@ -267,8 +267,6 @@ function ENT:Fix( kit )
         if IsValid( self ) then
             self.Broken = false
             self:RemoveAllDecals()
-
-            self.ACF_DamageMult = self.BaseACFDamageMult
 
         end
     end )

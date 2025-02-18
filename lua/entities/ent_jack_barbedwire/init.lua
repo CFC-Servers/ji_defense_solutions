@@ -192,8 +192,8 @@ function ENT:Think()
 
 end
 
-function ENT:ACF_PreDamage()
-    -- barbed wire can't be broken by ACF
+function ENT:ShouldDoDamageConversion()
+    -- barbed wire can't be broken by damage
     return false
 
 end
