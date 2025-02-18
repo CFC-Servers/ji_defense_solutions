@@ -109,7 +109,6 @@ function ENT:PhysicsCollide( data )
         self:EmitSound( "EpicMetal.ImpactSoft", 85, math.random( 70, 80 ), 1, CHAN_STATIC, SND_CHANGE_PITCH )
         if self.Armed then
             self:Detonate()
-
         end
     end
 end
@@ -152,7 +151,7 @@ function ENT:Use( activator )
     JID.genericUseEffect( activator )
 end
 
-function ENT:ACF_PreDamage()
+function ENT:ShouldDoDamageConversion()
     -- ball busters are immune
     return false
 end

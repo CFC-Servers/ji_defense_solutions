@@ -1060,11 +1060,8 @@ function ENT:Fix( kit )
 
 end
 
-function ENT:ACF_PreDamage()
-    -- if we're broken, we take acf damage
-    if self.Broken then return end
-    -- not broken yet, dont take acf damage
-    return false
+function ENT:ShouldDoDamageConversion() -- only take real damage when our JI health runs out
+    return self.Broken
 
 end
 
