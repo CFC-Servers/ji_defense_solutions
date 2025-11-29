@@ -19,7 +19,8 @@ function EFFECT:Init( data )
         return
     end
 
-    local emitter = ParticleEmitter( vOffset )
+    local emitter = JID.GetSafeParticleEmitter( vOffset )
+    if not emitter then return end
 
     for _ = 0, 75 * Scayul do
         local sprite

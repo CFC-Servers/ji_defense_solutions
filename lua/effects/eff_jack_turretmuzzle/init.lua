@@ -3,7 +3,9 @@ function EFFECT:Init( data )
     local pozishun = data:GetStart()
     local skayul = data:GetScale()
     local NumParticles = 5 * skayul
-    local emitter = ParticleEmitter( data:GetOrigin() )
+
+    local emitter = JID.GetSafeParticleEmitter( data:GetOrigin() )
+    if not emitter then return end
 
     for _ = 0, NumParticles do
         local rollparticle = emitter:Add( "particles/flamelet" .. math.random( 1, 3 ), pozishun + VectorRand() * math.Rand( 0, 10 ) * skayul )

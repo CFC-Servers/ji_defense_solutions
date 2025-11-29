@@ -20,7 +20,9 @@ function EFFECT:Init( data )
     end
 
     if self:WaterLevel() == 3 then return end
-    local Emitter = ParticleEmitter( vOffset )
+
+    local Emitter = JID.GetSafeParticleEmitter( vOffset )
+    if not Emitter then return end
 
     for _ = 0, 750 * Scayul do
         local sprite = "sprites/mat_jack_smoke" .. tostring( math.random( 1, 3 ) )

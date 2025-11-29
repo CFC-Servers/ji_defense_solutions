@@ -7,7 +7,9 @@ function EFFECT:Init( data )
     self.Siyuz = 1
     self.DieTime = CurTime() + .1
     self.Opacity = 1
-    local emitter = ParticleEmitter( vOffset )
+
+    local emitter = JID.GetSafeParticleEmitter( vOffset )
+    if not emitter then return end
 
     for _ = 0, 100 * Scayul ^ 2 do
         local sprite = "effects/fleck_cement" .. math.random( 1, 2 )

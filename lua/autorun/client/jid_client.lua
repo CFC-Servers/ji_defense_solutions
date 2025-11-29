@@ -53,3 +53,18 @@ function JID.MakeEasyClose( panel, cmd )
         if mouseY < myY or mouseY > myY + myHeight then ShutDownPanel( self, cmd ) return end
     end
 end
+
+local emitterWait = 0
+
+-- automatically handle emitter limit error spam
+function JID.GetSafeParticleEmitter( pos )
+    if emitterWait > CurTime() then return nil end
+
+    local emitter = ParticleEmitter( pos )
+    if not emitter then
+        emitterWait = CurTime() + 10
+        return nil
+    end
+
+    return emitter
+end

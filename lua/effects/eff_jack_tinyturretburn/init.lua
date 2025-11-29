@@ -12,7 +12,8 @@ function EFFECT:Init( data )
         return
     end
 
-    local Emitter = ParticleEmitter( SelfPos )
+    local Emitter = JID.GetSafeParticleEmitter( SelfPos )
+    if not Emitter then return end
 
     local Particle1 = Emitter:Add( "particles/flamelet" .. tostring( math.random( 1, 5 ) ), SelfPos + VectorRand() * math.Rand( 0, 1 ) )
 

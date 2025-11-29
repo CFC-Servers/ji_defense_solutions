@@ -8,7 +8,9 @@ function EFFECT:Init( data )
     local dirkshun = data:GetNormal() * 1000 * Scayul
 
     local NumParticles = 1 * Scayul
-    local emitter = ParticleEmitter( data:GetOrigin() )
+
+    local emitter = JID.GetSafeParticleEmitter( data:GetOrigin() )
+    if not emitter then return end
 
     for _ = 0, NumParticles do
         local Pos = data:GetOrigin()
