@@ -2,7 +2,9 @@ function EFFECT:Init( data )
     local pos = data:GetOrigin()
     local scale = data:GetScale()
     local numParticles = 5 * scale
-    local emitter = ParticleEmitter( data:GetOrigin() )
+
+    local emitter = JID.GetSafeParticleEmitter( data:GetOrigin() )
+    if not emitter then return end
 
     for _ = 0, numParticles do
         if math.random( 1, 2 ) == 2 then

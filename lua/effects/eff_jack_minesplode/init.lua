@@ -35,7 +35,9 @@ function EFFECT:Init( data )
         return
     end
 
-    local emitter = ParticleEmitter( vOffset )
+    local emitter = JID.GetSafeParticleEmitter( vOffset )
+    if not emitter then return end
+
     local particle = emitter:Add( "effects/fire_cloud1", vOffset )
     particle:SetVelocity( math.Rand( 40, 60 ) * VectorRand() * Scayul )
     particle:SetAirResistance( 20 )

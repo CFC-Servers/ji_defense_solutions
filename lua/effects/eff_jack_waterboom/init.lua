@@ -29,7 +29,9 @@ function EFFECT:Init( data )
         Splach:SetNormal( Vector( 0, 0, 1 ) )
         Splach:SetScale( 100 )
         util.Effect( "WaterSplash", Splach )
-        local emitter = ParticleEmitter( vOffset )
+
+        local emitter = JID.GetSafeParticleEmitter( vOffset )
+        if not emitter then return end
 
         for _ = 0, 400 do
             local Sprite
@@ -98,7 +100,9 @@ function EFFECT:Init( data )
         return
     end
 
-    local emitter = ParticleEmitter( vOffset )
+    local emitter = JID.GetSafeParticleEmitter( vOffset )
+    if not emitter then return end
+
     local particle = emitter:Add( "effects/fire_cloud1", vOffset )
     particle:SetVelocity( math.Rand( 40, 60 ) * VectorRand() * Scayul )
     particle:SetAirResistance( 20 )
@@ -187,7 +191,8 @@ function EFFECT:Init( data )
     emitter:Finish()
 
     timer.Simple( 0.05, function()
-        local Emitter = ParticleEmitter( vOffset )
+        local Emitter = JID.GetSafeParticleEmitter( vOffset )
+        if not Emitter then return end
 
         for _ = 0, 15 * Scayul do
             local sprite

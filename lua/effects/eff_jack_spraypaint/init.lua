@@ -7,7 +7,9 @@ function EFFECT:Init( data )
     self.Pos = vOffset
     self.Scayul = Scayul
     self.Normal = Vector( 0, 0, 1 )
-    local Emitter = ParticleEmitter( vOffset )
+
+    local Emitter = JID.GetSafeParticleEmitter( vOffset )
+    if not Emitter then return end
 
     for _ = 0, 30 * Scayul do
         local sprite

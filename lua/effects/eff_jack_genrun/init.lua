@@ -3,7 +3,9 @@ function EFFECT:Init( data )
     local skayul = data:GetScale()
     local NumParticles = 5 * skayul
     self.Nermal = data:GetNormal()
-    local emitter = ParticleEmitter( data:GetOrigin() )
+
+    local emitter = JID.GetSafeParticleEmitter( data:GetOrigin() )
+    if not emitter then return end
 
     for _ = 0, NumParticles do
         local rollparticle = emitter:Add( "sprites/heatwave", pozishun + VectorRand() * math.Rand( 0, 3 ) * skayul )

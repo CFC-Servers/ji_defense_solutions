@@ -10,7 +10,9 @@ function EFFECT:Init( data )
     self.DieTime = CurTime() + .1
     self.Opacity = 1
     self.TimeToDie = CurTime() + 0.015 * self.Scale
-    local emitter = ParticleEmitter( vOffset )
+
+    local emitter = JID.GetSafeParticleEmitter( vOffset )
+    if not emitter then return end
 
     for i = 0, 15 * Scayul do
         local sprite = "sprites/flamelet" .. math.random( 1, 3 )
@@ -71,7 +73,8 @@ function EFFECT:Init( data )
     emitter:Finish()
 
     timer.Simple( 0.025, function()
-        local Emitter = ParticleEmitter( vOffset )
+        local Emitter = JID.GetSafeParticleEmitter( vOffset )
+        if not Emitter then return end
 
         for i = 0, 50 * Scayul do
             local sprite

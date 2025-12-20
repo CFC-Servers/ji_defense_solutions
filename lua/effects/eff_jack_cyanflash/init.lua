@@ -3,7 +3,10 @@ function EFFECT:Init( data )
     self.Position = vOffset
     self.TimeToDie = CurTime() + .5
     self.Scayul = data:GetScale()
-    local emitter = ParticleEmitter( data:GetOrigin() )
+
+    local emitter = JID.GetSafeParticleEmitter( vOffset )
+    if not Emitter then return end
+
     local rollparticle = emitter:Add( "sprites/mat_jack_basicglow", vOffset )
 
     if rollparticle then
